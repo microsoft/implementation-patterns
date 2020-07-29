@@ -1,3 +1,4 @@
+# Producer / Consumer Pattern Using Azure Service Bus and Azure Functions
 ## Cost Optimization Considerations
 Cost in Azure accrues over time based on the services that are used within your solution. In most cases there are a large number of meters that need to be accounted for if you're looking to draw a comprehensive pictures of cost. Generally however the vast majority of overall cost will come a smaller number of core services that are in use. This being said, with this solution we'll focus on service bus, functions and networking costs as they will constitute the majority of your spend.
 ### Service Bus
