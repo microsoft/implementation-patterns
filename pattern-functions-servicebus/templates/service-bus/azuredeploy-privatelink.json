@@ -1,0 +1,98 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+
+        "namespaceName": {
+            "type": "String"
+        },
+        "privateEndpointName": {
+            "type": "String"
+        },
+        "privateDnsZoneName": {
+            "type": "String"
+        },
+        "vnetName": {
+            "type": "String"
+        },
+        "subnetName": {
+            "type": "String"
+        },
+        "networkResourceGroup": {
+            "type": "String"
+        },
+        "namespaceResourceGroup": {
+            "type": "String"
+        },
+        "primary": {
+            "type": "Bool"
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces/networkRuleSets",
+            "condition": "[equals(parameters('primary'), 'true')]",
+            "apiVersion": "2018-01-01-preview",
+            "name": "[concat(parameters('namespaceName'), '/default')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "defaultAction": "Deny",
+                "virtualNetworkRules": [],
+                "ipRules": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+            "apiVersion": "2020-04-01",
+            "name": "[concat(parameters('privateEndpointName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpointName'))]"
+            ],
+            "properties": {
+                "privateDnsZoneConfigs": [
+                    {
+                        "name": "privatelink-servicebus-windows-net",
+                        "properties": {
+                            "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2020-04-01",
+            "name": "[parameters('privateEndpointName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpointName')]",
+                        "properties": {
+                            "privateLinkServiceId": "[resourceId(parameters('namespaceResourceGroup'), 'Microsoft.ServiceBus/namespaces', parameters('namespaceName'))]",
+                            "groupIds": [
+                                "namespace"
+                            ],
+                            "privateLinkServiceConnectionState": {
+                                "status": "Approved",
+                                "description": "Auto-Approved",
+                                "actionsRequired": "None"
+                            }
+                        }
+                    }
+                ],
+                "manualPrivateLinkServiceConnections": [],
+                "subnet": {
+                    "id": "[concat(resourceId(parameters('networkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnetName') )]"
+                },
+                "customDnsConfigs": []
+            }
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespaceName": {
+            "type": "String"
+        },
+        "pairedNamespaceName": {
+            "type": "String"
+        },
+        "pairedNamespaceResourceGroup": {
+            "type": "String"
+        },
+        "aliasName": {
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces/disasterRecoveryConfigs",
+            "apiVersion": "2017-04-01",
+            "name": "[concat(parameters('namespaceName'), '/', parameters('aliasName'))]",
+            "properties": {
+                "partnerNamespace": "[resourceId(parameters('pairedNamespaceResourceGroup'), 'Microsoft.ServiceBus/namespaces', parameters('pairedNamespaceName'))]"
+            }
+        }
+    ]
+}

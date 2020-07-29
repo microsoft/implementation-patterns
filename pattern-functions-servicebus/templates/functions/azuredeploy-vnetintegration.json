@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appName": {
+            "type": "String"
+        },
+        "vnetName": {
+            "type": "String"
+        },
+        "subnetName": {
+            "type": "String"
+        },
+        "networkResourceGroup": {
+            "type": "String"
+        },
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites/virtualNetwork",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('appName'), '/a268eb56-d0de-4ec6-bede-f99587767346_integration-subnet')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "subnetResourceId": "[concat(resourceId(parameters('networkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnetName') )]",
+                "swiftSupported": true
+            }
+        }
+    ]
+}
