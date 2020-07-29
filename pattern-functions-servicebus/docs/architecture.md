@@ -44,7 +44,7 @@ This guide assumes that you are deploying your solution into a networking enviro
 	az deployment group create --resource-group network-centralus-rg --name bind-centralus --template-file ./templates/bind-forwarder/azuredeploy.json --parameters adminUsername=$userName sshKeyData=$sshKey vnetName=hub-vnet subnetName=DNSSubnet
 	```
 
-[top ->](#TOC)    
+[top ->](#Architecture-and-Composable-Deployment-Code)    
 ### Azure Service Bus
 #### Requirements
 - Predictable / Consistent Performance
@@ -129,7 +129,7 @@ TODO: Elaborate on this path vs via ER GW.
 	 az deployment group create --resource-group refworkload-eastus2-rg --name link-east --template-file ./templates/service-bus/azuredeploy-queuestopics.json --parameters namespaceName=kskrefns1 queueName=queue1 topicName=topic1
 	```
 
-[top ->](#TOC) 
+[top ->](#Architecture-and-Composable-Deployment-Code)    
 
 ### Azure Functions
 #### Requirements
@@ -196,4 +196,4 @@ TODO: Elaborate on this path vs via ER GW.
 	```bash
 	TBD
 	```
-[top ->](#TOC) 
+[top ->](#Architecture-and-Composable-Deployment-Code)    
