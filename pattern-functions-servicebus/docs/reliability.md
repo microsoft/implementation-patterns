@@ -14,3 +14,5 @@ Active Passive / Non-HTTP Trigger Failover - Failover
 ![](images/activePassiveNonHTTPFailed.png) 
 - Describe fail-over, fail-back process.
 - Describe backup / recovery process.
+---
+> [Back to TOC](../README.md#TOC)

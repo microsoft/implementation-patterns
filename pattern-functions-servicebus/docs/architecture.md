@@ -197,4 +197,6 @@ TODO: Elaborate on this path vs via ER GW.
 	```bash
 	TBD
 	```
-[top ->](#Architecture-and-Composable-Deployment-Code)    
+[top ->](#Architecture-and-Composable-Deployment-Code) 
+---
+> [Back to TOC](../README.md#TOC) 

@@ -6,3 +6,5 @@ Insert here specifics on Azure DevOps code build and deployment pipeline.
 Insert here specifics on Azure DevOps infrastructure deployment pipeline.
 ### Monitoring
 Insert here guidance on infrastructure and App Monitoring.
+---
+> [Back to TOC](../README.md#TOC)
