@@ -3,4 +3,4 @@
 ## Architecture and Composable Deployment Code
 ### Virtual Network Foundation
 #### Implementation
-![](images/networking-foundation.png)
+![](docs/Azure Data Factory Architecture.png)
