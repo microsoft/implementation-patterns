@@ -24,6 +24,3 @@ steps:
 
        az deployment group create --resource-group network-eastus2-rg --name firewall-eastus2 --template-file pattern-functions-servicebus/components/firewall/azuredeploy.json --parameters  networkResourceGroup=network-eastus2-rg vnetName=hub-vnet subnetName=AzureFirewallSubnet
        az deployment group create --resource-group network-centralus-rg --name firewall-centralus --template-file pattern-functions-servicebus/components/firewall/azuredeploy.json --parameters networkResourceGroup=network-centralus-rg vnetName=hub-vnet subnetName=AzureFirewallSubnet
-
-       az deployment group create --resource-group network-eastus2-rg --name bind-eastus2 --template-file pattern-functions-servicebus/components/bind-forwarder/azuredeploy.json --parameters adminUsername=$userName sshKeyData=$sshKey vnetName=hub-vnet subnetName=DNSSubnet
-       az deployment group create --resource-group network-centralus-rg --name bind-centralus --template-file pattern-functions-servicebus/components/bind-forwarder/azuredeploy.json --parameters adminUsername=$userName sshKeyData=$sshKey vnetName=hub-vnet subnetName=DNSSubnet
