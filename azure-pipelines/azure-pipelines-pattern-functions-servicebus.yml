@@ -1,1 +1,36 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- checkout: self  
+
+- task: AzureCLI@2
+  displayName: Deploy to EastUS2
+  inputs:
+    azureSubscription: 'Azure implementation patterns EastUS2 connection'
+    scriptType: pscore
+    scriptLocation: inlineScript
+    inlineScript: | 
+       az group create --location eastus2 --name network-eastus2-rg  
+       
+       az deployment group create --resource-group network-eastus2-rg --name network-eastus2 --template-file pattern-functions-servicebus/components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.0.0.0/16" firewallSubnetPrefix="10.0.1.0/24" DNSSubnetPrefix="10.0.2.0/24" spokeVnetPrefix="10.1.0.0/16" workloadSubnetPrefix="10.1.2.0/24"
+
+       az deployment group create --resource-group network-eastus2-rg --name firewall-eastus2 --template-file pattern-functions-servicebus/components/firewall/azuredeploy.json --parameters  networkResourceGroup=network-eastus2-rg vnetName=hub-vnet subnetName=AzureFirewallSubnet
+
+- task: AzureCLI@2
+  displayName: Deploy to CentalUS
+  inputs:
+    azureSubscription: 'Azure implementation patterns CentralUS connection'
+    scriptType: pscore
+    scriptLocation: inlineScript
+    inlineScript: | 
+       dir
+       az group create --location centralus --name network-centralus-rg
+       
+       az deployment group create --resource-group network-centralus-rg --name network-centralus --template-file pattern-functions-servicebus/components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.2.0.0/16" firewallSubnetPrefix="10.2.1.0/24" DNSSubnetPrefix="10.2.2.0/24" spokeVnetPrefix="10.3.0.0/16" workloadSubnetPrefix="10.3.2.0/24"
+
+       az deployment group create --resource-group network-centralus-rg --name firewall-centralus --template-file pattern-functions-servicebus/components/firewall/azuredeploy.json --parameters networkResourceGroup=network-centralus-rg vnetName=hub-vnet subnetName=AzureFirewallSubnet
 
