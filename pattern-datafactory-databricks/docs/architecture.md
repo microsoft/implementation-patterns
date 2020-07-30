@@ -1,5 +1,5 @@
 
-# Azure Data Factory Architecure Pattern
+# Azure Data Factory Architecture Patterns
 ## Architecture and Composable Deployment Code
 ### Virtual Network Foundation
 #### Implementation
