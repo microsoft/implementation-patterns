@@ -1,0 +1,49 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "allowedSubnetId":{
+            "type":"string",
+            "metadata": {
+                "description":"subnet ID of allowed Subnet for Keyvault communication"
+            }
+        },
+        "kvEnabledForTemplateDeployment": {
+            "type": "bool"
+        }
+    },
+    "variables": {
+        "vaultName": "<generate name based on naming conventions>",
+        "location": "[resourceGroup().location]",
+        "tenantId":"[subscription().tenantId]",
+        "endpointBypass":"AzureServices"
+    },
+    "resources": [
+        {
+            "type":"Microsoft.KeyVault/vaults",
+            "apiVersion":"2019-09-01",
+            "name":"[variables('vaultName')]",
+            "location":"[variables('location')]",
+            "properties":{
+                "tenantId":"[variables('tenantId')]",
+                "sku": {
+                    "name":"standard",
+                    "family":"A"
+                },
+                "networkAcls":{
+                    "bypass":"[variables('endpointBypass')]",
+                    "virtualNetworkRules":[
+                        {
+                            "id":"[parameters('allowedSubnetId')]",
+                            "action":"Allow"
+                        }
+                    ],
+                    "defaultAction":"Deny"
+                },
+                "enabledForTemplateDeployment":"[parameters('kvEnabledForTemplateDeployment')]"
+            }
+        }
+    ],
+    "outputs": {
+    }
+  }
