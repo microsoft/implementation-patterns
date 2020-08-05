@@ -34,7 +34,7 @@
             "value": "poctestadfv2-32" 
         },
         "storageAccount":{
-            "value": "mesta11pe"
+            "value": "STORAGEDEPLOYMENTACCOUNT"
         },
         "installContainer":{
             "value": "scripts"
