@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+
+    },
+    "variables": {
+
+     "vnetId": "/subscriptions/366e578a-8254-496d-8319-916530c5aa3d/resourceGroups/wintest_group/providers/Microsoft.Network/virtualNetworks/wintest_group-vnet",
+      "subnetName": "default",
+      "subnetId": "[concat(variables('vnetId'),'/subnets/',variables('subnetName'))]"
+    },
+    "resources": [
+     {
+  "name": "stgtemplep",
+  "type": "Microsoft.Network/privateEndpoints",
+  "apiVersion": "2019-11-01",
+  "location": "eastus",
+  "tags": {},
+  "properties": {
+    "subnet": {
+      "id": "[variables('subnetId')]"
+    },
+    "privateLinkServiceConnections": [
+      {
+    
+        "properties": {
+          "privateLinkServiceId": "/subscriptions/366e578a-8254-496d-8319-916530c5aa3d/resourceGroups/wintest_group/providers/Microsoft.Storage/storageAccounts/samteststendpoint",
+          "groupIds": [
+            "blob"
+          ],
+          "requestMessage": "connectfrom template"
+          
+        },
+        "name": "nic-1-pvt"
+      }
+    ],
+    "manualPrivateLinkServiceConnections": [
+      
+    ]
+  }
+}
+    ],
+    "outputs":{
+
+        
+    }
+  }
