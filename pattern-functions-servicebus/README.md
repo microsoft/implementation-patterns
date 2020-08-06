@@ -26,7 +26,7 @@ On Azure, the primary enterprise messaging service is [Azure Service Bus](https:
 [Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/#:~:text=Azure%20Functions%20Documentation.%20Azure%20Functions%20is%20a%20serverless,code%20in%20response%20to%20a%20variety%20of%20events.) offers a convenient compute platform from which to implement a producer consumer pattern with relatively little underlying infrastructure management.
 
 Azure Functions and Service Bus are relatively simple to get up and running in their default configurations. Things get significantly more complex when implementing them in environments with stringent security requirements that dictate more aggressive network perimeter security and segmentation.
-  
+
 This document describes key considerations for deploying Azure Functions alongside Service Bus in a fully locked down environment using technologies including regional VNet Integration for functions, private endpoints for Service Bus and a variety of network security controls including Network Security Groups and Azure Firewall.
 
 We've modeled this architecture on an fairly aggressive set of requirements from a performance/scalability, reliability and security perspective. Those requirements will be noted within the document. Your implementation of this pattern may differ depending on your needs.
@@ -68,7 +68,7 @@ The base-level resource for Azure Service Bus is a Service Bus Namespace. Namesp
 When creating a namespace in a single region, there are relatively few decisions you'll need to make. You will need to specify the name, pricing tier, initial scale and redundancy settings, subscription, resource group and location.
 
 In our reference implementation we will be deploying a Premium namespace. This is the tier that is recommended for most production workloads due to it's performance characteristics. In addition, the Premium tier supports VNet integration which allows us to isolate the namespace to a private network. This is key to achieving our overall security objectives.   
-  
+
 - We'll create a namespace in both regions. (1)   
 
 - We'll configure geo-redundancy (2) with the EastUS2 namespace being primary and the CentralUS namespace being secondary. This will replicate all entity information between regions (but not messages).
@@ -105,9 +105,15 @@ TODO: Elaborate on this path vs via ER GW.
 [top ->](#TOC)
 
 ## Composable Deployment Code
+Below you'll find a set of fully parameterized ARM templates that can be used to deploy the above noted architecture. 
+
+These ARM templates have been constructed in a modular way to optimize reuse potential.
+
+Within each of the below folders you'll find a deploy.sh file that provides an example of how to sequentially deploy the templates with the appropriate parameters.
+
 1. [Base Network](components/base-network)
-5. [Service Bus](components/service-bus)
-6. [Functions](components/functions)
+2. [Service Bus](components/service-bus)
+3. [Functions](components/functions)
 
 
 
