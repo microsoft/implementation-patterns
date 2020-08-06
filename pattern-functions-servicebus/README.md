@@ -16,6 +16,8 @@
 - Linux Command Line (Bash)
 - Azure CLI
 
+[top ->](#TOC)
+
 ## Architectural Overview
 Many cloud native applications are expected to handle a large number of requests. Rather than process each request synchronously, a common technique is for the application to pass them through a messaging system to another service (a consumer service) that handles them asynchronously. This strategy helps to ensure that the business logic in the application isn't blocked while the requests are being processed. For full details on this pattern see the [following article](https://docs.microsoft.com/en-us/azure/architecture/patterns/competing-consumers).
 
@@ -30,6 +32,8 @@ This document describes key considerations for deploying Azure Functions alongsi
 We've modeled this architecture on an fairly aggressive set of requirements from a performance/scalability, reliability and security perspective. Those requirements will be noted within the document. Your implementation of this pattern may differ depending on your needs.
 
 Similar to other architectures available in the [Azure Architecture Center](https://docs.microsoft.com/en-us/azure/architecture/browse/), this document touches on each pillar defined in the [Microsoft Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework).  
+
+[top ->](#TOC)
 
 ### Virtual Network Foundation
 ![](docs/images/networking-foundation.png)
@@ -46,6 +50,8 @@ This guide assumes that you are deploying your solution into a networking enviro
 - In many locked down environments [Forced tunneling](https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-forced-tunneling-rm) is in place. E.G. routes are being published over ExpressRoute via BGP that override the default 0.0.0.0/0 -> Internet system route in all connected Azure subnets. The effect is that there is **no** direct route to the internet from within Azure subnets. Internet destined traffic is sent to the VPN/ER gateway. We can simulate this in a test environment by using restrictive NSGs and Firewall rules to prohibit internet egress. We'll route any internet egress traffic to Azure firewall (4) using a UDR (5) where it can be filtered and audited.  
 
 - Generally, custom DNS is configured on the spoke VNet settings. DNS forwarders in the hub are referenced. These forwarders  provide conditional forwarding to the Azure internal resolver and on premises DNS servers as needed. In this reference implementation we'll deploy a simple BIND forwarder (6) into our hub network that will be configured to forward requests to the Azure internal resolver.  
+
+[top ->](#TOC)
 
 ### Azure Service Bus
 #### Requirements
@@ -75,6 +81,8 @@ TODO: Elaborate on this path vs via ER GW.
   
 - TODO: Add specifics on DNS resolution and network path to private endpoints for both regions from on-premises.  
 
+[top ->](#TOC)
+
 ### Azure Functions
 #### Requirements
 - Support for Java (version 8)
@@ -93,13 +101,16 @@ TODO: Elaborate on this path vs via ER GW.
 - The Firewall will be configured to allow traffic to public App Insights endpoints to enable built-in monitoring facilitated by the Azure Functions host running in the Function App.
 
 - DNS settings on the Spoke VNet will be configured such that all DNS queries (4) originating from subnets in the VNet will be sent to our custom DNS forwarders.
+
+[top ->](#TOC)
+
 ## Composable Deployment Code
-- [Base Networking](components/base-network)
-- [Integration Subnet](components/integration-subnet)
-- [Firewall](components/firewall)
-- [BIND DNS Forwarders](components/functions)
-- [Service Bus](components/integration-subnet)
-- [Functions](components/service-bus)
+1. [Base Networking](components/base-network)
+2. [Integration Subnet](components/integration-subnet)
+3. [Firewall](components/firewall)
+4. [BIND DNS Forwarders](components/functions)
+5. [Service Bus](components/integration-subnet)
+6. [Functions](components/service-bus)
 
 
 
