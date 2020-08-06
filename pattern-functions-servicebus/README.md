@@ -105,10 +105,7 @@ TODO: Elaborate on this path vs via ER GW.
 [top ->](#TOC)
 
 ## Composable Deployment Code
-1. [Base Networking](components/base-network)
-2. [Integration Subnet](components/integration-subnet)
-3. [Firewall](components/firewall)
-4. [BIND DNS Forwarders](components/functions)
+1. [Base Network](components/base-network)
 5. [Service Bus](components/integration-subnet)
 6. [Functions](components/service-bus)
 
