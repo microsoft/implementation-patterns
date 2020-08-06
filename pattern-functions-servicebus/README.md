@@ -106,8 +106,8 @@ TODO: Elaborate on this path vs via ER GW.
 
 ## Composable Deployment Code
 1. [Base Network](components/base-network)
-5. [Service Bus](components/integration-subnet)
-6. [Functions](components/service-bus)
+5. [Service Bus](components/service-bus)
+6. [Functions](components/functions)
 
 
 
