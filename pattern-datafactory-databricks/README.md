@@ -6,18 +6,13 @@ Azure-Data-Factory-Patterns-and-Best-practices
 - [Architectural Overview](docs/architecture.md)
 - [Composable Deployment Code](docs/Composable-Deployment-Code.md)
 - Considerations for a Well Architected Solution
-   - [Cost Optimization Considerations](docs/adfcostoptimization.md)
-   - [Operational Considerations](docs/adfoperational.md)
-   - [Performance and Scalability Considerations](docs/adfperformance.md)
-   - [Reliability Considerations](docs/adfreliability.md)
-   - [Security Considerations](docs/adfsecurity.md)  
+   - [Cost Optimization](docs/adfcostoptimization.md)
+   - [Operational](docs/adfoperational.md)
+   - [Performance and Scalability](docs/adfperformance.md)
+   - [Reliability](docs/adfreliability.md)
+   - [Security](docs/adfsecurity.md)  
 
 
-
-## Getting Started / Prerequisites
-- Azure Subscription with appropriate role based access for the components you chose to deploy
-- Linux Command Line (Bash)
-- Azure CLI
 
 
 # Azure Databricks
