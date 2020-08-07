@@ -2,7 +2,7 @@
 Azure-Data-Factory-Patterns-and-Best-practices
 
 ## TOC
-- [Getting Started / Prerequisites](Getting-Started)
+- [Getting Started / Prerequisites](adfGetting-Started.md)
 - [Architectural Overview](docs/architecture.md)
 - [Composable Deployment Code](docs/Composable-Deployment-Code.md)
 - Considerations for a Well Architected Solution
