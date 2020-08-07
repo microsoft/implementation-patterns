@@ -17,8 +17,7 @@
 
 - **Compliance**
 
-- **Firewall requirements for Self Hosted Integration Runtime **
-
+- **Firewall requirements for Self Hosted Integration Runtime**
   - Outbound ports and domains
   - IP addresses
   - Service endpoints
