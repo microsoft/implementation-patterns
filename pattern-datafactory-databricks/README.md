@@ -41,11 +41,6 @@ New tools etc vagera
 - [Reliability Considerations](docs/adfreliability.md)
 - [Security Considerations](docs/adfsecurity.md)  
 
-In the presence of ADF, etc
-
-- ***In the presence of ADF, etc***
-  - fjhhgjfhg
-    - fjhfjsdhfuj
 
 
 
