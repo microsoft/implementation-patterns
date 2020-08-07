@@ -1,7 +1,7 @@
 
 ### Performance considerations for SHIR and Azure IR 
 
-![img](file:///C:/Users/srgolla/AppData/Local/Temp/msohtmlclip1/01/clip_image002.jpg)
+![image](https://user-images.githubusercontent.com/22504173/89627977-99b28280-d869-11ea-83dd-fcbaef113c10.png)
 
  
 
@@ -31,8 +31,7 @@ o  If you would like to achieve higher throughput, you can either scale up or sc
 - - When you copy      data from a source data store to a sink data store, you might choose to      use Blob storage as an interim staging store.
 
  
-
-![img](file:///C:/Users/srgolla/AppData/Local/Temp/msohtmlclip1/01/clip_image004.jpg)
+![image](https://user-images.githubusercontent.com/22504173/89628022-ac2cbc00-d869-11ea-8e4f-caa584219637.png)
 
  
 
