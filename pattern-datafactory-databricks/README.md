@@ -19,10 +19,13 @@ Azure-Data-Factory-Patterns-and-Best-practices
 Azure-Databricks-Patterns-and-Best-practices
 
 ## TOC
-- [Architecture and Composable Deployment Code](docs/architecture.md)
-- [Cost Optimization Considerations](docs/costoptimization.md)
-- [Operational Considerations](docs/operational.md)
-- [Performance and Scalability Considerations](docs/performance.md)
-- [Reliability Considerations](docs/reliability.md)
-- [Security Considerations](docs/adfsecurity.md)  
- 
+- [Getting Started / Prerequisites](docs/adbGetting-Started.md)
+- [Architectural Overview](docs/adbarchitecture.md)
+- [Composable Deployment Code](docs/adbComposable-Deployment-Code.md)
+- Considerations for a Well Architected Solution
+   - [Cost Optimization](docs/adbcostoptimization.md)
+   - [Operational](docs/adboperational.md)
+   - [Performance and Scalability](docs/adbperformance.md)
+   - [Reliability](docs/adbreliability.md)
+   - [Security](docs/adbsecurity.md)  
+
