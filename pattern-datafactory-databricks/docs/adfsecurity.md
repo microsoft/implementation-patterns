@@ -1,4 +1,4 @@
-## Security consideration
+## Security considerations
 
 - **Customer data storage**
 
