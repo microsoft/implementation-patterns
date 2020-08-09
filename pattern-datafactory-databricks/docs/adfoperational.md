@@ -22,3 +22,4 @@ For repos which are not Github or Azure Devops, there is an option to export the
 Incase you want to export the contents of a single pipeline and its corresponding artifacts instead of the entire data factory, then you need to select "Download Support files" option within the pipeline properties.
 ![image](https://user-images.githubusercontent.com/22504173/89733983-25254280-da27-11ea-9854-8e28f0b09e18.png)
 
+![image](https://user-images.githubusercontent.com/22504173/89734089-e0e67200-da27-11ea-94dc-c131e224c016.png)
