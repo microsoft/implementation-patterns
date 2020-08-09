@@ -17,3 +17,8 @@ For Azure Devops, you can select the right Git repo and collaboration branch acc
 For repos which are not Github or Azure Devops, there is an option to export the ARM templates of Data factory and upload them into the corresponding source control platforms
 ![image](https://user-images.githubusercontent.com/22504173/89733931-e3949780-da26-11ea-9e10-c4cc87afe48b.png)
 ![image](https://user-images.githubusercontent.com/22504173/89733947-fa3aee80-da26-11ea-9d1d-d6b148acb565.png)
+
+
+Incase you want to export the contents of a single pipeline and its corresponding artifacts instead of the entire data factory, then you need to select "Download Support files" option within the pipeline properties.
+![image](https://user-images.githubusercontent.com/22504173/89733983-25254280-da27-11ea-9854-8e28f0b09e18.png)
+
