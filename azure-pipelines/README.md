@@ -35,8 +35,10 @@ We currently have just 2 builds:
 - **Parallel Jobs**: With this method of deployment, we can make use of parallel jobs. For example, to deploy storage, cdn and sql. Storage (30s) is a dependency for CDN (30s), but SQL (120s) can be deployed independently - we could argue that running this in 3 jobs will be fast
 
     Diagram showing serial deployment in 3 minutes
+    ![serial deployment](https://github.com/microsoft/implementation-patterns/blob/master/azure-pipelines/images/serialJobPipelines.png)
     
     Diagram showing parallel deployment in 2 minutes
+    ![parallel deployment](https://github.com/microsoft/implementation-patterns/blob/master/azure-pipelines/images/parallelJobPipelines.png)
     
 - **Dependencies**: watch out for missing DependsOn. Troubleshooting - use a Azure CLI window. 
 - **Secrets**: Don't have secrets visible in code. 
