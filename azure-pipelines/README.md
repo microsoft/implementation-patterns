@@ -40,86 +40,86 @@ We currently have just 2 builds:
     Diagram showing parallel deployment in 3-4 minutes. We group items that don't have dependencies, and separate long running tasks into their own job.
     ![parallel deployment](https://github.com/microsoft/implementation-patterns/blob/main/azure-pipelines/parallelJobPipelines.png)
     
-    jobs:
+        jobs:
 
 
-      - job: DeployStorage
-        displayName: 'Deploy Key Vault and Azure Storage'
-        pool:
-          vmImage: windows-latest
-        steps:
-        - task: DownloadBuildArtifacts@0
-          displayName: 'Download the build artifacts'
-          inputs:
-            buildType: 'current'
-            downloadType: 'single'
-            artifactName: 'drop'
-            downloadPath: '$(build.artifactstagingdirectory)'
-        - task: AzureCLI@2
-          displayName: 'Deploy ARM templates'
-          inputs:
-            azureSubscription: 'Service connection to Azure Portal'
-            scriptType: ps
-            scriptLocation: inlineScript
-            inlineScript: |             
-            $keyVaultName = "$appPrefix-$environment-$locationShort-vault"
-            $storageAccountName = "$appPrefix$environment$($locationShort)storage"
-            $templatesLocation = "$(build.artifactstagingdirectory)\drop\ARMTemplates"
+          - job: DeployStorage
+            displayName: 'Deploy Key Vault and Azure Storage'
+            pool:
+              vmImage: windows-latest
+            steps:
+            - task: DownloadBuildArtifacts@0
+              displayName: 'Download the build artifacts'
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: 'drop'
+                downloadPath: '$(build.artifactstagingdirectory)'
+            - task: AzureCLI@2
+              displayName: 'Deploy ARM templates'
+              inputs:
+                azureSubscription: 'Service connection to Azure Portal'
+                scriptType: ps
+                scriptLocation: inlineScript
+                inlineScript: |             
+                $keyVaultName = "$appPrefix-$environment-$locationShort-vault"
+                $storageAccountName = "$appPrefix$environment$($locationShort)storage"
+                $templatesLocation = "$(build.artifactstagingdirectory)\drop\ARMTemplates"
                
-            #Create resource group
-            az group create --name $resourceGroupName --location $location 
+                #Create resource group
+                az group create --name $resourceGroupName --location $location 
                 
-            #Key vault
-            az deployment group create --resource-group $resourceGroupName --name $keyVaultName --template-file "$templatesLocation\AzureKeyVault.json" --parameters keyVaultName=$keyVaultName
+                #Key vault
+                az deployment group create --resource-group $resourceGroupName --name $keyVaultName --template-file "$templatesLocation\AzureKeyVault.json" --parameters keyVaultName=$keyVaultName
                 
-            #Storage
-            $storageOutput = az deployment group create --resource-group $resourceGroupName --name $storageAccountName --template-file "$templatesLocation\AzureStorage.json" --parameters storageAccountName=$storageAccountName
+                #Storage
+                $storageOutput = az deployment group create --resource-group $resourceGroupName --name $storageAccountName --template-file "$templatesLocation\AzureStorage.json" --parameters storageAccountName=$storageAccountName
  
 
-      - job: DeployServices
-        displayName: 'Deploy CDN, Redis, App insights, and Web apps'
-        pool:
-          vmImage: windows-latest
-        dependsOn: DeployStorage
-        steps:
-        - task: DownloadBuildArtifacts@0
-          displayName: 'Download the build artifacts'
-          inputs:
-            buildType: 'current'
-            downloadType: 'single'
-            artifactName: 'drop'
-            downloadPath: '$(build.artifactstagingdirectory)'
-        - task: AzureCLI@2
-          displayName: 'Deploy ARM templates'
-          inputs:
-            azureSubscription: 'Service connection to Azure Portal'
-            scriptType: ps
-            scriptLocation: inlineScript
-            inlineScript: |             
-            #Deploy abc/def/ghi/klm
+          - job: DeployServices
+            displayName: 'Deploy CDN, Redis, App insights, and Web apps'
+            pool:
+              vmImage: windows-latest
+            dependsOn: DeployStorage
+            steps:
+            - task: DownloadBuildArtifacts@0
+              displayName: 'Download the build artifacts'
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: 'drop'
+                downloadPath: '$(build.artifactstagingdirectory)'
+            - task: AzureCLI@2
+              displayName: 'Deploy ARM templates'
+              inputs:
+                azureSubscription: 'Service connection to Azure Portal'
+                scriptType: ps
+                scriptLocation: inlineScript
+                inlineScript: |             
+                #Deploy abc/def/ghi/klm
 
 
-      - job: DeploySQL
-        displayName: 'Deploy Azure SQL'
-        pool:
-          vmImage: windows-latest
-        dependsOn: DeployStorage
-        steps:
-        - task: DownloadBuildArtifacts@0
-          displayName: 'Download the build artifacts'
-          inputs:
-            buildType: 'current'
-            downloadType: 'single'
-            artifactName: 'drop'
-            downloadPath: '$(build.artifactstagingdirectory)'
-        - task: AzureCLI@2
-          displayName: 'Deploy ARM templates'
-          inputs:
-            azureSubscription: 'Service connection to Azure Portal'
-            scriptType: ps
-            scriptLocation: inlineScript
-            inlineScript: |             
-            #Deploy abc/def/ghi/klm
+          - job: DeploySQL
+            displayName: 'Deploy Azure SQL'
+            pool:
+              vmImage: windows-latest
+            dependsOn: DeployStorage
+            steps:
+            - task: DownloadBuildArtifacts@0
+              displayName: 'Download the build artifacts'
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: 'drop'
+                downloadPath: '$(build.artifactstagingdirectory)'
+            - task: AzureCLI@2
+              displayName: 'Deploy ARM templates'
+              inputs:
+                azureSubscription: 'Service connection to Azure Portal'
+                scriptType: ps
+                scriptLocation: inlineScript
+                inlineScript: |             
+                #Deploy abc/def/ghi/klm
     
 - **Dependencies**: watch out for missing DependsOn. Troubleshooting - use a Azure CLI window. 
 - **Secrets**: Don't have secrets visible in code. 
