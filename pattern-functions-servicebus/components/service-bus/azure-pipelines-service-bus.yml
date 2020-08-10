@@ -1,6 +1,6 @@
 name: ServiceBus deployment
 
-#trigger:
+trigger: none
 #- main
 
 pool:
