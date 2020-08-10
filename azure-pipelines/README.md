@@ -40,6 +40,8 @@ We currently have just 2 builds:
     Diagram showing parallel deployment in 3-4 minutes. We group items that don't have dependencies, and separate long running tasks into their own job.
     ![parallel deployment](https://github.com/microsoft/implementation-patterns/blob/main/azure-pipelines/parallelJobPipelines.png)
     
+    We can see see the use of multiple jobs in the sample YAML below, with the usage of "dependsOn", to create job dependencies. We can also use conditions to run particular jobs in certain circumstances
+    
         jobs:
 
 
@@ -122,4 +124,6 @@ We currently have just 2 builds:
                 #Deploy abc/def/ghi/klm
     
 - **Dependencies**: watch out for missing DependsOn. Troubleshooting - use a Azure CLI window. 
+        more details incoming/ TBD
 - **Secrets**: Don't have secrets visible in code. 
+        more details incoming/ TBD
