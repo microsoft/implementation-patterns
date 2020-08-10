@@ -14,15 +14,23 @@ We currently have just 2 builds:
 ## Best Practices
 - **Outputs**: Use Outputs to extract information where needed. For example, to get the Storage Access Key:
 
-      ARM code to prepare property for extraction
+      "outputs": {
+        "storageAccountKey": {
+          "type": "string",
+          "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
+        }
+      }
 
-  This in the script, you can access it like this:
+  To deploy the deploy and extract the outputs in the script:
 
-      Azure CLI to extract output
+      $storageOutput = az deployment group create --resource-group $resourceGroupName --name $storageAccountName --template-file "$templatesLocation\Storage.json" --parameters storageAccountName=$storageAccountName
+      $storageJSON = $storageOutput | ConvertFrom-Json
+      $storageAccountAccessKey = $storageJSON.properties.outputs.storageAccountKey.value
 
-  To save in a keyvault, use:
+  To upload the secret into a keyvault, use:
 
-      Azure CLI to save KeyVault code
+      az keyvault secret set --vault-name $keyVaultName --name $keyVaultSecretName --value $storageAccountAccessKey 
+
     
 - **Parallel Jobs**: With this method of deployment, we can make use of parallel jobs. For example, to deploy storage, cdn and sql. Storage (30s) is a dependency for CDN (30s), but SQL (120s) can be deployed independently - we could argue that running this in 3 jobs will be fast
 
