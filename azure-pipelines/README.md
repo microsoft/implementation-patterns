@@ -124,6 +124,8 @@ We currently have just 2 builds:
                 #Deploy abc/def/ghi/klm
     
 - **Dependencies**: watch out for missing DependsOn. Troubleshooting - use a Azure CLI window. 
+
           more details incoming/ TBD
 - **Secrets**: Don't have secrets visible in code. 
+
           more details incoming/ TBD
