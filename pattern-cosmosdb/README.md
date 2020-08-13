@@ -3,7 +3,7 @@ Today's applications are required to be highly responsive and always online. To 
 
 Azure Cosmos DB is Microsoft's globally distributed, multi-model database service. With a click of a button, Cosmos DB enables you to elastically and independently scale throughput and storage across any number of Azure regions worldwide. You can elastically scale throughput and storage, and take advantage of fast, single-digit-millisecond data access using your favorite API including: SQL, MongoDB, Cassandra, Tables, or Gremlin. Cosmos DB provides comprehensive service level agreements (SLAs) for throughput, latency, availability, and consistency guarantees, something no other database service offers.
 
-This document describes key considerations for deploying Azure Comso DB in a fully locked down environment using technologies including  Application Tokens, IP Firewall and VNEt integration.
+This document describes key considerations for deploying Azure Comso DB in a fully locked down environment using technologies including Application Tokens, IP Firewall, VNet integration, Private Endpoint, RBAC and Data Encryption using customer-managed keys.
 
 We've modeled this architecture on an fairly aggressive set of requirements from a performance/scalability, reliability and security perspective. Those requirements will be noted within the document. Your implementation of this pattern may differ depending on your needs.
 
