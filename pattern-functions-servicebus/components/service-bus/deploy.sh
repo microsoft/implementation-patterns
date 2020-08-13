@@ -8,8 +8,8 @@ resourceGroup2Location="centralus"
 namespace1Name="namespace1ksk"
 namespace2Name="namespace2ksk"
 aliasName="namespacekskalias"
-eastNetworkResourceGroupName="Foundation-HubAndSpoke-EastUS2"
-centralNetworkResourceGroupName="Foundation-HubAndSpoke-CentralUS"
+eastNetworkResourceGroupName="Network-RG-EastUS2"
+centralNetworkResourceGroupName="Network-RG-CentralUS"
 
 # Create RGs
 az group create --name $resourceGroup1Name --location $resourceGroup1Location
