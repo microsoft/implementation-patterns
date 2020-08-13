@@ -13,6 +13,9 @@ centralWorkloadResourceGroupName="Workload-RG-CentralUS"
 eastPlanName="demplaneast1"
 centralPlanName="demplancentral1"
 
+eastStorageName="demstoreast1"
+centralStorageName="demstorcentral1"
+
 appId="ap123456"
 employeeID="123456"
 org="orga"
@@ -25,3 +28,8 @@ az group create --name $centralWorkloadResourceGroupName --location $resourceGro
 # Create App Service Plans
 az deployment group create --resource-group $eastWorkloadResourceGroupName --name plan-eastus2 --template-file azuredeploy-plan.json --parameters planName=$eastPlanName applicationId=$appId employeeId=$employeeID organization=$org environment=$env
 az deployment group create --resource-group $centralWorkloadResourceGroupName --name plan-centralus --template-file azuredeploy-plan.json --parameters planName=$centralPlanName applicationId=$appId employeeId=$employeeID organization=$org environment=$env
+
+# Create Storage Accounts
+az deployment group create --resource-group $eastWorkloadResourceGroupName --name storage-eastus2 --template-file azuredeploy-storage.json --parameters storageAccountName=$eastStorageName applicationId=$appId employeeId=$employeeID organization=$org environment=$env
+az deployment group create --resource-group $centralWorkloadResourceGroupName --name storage-centralus --template-file azuredeploy-storage.json --parameters storageAccountName=$centralStorageName applicationId=$appId employeeId=$employeeID organization=$org environment=$env
+

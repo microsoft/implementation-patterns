@@ -8,9 +8,33 @@
         "location": {
             "defaultValue": "[resourceGroup().location]",
             "type": "String"
+        },
+        "applicationId": {
+            "type": "String"
+        },
+        "employeeId": {
+            "type": "String"
+        },
+        "organization": {
+            "type": "String"
+        },
+        "environment": {
+            "type": "String"
+        },
+        "timestamp": {
+            "type": "String",
+            "defaultValue": "[utcNow('u')]"
         }
     },
-    "variables": {},
+    "variables": {
+        "resourceTags": {
+            "ApplicationId": "[parameters('applicationId')]",
+            "CreatedBy": "[parameters('employeeId')]",
+            "Organization": "[parameters('organization')]",
+            "Environment": "[parameters('environment')]",
+            "Timestamp": "[parameters('timestamp')]"
+        }
+    },
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
@@ -30,6 +54,7 @@
                     "defaultAction": "Allow"
                 },
                 "supportsHttpsTrafficOnly": true,
+                "tags": "[variables('resourceTags')]",
                 "encryption": {
                     "services": {
                         "file": {
