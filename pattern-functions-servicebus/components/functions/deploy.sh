@@ -38,4 +38,4 @@ az deployment group create --resource-group $centralWorkloadResourceGroupName --
 
 # Create Function Apps
 az deployment group create --resource-group $eastWorkloadResourceGroupName --name app-eastus2 --template-file azuredeploy-app.json --parameters appName=$eastAppName planName=$eastPlanName storageAccountName=$eastStorageName applicationId=$appId employeeId=$employeeID organization=$org environment=$env
-az deployment group create --resource-group $centralWorkloadResourceGroupName --name app-centralus --template-file azuredeploy-app.json --parameters appName=$centralAppName planName=$eastPlanName storageAccountName=$centralStorageName applicationId=$appId employeeId=$employeeID organization=$org environment=$env
+az deployment group create --resource-group $centralWorkloadResourceGroupName --name app-centralus --template-file azuredeploy-app.json --parameters appName=$centralAppName planName=$centralPlanName storageAccountName=$centralStorageName applicationId=$appId employeeId=$employeeID organization=$org environment=$env
