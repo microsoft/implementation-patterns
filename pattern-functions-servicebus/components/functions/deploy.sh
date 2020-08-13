@@ -39,3 +39,7 @@ az deployment group create --resource-group $centralWorkloadResourceGroupName --
 # Create Function Apps
 az deployment group create --resource-group $eastWorkloadResourceGroupName --name app-eastus2 --template-file azuredeploy-app.json --parameters appName=$eastAppName planName=$eastPlanName storageAccountName=$eastStorageName applicationId=$appId employeeId=$employeeID organization=$org environment=$env
 az deployment group create --resource-group $centralWorkloadResourceGroupName --name app-centralus --template-file azuredeploy-app.json --parameters appName=$centralAppName planName=$centralPlanName storageAccountName=$centralStorageName applicationId=$appId employeeId=$employeeID organization=$org environment=$env
+
+# Deploy the Integration Subnets
+az deployment group create --resource-group $eastNetworkResourceGroupName --name app-eastus2 --template-file azuredeploy-integrationsubnet.json --parameters existingVnetName="spoke-vnet" newSubnetName="integration-subnet" integrationSubnetPrefix="10.1.3.0/24"
+az deployment group create --resource-group $centralNetworkResourceGroupName --name app-centralus --template-file azuredeploy-integrationsubnet.json --parameters existingVnetName="spoke-vnet" newSubnetName="integration-subnet" integrationSubnetPrefix="10.3.3.0/24"

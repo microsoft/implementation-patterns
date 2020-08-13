@@ -3,11 +3,15 @@
 # Params
 resourceGroup1Name="ServiceBusDem-EastUS2"
 resourceGroup2Name="ServiceBusDem-CentralUS"
+
 resourceGroup1Location="eastus2"
 resourceGroup2Location="centralus"
+
 namespace1Name="namespace1ksk"
 namespace2Name="namespace2ksk"
+
 aliasName="namespacekskalias"
+
 eastNetworkResourceGroupName="Network-RG-EastUS2"
 centralNetworkResourceGroupName="Network-RG-CentralUS"
 

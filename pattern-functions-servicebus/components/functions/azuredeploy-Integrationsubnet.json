@@ -25,7 +25,6 @@
         },
         "integrationSubnetPrefix": {
             "type": "string",
-            "defaultValue": "10.1.1.0/24",
             "metadata": {
                 "description": "IP to let in to NSGs for testing"
             }
