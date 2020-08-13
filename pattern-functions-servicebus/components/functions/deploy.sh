@@ -43,3 +43,7 @@ az deployment group create --resource-group $centralWorkloadResourceGroupName --
 # Deploy the Integration Subnets
 az deployment group create --resource-group $eastNetworkResourceGroupName --name app-eastus2 --template-file azuredeploy-integrationsubnet.json --parameters existingVnetName="spoke-vnet" newSubnetName="integration-subnet" integrationSubnetPrefix="10.1.3.0/24"
 az deployment group create --resource-group $centralNetworkResourceGroupName --name app-centralus --template-file azuredeploy-integrationsubnet.json --parameters existingVnetName="spoke-vnet" newSubnetName="integration-subnet" integrationSubnetPrefix="10.3.3.0/24"
+
+# Enable VNet Integration for the Function Apps
+az deployment group create --resource-group $eastWorkloadResourceGroupName --name app-eastus2 --template-file azuredeploy-vnetintegration.json --parameters appName=$eastAppName vnetName="spoke-vnet" subnetName="integration-subnet" networkResourceGroup=$eastNetworkResourceGroupName
+az deployment group create --resource-group $centralWorkloadResourceGroupName  --name app-centralus --template-file azuredeploy-vnetintegration.json --parameters appName=$centralAppName vnetName="spoke-vnet" subnetName="integration-subnet" networkResourceGroup=$centralNetworkResourceGroupName

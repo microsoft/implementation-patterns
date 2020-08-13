@@ -22,14 +22,27 @@
     "variables": {},
     "resources": [
         {
-            "type": "Microsoft.Web/sites/virtualNetwork",
-            "apiVersion": "2018-11-01",
-            "name": "[concat(parameters('appName'), '/a268eb56-d0de-4ec6-bede-f99587767346_integration-subnet')]",
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2016-08-01",
+            "name": "[parameters('appName')]",
             "location": "[parameters('location')]",
-            "properties": {
-                "subnetResourceId": "[concat(resourceId(parameters('networkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnetName') )]",
-                "swiftSupported": true
-            }
+            "kind": "functionapp",
+            "properties": {},
+            "resources": [
+                {
+                    "type": "config",
+                    "apiVersion": "2018-02-01",
+                    "name": "virtualNetwork",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', parameters('appName'))]"
+                    ],
+                    "properties": {
+                        "subnetResourceId": "[concat(resourceId(parameters('networkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName')), '/subnets/', parameters('subnetName') )]",
+                        "swiftSupported": true
+                    }
+                }
+            ]
         }
     ]
 }
