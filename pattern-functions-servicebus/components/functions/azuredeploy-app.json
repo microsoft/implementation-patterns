@@ -12,29 +12,47 @@
             "defaultValue": "[resourceGroup().location]",
             "type": "String"
         },
-        "vnetName": {
+        "storageAccountName": {
             "type": "String"
         },
-        "subnetName": {
+        "applicationId": {
             "type": "String"
         },
-        "networkResourceGroup": {
+        "employeeId": {
             "type": "String"
         },
-        "storageAccountname": {
+        "organization": {
             "type": "String"
+        },
+        "environment": {
+            "type": "String"
+        },
+        "timestamp": {
+            "type": "String",
+            "defaultValue": "[utcNow('u')]"
         }
     },
-    "variables": {},
+     "variables": {
+        "resourceTags": {
+            "ApplicationId": "[parameters('applicationId')]",
+            "CreatedBy": "[parameters('employeeId')]",
+            "Organization": "[parameters('organization')]",
+            "Environment": "[parameters('environment')]",
+            "Timestamp": "[parameters('timestamp')]"
+        }
+    },
     "resources": [
         {
             "type": "Microsoft.Web/sites",
             "apiVersion": "2018-11-01",
             "name": "[parameters('appName')]",
+            "tags": "[variables('resourceTags')]",
             "location": "[parameters('location')]",
             "kind": "functionapp",
             "properties": {
-                "serverFarmId": "[resourceId('refworkload-centralus-rg','Microsoft.Web/serverfarms', parameters('planName'))]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('planName'))]",
+                "scmIpSecurityRestrictionsUseMain": true,
+                "ftpsState": "Disabled",
                 "siteConfig": {
                     "appSettings": [
                         {
@@ -47,11 +65,11 @@
                         },
                         {
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                            "value": "10.14.1"
+                            "value": "~12"
                         },
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~2"
+                            "value": "~3"
                         }
                     ]
                 }
