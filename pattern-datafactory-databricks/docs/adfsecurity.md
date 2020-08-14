@@ -30,13 +30,33 @@
 
 - **Identity Management**
 
+  As explained above, we have different options to connect using credentials to data sources. When creating a data factory, a managed identity can be created along with factory creation. The managed identity is a managed application registered to Azure Active Directory, and represents this specific data factory. Its created automatically when using Azure Portal or Powershell.
+
+  Here is a snippet on how you would assign this in ARM template
+
+  {
+      "contentVersion": "1.0.0.0",
+      "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+      "resources": [{
+          "name": "<dataFactoryName>",
+          "apiVersion": "2018-06-01",
+          "type": "Microsoft.DataFactory/factories",
+          "location": "<region>",
+          "identity": {
+  			"type": "SystemAssigned"
+  		}
+      }]
+  }
+
+  
+
 - **Network Security for Azure Integration Runtime**
 
   By default, Azure Integration runtime is created in public space and supports connecting to data stores and computes services with public accessible endpoints. 
 
   - Managed virtual network
 
-    Currently in preview, this option will allow us to host Azure Integration runtime securely within a ADF managed Virtual network(meaning customer doesnt own this VNET). In this way, you can only connect to Azure data sources securely using a private endpoint.
+    Currently in preview, this option will allow us to host Azure Integration runtime securely within a ADF managed Virtual network(meaning customer doesnt own this VNET). In this way, you can only connect to Azure data sources securely using a managed private endpoint. Only port 443 is opened for outbound connections.
 
     ![image](https://user-images.githubusercontent.com/22504173/90241980-2628ec00-ddfa-11ea-90ce-c0e2e28fb4c8.png)
     ![image](https://user-images.githubusercontent.com/22504173/90242310-c7b03d80-ddfa-11ea-84d4-fd1d677a9f45.png)
