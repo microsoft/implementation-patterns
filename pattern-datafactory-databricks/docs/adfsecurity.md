@@ -34,8 +34,8 @@
 
   Here is a snippet on how you would assign this in ARM template
 
+  ~~~json
   ```
-  ​```json
   {
       "contentVersion": "1.0.0.0",
       "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
@@ -49,8 +49,8 @@
   		}
       }]
   }
-  ​```
   ```
+  ~~~
 
 - **Network Security for Azure Integration Runtime**
 
