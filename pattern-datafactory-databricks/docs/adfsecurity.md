@@ -33,9 +33,7 @@
   As explained above, we have different options to connect using credentials to data sources. When creating a data factory, a managed identity can be created along with factory creation. The managed identity is a managed application registered to Azure Active Directory, and represents this specific data factory. Its created automatically when using Azure Portal or Powershell.
 
   Here is a snippet on how you would assign this in ARM template
-
-  ~~~json
-  ```
+  ```json
   {
       "contentVersion": "1.0.0.0",
       "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
@@ -48,9 +46,8 @@
   			"type": "SystemAssigned"
   		}
       }]
-  }
+  }  
   ```
-  ~~~
 
 - **Network Security for Azure Integration Runtime**
 
