@@ -1,8 +1,8 @@
 ## High Availability for Azure Data Factory
 
-Azure Data Factory is a highly available service within a region. It has several moving parts (Orchestration, Metadata and Data movement) and each part is guaranteed to provide High availability across availability zones within a region which is completely transparent to the customer.
+Azure Data Factory is a highly available service within a region. It has several moving parts (Orchestration, Metadata and Data movement) and each part is guaranteed to provide High availability across availability zones within a region which is completely transparent to the customer. Meta data is stored in the same region as Azure Data Factory region. Orchestration also happens from the same region. Data Movement is realized through integration runtime (Azure or Self-hosted) which defines the location for Data Movement.
 
-As a customer the only component you need to worry about High Availability is for the Self hosted Integration runtime
+As a customer the only component you need to worry about High Availability is for the Self hosted Integration runtime. Azure IR is highly available and a completely managed offering.
 
 1. Please make sure to have more than 1 node (Max 4) for your Self hosted Integration runtime environment in an Active-Active mode so that they dont become the single point of failure. It improves copy performance as well
 2. In case you are leveraging Azure VM's to host the Self hosted IR, Please make sure that the VM's are deployed across different Availability Zones or part of the same Availability set for resiliency
