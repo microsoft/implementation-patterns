@@ -23,9 +23,13 @@
 
 - **Credentials Encryption**
 
-  Default encryption – Secure values like **credentials/ connection strings/ keys** in linked services are by **default encrypted** and cannot be seen in plain text. The **default encrypted** fields are pre-defined per connector. Default encrypted fields are stored either on the self-hosted IR machine (when using self-hosted IR in the linked service reference) or in ADF managed Cosmos DB storage in Azure (when using Azure IR)
+  **Default encryption** – Secure values like credentials/ connection strings/ keys in linked services are by default encrypted and cannot be seen in plain text. The default encrypted fields are pre-defined per connector. Default encrypted fields are stored either on the self-hosted IR machine (when using self-hosted IR in the linked service reference) or in ADF managed Cosmos DB storage in Azure (when using Azure IR); **Explicit encryption** - Additionally, any property in Pipeline, Activity, Dataset and Linked Service JSON definition, can be explicitly marked as secure string to ensure ADF encrypts those fields as well. Once you declare a field as secure string explicitly, you will not see them in plain text. Explicitly encrypted fields are always stored in ADF managed Cosmos DB storage
 
-  Explicit encryption - Additionally, any property in Pipeline, Activity, Dataset and Linked Service JSON definition, can be **explicitly** marked as **secure string** to ensure ADF encrypts those fields as well. Once you declare a field as secure string explicitly, you will not see them in plain text. Explicitly encrypted fields are always stored in ADF managed Cosmos DB storage
+  - **Store encrypted credentials in an Azure Data Factory managed store (in Cloud)**. Data Factory helps protect your data store credentials by encrypting them with certificates managed by Microsoft. These certificates are rotated every two years . The encrypted credentials are securely stored in an Azure Cosmos DB managed by Azure Data Factory. 
+
+  - **Store credentials locally when using self-hosted IR (on-premise/ on self-hosted IR machine)**. If you want to encrypt and store credentials locally on the self-hosted integration runtime, follow the steps in [Encrypt credentials for on-premises data stores in Azure Data Factory](https://docs.microsoft.com/en-us/azure/data-factory/encrypt-credentials-self-hosted-integration-runtime). All connectors support this option. The self-hosted integration runtime uses Windows [DPAPI](https://msdn.microsoft.com/library/ms995355.aspx) to encrypt the sensitive data and credential information. Use the **New-AzDataFactoryV2LinkedServiceEncryptedCredential** cmdlet to encrypt linked service credentials and sensitive details in the linked service. You can then use the JSON returned to create a linked service by using the **Set-AzDataFactoryV2LinkedService** cmdlet.
+
+  - **Store credentials in Azure Key Vault**. You can also store the data store's credentials in [Azure Key Vault](https://azure.microsoft.com/services/key-vault/). Data Factory retrieves the credential during the execution of an activity. For more information, see [Store credential in Azure Key Vault](https://docs.microsoft.com/en-us/azure/data-factory/store-credentials-in-key-vault).
 
   
 
@@ -34,7 +38,24 @@
 - **Firewall requirements for Self Hosted Integration Runtime**
 
   - Outbound ports and domains
+
+    Self-hosted IR only requires outbound ports to connect to Azure Services/ data stores. It has no inbound requirements in the firewall. 
+
+    In the *corporate firewall*, you need to configure the following domains and **outbound** ports:
+
+    | **Domain names**                | **Ports** | **Description**                                              |      |
+    | ------------------------------- | --------- | ------------------------------------------------------------ | ---- |
+    | ***.servicebus.windows.net**    | 443       | Used for communication with the back-end data movement service |      |
+    | ***.core.windows.net**          | 443       | Used for staged copy through Azure Blob storage (if configured) |      |
+    | ***.frontend.clouddatahub.net** | 443       | Used for communication with the back-end data movement service |      |
+    | **download.microsoft.com**      | 443       | Used for downloading the updates                             |      |
+
+    Based on your source and sink, you might have to whitelist additional domains and outbound ports in your corporate firewall or Windows firewall.
+
   - IP addresses
+
   - Service endpoints
+
   - Private endpoints
+
   - On-premises Credentials encryption
