@@ -4,7 +4,7 @@
 
 - **Data encryption in transit**
 
-  If the cloud data store supports HTTPS or TLS, all data transfers between data movement services in Data Factory and a cloud data store are via secure channel HTTPS or TLS.
+  If the cloud data store supports HTTPS or TLS, all data transfers between data movement services in Data Factory and a cloud data store are via secure channel HTTPS or TLS. You can also use IPSec VPN or Azure ExpressRoute to further secure the communication channel between your on-premises network and Azure.
 
 - **Data encryption at rest**
 
