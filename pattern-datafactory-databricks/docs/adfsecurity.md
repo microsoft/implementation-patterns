@@ -1,8 +1,6 @@
 ## Security considerations
 
-- **Customer data storage**
-
-  Azure Data Factory (ADF) does not store your actual data during ETL workflow. It does store certain meta data (*pipeline*, *trigger*, *activity*, *linked* *service* and *dataset* definitions in JSON) and ensures that any secure string fields in the definition is always encrypted at rest
+ Azure Data Factory (ADF) does not store your actual data during ETL workflow. It does store certain meta data (*pipeline*, *trigger*, *activity*, *linked* *service* and *dataset* definitions in JSON) and ensures that any secure string fields in the definition is always encrypted at rest
 
 - **Data encryption in transit**
 
