@@ -1,6 +1,3 @@
-### Monitor and Manage
-
-
 ### CI\CD for Pipelines and Templates
 
 Azure Data Factory has native integration with Github and Azure Devops git repos as Source control. You can deploy your pipelines and other ADF artifacts like Linked Servicesm Datasets, Triggers, Templates etc directly to these git repos natively. It enabled multiple users to work on their on feature branch and then push it into a collaboration branch for deployments into other environments.
@@ -23,3 +20,5 @@ Incase you want to export the contents of a single pipeline and its correspondin
 ![image](https://user-images.githubusercontent.com/22504173/89733983-25254280-da27-11ea-9854-8e28f0b09e18.png)
 
 ![image](https://user-images.githubusercontent.com/22504173/89734089-e0e67200-da27-11ea-94dc-c131e224c016.png)
+
+### Monitor and Manage
