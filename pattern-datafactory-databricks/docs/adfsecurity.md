@@ -37,11 +37,13 @@
 
 - **Firewall requirements for Self Hosted Integration Runtime**
 
+  - Service endpoints\ Private endpoints
+
+    In case you are hosting Self hosted Integration runtime on a Azure VNET, then you could enable Service endpoints or Private endpoints to your Azure PaaS data stores. This will guarantee that the traffic is reaching to these respective data stores from Self hosted IR securely over Azure backbone and Private endpoints will also ensure that your outbound traffic is going over a private IP address local to the VNET. 
+
   - Outbound ports and domains
 
-    Self-hosted IR only requires outbound ports to connect to Azure Services/ data stores. It has no inbound requirements in the firewall. 
-
-    In the *corporate firewall*, you need to configure the following domains and **outbound** ports:
+    Self-hosted IR only requires outbound ports to connect to Azure Services/ data stores. It has no inbound requirements in the firewall. In the *corporate firewall*, you need to configure the following domains and **outbound** ports:
 
     | **Domain names**                | **Ports** | **Description**                                              |      |
     | ------------------------------- | --------- | ------------------------------------------------------------ | ---- |
@@ -52,10 +54,13 @@
 
     Based on your source and sink, you might have to whitelist additional domains and outbound ports in your corporate firewall or Windows firewall.
 
-  - IP addresses
+  - IP addresses and URLs whitelisting
 
-  - Service endpoints
+    In the above table, you can see that we are using Wildcard domains which is not allowed by many security teams at regulated industries. In those scenarios, you can check the View Service URLs on the Self hosted Integration runtime properties to get all the URLs which can be whitelisted on your external firewall.
 
-  - Private endpoints
+    ![image](https://user-images.githubusercontent.com/22504173/90240950-2b853700-ddf8-11ea-8a92-15756aeacfa4.png)
+    ![image](https://user-images.githubusercontent.com/22504173/90241000-38a22600-ddf8-11ea-80b9-d2b7e6823a0a.png)
 
-  - On-premises Credentials encryption
+    
+
+    
