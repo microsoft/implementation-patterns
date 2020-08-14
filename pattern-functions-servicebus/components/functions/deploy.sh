@@ -47,3 +47,7 @@ az deployment group create --resource-group $centralNetworkResourceGroupName --n
 # Enable VNet Integration for the Function Apps
 az deployment group create --resource-group $eastWorkloadResourceGroupName --name app-eastus2 --template-file azuredeploy-vnetintegration.json --parameters appName=$eastAppName vnetName="spoke-vnet" subnetName="integration-subnet" networkResourceGroup=$eastNetworkResourceGroupName
 az deployment group create --resource-group $centralWorkloadResourceGroupName  --name app-centralus --template-file azuredeploy-vnetintegration.json --parameters appName=$centralAppName vnetName="spoke-vnet" subnetName="integration-subnet" networkResourceGroup=$centralNetworkResourceGroupName
+
+# Enable Funcion App Settings (WEBSITE-VNET-ROUTE-ALL) Use CLI to avoid wiping all configuration
+az functionapp config appsettings set --name $eastAppName --resource-group $eastWorkloadResourceGroupName --settings WEBSITE_VNET_ROUTE_ALL=1
+az functionapp config appsettings set --name $centralAppName --resource-group $centralWorkloadResourceGroupName --settings WEBSITE_VNET_ROUTE_ALL=1
