@@ -4,11 +4,6 @@
 
   Azure Data Factory (ADF) does not store your actual data during ETL workflow. It does store certain meta data (*pipeline*, *trigger*, *activity*, *linked* *service* and *dataset* definitions in JSON) and ensures that any secure string fields in the definition is always encrypted at rest
 
-- **Network Security**
-
-  - VNET security for Self Hosted Integration Runtime
-  - Managed VNET for Azure Integration Runtime
-
 - **Data encryption in transit**
 
 - **Data encryption at rest**
@@ -35,7 +30,20 @@
 
 - **Identity Management**
 
-- **Firewall requirements for Self Hosted Integration Runtime**
+- **Network Security for Azure Integration Runtime**
+
+  By default, Azure Integration runtime is created in public space and supports connecting to data stores and computes services with public accessible endpoints. 
+
+  - Managed virtual network
+
+    Currently in preview, this option will allow us to host Azure Integration runtime securely within a ADF managed Virtual network(meaning customer doesnt own this VNET). In this way, you can only connect to Azure data sources securely using a private endpoint.
+
+    ![image](https://user-images.githubusercontent.com/22504173/90241980-2628ec00-ddfa-11ea-90ce-c0e2e28fb4c8.png)
+    ![image](https://user-images.githubusercontent.com/22504173/90242310-c7b03d80-ddfa-11ea-84d4-fd1d677a9f45.png)
+
+    
+
+- **Network Security for Self Hosted Integration Runtime**
 
   - Service endpoints\ Private endpoints
 
