@@ -6,14 +6,13 @@
  
 
 Azure Data Factory provides the following performance optimization features:
-
-·    [Data Integration Units](https://docs.microsoft.com/en-us/azure/data-factory/copy-activity-performance#data-integration-units)
+[Data Integration Units](https://docs.microsoft.com/en-us/azure/data-factory/copy-activity-performance#data-integration-units)
 
 o  A Data Integration Unit is a measure that represents the power (a combination of CPU, memory, and network resource allocation) of a single unit in Azure Data Factory. Data Integration Unit only applies to [Azure integration runtime](https://docs.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime#azure-integration-runtime), but not [self-hosted integration runtime](https://docs.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime#self-hosted-integration-runtime).
 
 o  The allowed DIUs to empower a copy activity run is **between 2 and 256**. If not specified or you choose "Auto" on the UI, Data Factory dynamically applies the optimal DIU setting based on your source-sink pair and data pattern. 
 
-·    [Self-hosted integration runtime scalability](https://docs.microsoft.com/en-us/azure/data-factory/copy-activity-performance#self-hosted-integration-runtime-scalability)
+[Self-hosted integration runtime scalability](https://docs.microsoft.com/en-us/azure/data-factory/copy-activity-performance#self-hosted-integration-runtime-scalability)
 
 o  If you would like to achieve higher throughput, you can either scale up or scale out the Self-hosted IR:
 
