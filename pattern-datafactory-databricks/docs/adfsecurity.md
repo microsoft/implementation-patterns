@@ -6,7 +6,11 @@
 
 - **Data encryption in transit**
 
+  If the cloud data store supports HTTPS or TLS, all data transfers between data movement services in Data Factory and a cloud data store are via secure channel HTTPS or TLS.
+
 - **Data encryption at rest**
+
+  Most of the Azure data stores support encryption of data at rest using Microsoft Managed Keys or Customer Managed Keys respectively. We recommend that you enable the data encryption mechanism for those data stores to guarantee data is encrypted at rest
 
   - Customer Managed Keys for ADF
 
