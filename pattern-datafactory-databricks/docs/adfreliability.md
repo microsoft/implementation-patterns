@@ -11,4 +11,5 @@ Here are the steps needed achieve a comprehensive Disaster Recovery (DR) strateg
 Service Level Disaster recovery: Azure Data Factory team can also do a manual failover incase there is a region wide outage beyond 24 hours. Support ticket needs to be raised.
 
 ### DR for ADF data sources and DNS zones
-As mentiooed
+As mentioned above, you need to make sure that all the data sources involved in the pipeline are setup for Geo replication across regions. Make sure that your Linked services are pointing to the DR endpoints. If data sources are enabled for private endpoints, then you need to make sure that the Private DNS zone which is used for the Primary region also include Virtual links for the DR Virtual network which will host the Self hosted Integration runtime.
+
