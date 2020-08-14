@@ -30,9 +30,12 @@
 
 - **Identity Management**
 
-  As explained above, we have different options to connect using credentials to data sources. When creating a data factory, a managed identity can be created along with factory creation. The managed identity is a managed application registered to Azure Active Directory, and represents this specific data factory. Its created automatically when using Azure Portal or Powershell.
+  As explained above, we have different options to connect using credentials to data sources. When creating a data factory, a managed identity can be created along with factory creation. The managed identity is a managed application registered to Azure Active Directory, and represents this specific data factory. It can be used to authenticate with Azure Key vault to retrieve secrets and keys. It can be used to authenticate to any Azure data service which support AAD authentication. This is the most secure way as we are not storing any passwords or key vault configurations in the code and are only retrieving them during execution time only
+
+  Its created automatically when using Azure Portal or Powershell.
 
   Here is a snippet on how you would assign this in ARM template
+
   ```json
   {
       "contentVersion": "1.0.0.0",
@@ -46,7 +49,8 @@
   			"type": "SystemAssigned"
   		}
       }]
-  }  
+  }
+  
   ```
 
 - **Network Security for Azure Integration Runtime**
