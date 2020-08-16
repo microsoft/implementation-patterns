@@ -4,11 +4,16 @@
 
 - **Data encryption in transit**
 
-  If the cloud data store supports HTTPS or TLS, all data transfers between data movement services in Data Factory and a cloud data store are via secure channel HTTPS or TLS. You can also use IPSec VPN or Azure ExpressRoute to further secure the communication channel between your on-premises network and Azure.
+  If the cloud data store supports HTTPS or TLS, all data transfers between data movement services in Data Factory and a cloud data store are via secure channel HTTPS or TLS. You can also use IPSec VPN or Azure ExpressRoute to further secure the communication channel between your on-premises network and Azure. TLS version used is 1.2.
+
 
 - **Data encryption at rest**
 
   Most of the Azure data stores support encryption of data at rest using Microsoft Managed Keys or Customer Managed Keys respectively. We recommend that you enable the data encryption mechanism for those data stores to guarantee data is encrypted at rest
+ At-rest
+    SQL Transparent Data Encryption (TDE)
+    Azure Blob \ADLS Gen2 storage service encryption
+    Other 3rd party services
 
   - Customer Managed Keys for ADF
 
