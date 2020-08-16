@@ -59,6 +59,7 @@
   }
   
   ```
+![image](https://user-images.githubusercontent.com/22504173/90346918-dd8c5100-dffa-11ea-8ec4-1ef8a87dd1c1.png)
 
 - **Network Security for Azure Integration Runtime**
 
