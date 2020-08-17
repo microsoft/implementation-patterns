@@ -10,12 +10,15 @@ You can monitor pipeline runs, Trigger runs under their respective tabs on the M
 
 ![image](https://user-images.githubusercontent.com/22504173/90347183-b3d42980-dffc-11ea-8ea8-f49160cd7520.png)
 
+Pipeline runs
+![image](https://user-images.githubusercontent.com/22504173/90347519-fbf44b80-dffe-11ea-8281-5dc90ee61b02.png)
+
+Activity runs
+
 Integration runtimes can be monitored under the Runtimes and sessions category
 
 ![image](https://user-images.githubusercontent.com/22504173/90347226-e120d780-dffc-11ea-88c2-f23a84a4a205.png)
 ![image](https://user-images.githubusercontent.com/22504173/90347216-d403e880-dffc-11ea-8290-dfe0ea1d2c79.png)
-
-### Monitor Pipeline and Activity runs
 
 ### Monitor with Azure Monitor
 
