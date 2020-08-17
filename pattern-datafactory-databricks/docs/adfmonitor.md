@@ -22,5 +22,25 @@ Integration runtimes can be monitored under the Runtimes and sessions category:
 ![image](https://user-images.githubusercontent.com/22504173/90347226-e120d780-dffc-11ea-88c2-f23a84a4a205.png)
 ![image](https://user-images.githubusercontent.com/22504173/90347216-d403e880-dffc-11ea-8290-dfe0ea1d2c79.png)
 
-### Monitor with Azure Monitor
+## Monitor Azure Data Factory with Azure Monitor
 
+Data Factory stores pipeline-run data for only 45 days. Use Azure Monitor if you want to keep that data for a longer time. With Monitor, you can route diagnostic logs for analysis to multiple different targets. •Azure Monitor is not enabled by default for data factory.
+
+Azure Data factory emits Metrics which is part of Azure monitor where you can get a wealth of system health information and other counters which you can monitor
+
+![image](https://user-images.githubusercontent.com/22504173/90347703-f9debc80-dfff-11ea-80da-fd3be267a6c3.png)
+
+You can persist Azure Data factory Metrics and Logs information externally so that you can retain this data beyond the 45 day retention period. This where we need to enable Diagnostics settings on Azure portal for the service and configure the settings accordingly. You can send this data to Azure Log Analytics workspace where you can join and correlate with other service logs or you can retain them on Azure storage for long term retention or send it to Eventhubs for any third party monitoring integration.
+
+![image](https://user-images.githubusercontent.com/22504173/90347813-8a1d0180-e000-11ea-9adb-a01e44ef205c.png)
+
+Once the data reaches Azure Log analytics, you can leverage the rich features of the Kusto query language(KQL) to explore this data. 
+
+You can also leverage the Market place solution to monitor multiple Azure Data factories across your enterprise
+
+![image](https://user-images.githubusercontent.com/22504173/90347954-7d4cdd80-e001-11ea-8590-eca6d806bdfc.png)
+![image](https://user-images.githubusercontent.com/22504173/90347945-6c9c6780-e001-11ea-8568-2fab685bb3be.png)
+![image](https://user-images.githubusercontent.com/22504173/90347959-88077280-e001-11ea-820a-5f4fd93289f5.png)
+![image](https://user-images.githubusercontent.com/22504173/90347966-905fad80-e001-11ea-87f8-ed5e820b4752.png)
+
+For more information: https://docs.microsoft.com/en-us/azure/data-factory/monitor-using-azure-monitor
