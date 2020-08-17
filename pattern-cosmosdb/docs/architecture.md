@@ -67,6 +67,7 @@ This reference implementation will deploy a SQL API Account. This is the most co
 - RUs at account or Datbase Level?
 
 - Default Consistency level
+
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/strong-consistency.gif)
 - Key Vault
 
