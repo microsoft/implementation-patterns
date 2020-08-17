@@ -1,4 +1,4 @@
-## .[Monitor and Manage].(https://github.com/microsoft/implementation-patterns/blob/main/pattern-datafactory-databricks/docs/adfmonitor.md)
+## [Monitor and Manage](https://github.com/microsoft/implementation-patterns/blob/main/pattern-datafactory-databricks/docs/adfmonitor.md)
 
 ### Monitor Visually
 Monitor pipeline and activity runs with a simple list view interface. All the runs are displayed in local browser time zone. You can change the time zone and all the date time fields will snap to the selected time zone.
