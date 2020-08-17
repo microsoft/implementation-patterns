@@ -8,15 +8,16 @@ Monitor pipeline and activity runs with a simple list view interface. All the ru
 
 You can monitor pipeline runs, Trigger runs under their respective tabs on the Monitoring page which will provide you with the history of all the executions that happened on this data factory
 
-![image](https://user-images.githubusercontent.com/22504173/90347183-b3d42980-dffc-11ea-8ea8-f49160cd7520.png)
-
 Pipeline runs
 ![image](https://user-images.githubusercontent.com/22504173/90347519-fbf44b80-dffe-11ea-8281-5dc90ee61b02.png)
 
 Activity runs
+![image](https://user-images.githubusercontent.com/22504173/90347549-26de9f80-dfff-11ea-8862-f9d0c7e9d06b.png)
+
+Errors
+![image](https://user-images.githubusercontent.com/22504173/90347575-61483c80-dfff-11ea-941e-d07d8d0ee890.png)
 
 Integration runtimes can be monitored under the Runtimes and sessions category
-
 ![image](https://user-images.githubusercontent.com/22504173/90347226-e120d780-dffc-11ea-88c2-f23a84a4a205.png)
 ![image](https://user-images.githubusercontent.com/22504173/90347216-d403e880-dffc-11ea-8290-dfe0ea1d2c79.png)
 
