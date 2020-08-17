@@ -1,4 +1,4 @@
-# Azure Cosmos DB Account Pattern
+# Azure Cosmos DB Account Multi Region Pattern
 ## Architecture and Composable Deployment Code
 ### Implementation
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/introduction/azure-cosmos-db.png)
@@ -8,12 +8,7 @@ This guide assumes that you are deploying your solution into a networking enviro
 
 - Azure Cosmos DB can be deployed to one or more Azure Regions transparently. For reads, Azure Traffic manager handles routing requests to the requestor's nearest region.
 
-- When deploying Azure Cosmos DB an API must be selected for the Azure Cosoms DB account.
-
-- We'll deploy Azure Cosoms DB into one Resource Group and configure distribution across two regions.
-
-TODO: Check below to make certain it all appiles
-
+###TODO: Check below to make certain it all appiles
 #### Deployment
 1. Create a resource group for each region's network resources
 	```bash
@@ -54,23 +49,28 @@ The base-level resource for Azure Cosmos DB is an Azure Cosmos DB Account. Accou
 
 ![](https://azurecomcdn.azureedge.net/mediahandler/acomblog/media/Default/blog/8d036cf9-df49-45d3-b540-00f18c4f5c31.png)
 
-When creating an account in a single region, there are relatively few decisions you'll need to make. You will need to specify the name, pricing tier, initial scale and redundancy settings, subscription, resource group and location.
+When creating an account in a single region, there are relatively few decisions needed. The delpoyment requires the name, pricing tier, initial scale and redundancy settings, subscription, resource group, consistency levey and location.
 
-In our reference implementation we will be deploying a SQL API Account. This is the most commonly deployed API and is recommended for most production workloads due to it's flexability and ease of development.    
+This reference implementation will deploy a SQL API Account. This is the most commonly deployed API and is recommended for most production workloads due to it's flexability and ease of development.    
   
-- We'll create an account in one Azure Region (1)  
+- Create an account in one Azure Region (1)  
 
+###TODO: 2 or 3 Azure Regions
 - We'll configure geo-redundancy (2) with the another Azure Region by adding it to the Azure Cosmos DB Account. This replicaiton is at the Azure Comos DB Account level, not at the individual database/container level.
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/how-to-manage-database-account/replicate-data-globally.png)
 
-TODO: Change all below
-- The namespace will be set up with two private endpoints each. One in the region that the namespace is deployed in (3) and one in the other region (4). This will allow private access from both regions. We will configure access restrictions (per-namespace firewall) on the namespace such that the endpoint will be the only method one can use to connect to the namespace. This effectively takes the namespace off the Internet.    
-TODO: Elaborate on this path vs via ER GW.
+###TODO: Change all below
+- The account will be set up in the same region as the Resource Group it is in. 
 
-- A set of private DNS zones (5), requisite A records and VNet links will be created such that queries originating from any VNet that is configured to use our bind forwarders will resolve the namespace name to the IP of the private endpoint and not the public IP. This is done via split horizon DNS. E.G. externally, the namespace URLs will continue to resolve to the public IP's which will be inaccessible due to the access restriction configuration. Internally the same URLs will resolve to the IP of the private endpoint.  
-  Normally, we would maintain a single zone per service for private link. Because we need DNS queries for the namespace to resolve to different endpoint IP's depending on where the queries are initiated from we'll use two zones which we can link to different networks in this scenario.
-  
-- TODO: Make this Cosmos Specific
+- Geo Redundancy will be enabled by deploying to specific regions
+
+- RUs at account or Datbase Level?
+
+- Default Consistency level
+![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/strong-consistency.gif)
+- Key Vault
+
+### TODO: Make this Cosmos Specific
 #### Deployment
 1. Create resource groups for our reference workload
 	```bash
