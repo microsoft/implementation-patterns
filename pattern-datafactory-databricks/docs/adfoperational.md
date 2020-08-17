@@ -1,4 +1,4 @@
-### CI\CD for Pipelines and Templates
+## CI\CD for Pipelines and Templates
 
 Azure Data Factory has native integration with Github and Azure Devops git repos as Source control. You can deploy your pipelines and other ADF artifacts like Linked Servicesm Datasets, Triggers, Templates etc directly to these git repos natively. It enabled multiple users to work on their on feature branch and then push it into a collaboration branch for deployments into other environments.
 
@@ -21,4 +21,20 @@ Incase you want to export the contents of a single pipeline and its correspondin
 
 ![image](https://user-images.githubusercontent.com/22504173/89734089-e0e67200-da27-11ea-94dc-c131e224c016.png)
 
-### Monitor and Manage
+## Monitor and Manage
+
+### Monitor Visually
+Monitor pipeline and activity runs with a simple list view interface. All the runs are displayed in local browser time zone. You can change the time zone and all the date time fields will snap to the selected time zone.
+![image](https://user-images.githubusercontent.com/22504173/90347075-fa755400-dffb-11ea-8ca3-05e856eed069.png)
+
+You can monitor pipeline runs, Trigger runs under their respective tabs on the Monitoring page which will provide you with the history of all the executions that happened on this data factory
+![image](https://user-images.githubusercontent.com/22504173/90347183-b3d42980-dffc-11ea-8ea8-f49160cd7520.png)
+
+Integration runtimes can be monitored under the Runtimes and sessions category
+![image](https://user-images.githubusercontent.com/22504173/90347226-e120d780-dffc-11ea-88c2-f23a84a4a205.png)
+![image](https://user-images.githubusercontent.com/22504173/90347216-d403e880-dffc-11ea-8290-dfe0ea1d2c79.png)
+
+### Monitor Pipeline and Activity runs
+
+### Monitor with Azure Monitor
+
