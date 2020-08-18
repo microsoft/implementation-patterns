@@ -13,10 +13,10 @@ We currently have just 2 builds:
 
 ## Sample Pipeline
 
-          more details incoming/ TBD
-          name: ServiceBus deployment
+    name: ServiceBus deployment
 
-    trigger: none
+    trigger: 
+    - master
     
     pool:
       vmImage: 'ubuntu-latest'
