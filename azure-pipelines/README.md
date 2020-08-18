@@ -1,18 +1,8 @@
 Common Azure DevOps patterns when consuming ARM templates, following best practices.
 
-We will be using service principals created in Azure DevOps and scoped to specific resource groups in Azure
-- Azure implementation patterns connection
-
-Azure DevOps project: https://dev.azure.com/implementation-patterns/implementation-patterns
-
-We currently have just 2 builds:
-
-[![Build Status](https://dev.azure.com/implementation-patterns/implementation-patterns/_apis/build/status/microsoft.implementation-patterns?branchName=main)](https://dev.azure.com/implementation-patterns/implementation-patterns/_build/latest?definitionId=2&branchName=main)
-
-[![Build Status](https://dev.azure.com/implementation-patterns/implementation-patterns/_apis/build/status/Servicebus%20deployment?branchName=main)](https://dev.azure.com/implementation-patterns/implementation-patterns/_build/latest?definitionId=3&branchName=main)
-
 ## Sample Pipeline
 
+Linux runner:
     name: ServiceBus deployment
 
     trigger: 
@@ -35,9 +25,32 @@ We currently have just 2 builds:
            az deployment group create --resource-group network-eastus2-rg --name network-eastus2 --template-file pattern-functions-servicebus/components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.0.0.0/16" firewallSubnetPrefix="10.0.1.0/24" DNSSubnetPrefix="10.0.2.0/24" spokeVnetPrefix="10.1.0.0/16" workloadSubnetPrefix="10.1.2.0/24"
            az deployment group create --resource-group network-centralus-rg --name network-centralus --template-file pattern-functions-servicebus/components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.2.0.0/16" firewallSubnetPrefix="10.2.1.0/24" DNSSubnetPrefix="10.2.2.0/24" spokeVnetPrefix="10.3.0.0/16" workloadSubnetPrefix="10.3.2.0/24"
 
+Windows runner:
+    name: ServiceBus deployment
+
+    trigger: 
+    - master
+    
+    pool:
+      vmImage: 'windows-latest'
+    
+    steps:
+    - checkout: self  
+    
+    - task: AzureCLI@2
+      displayName: Deploy ARM Templates
+      inputs:
+        azureSubscription: 'Azure implementation patterns connection'
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: | 
+       
+           az deployment group create --resource-group network-eastus2-rg --name network-eastus2 --template-file pattern-functions-servicebus/components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.0.0.0/16" firewallSubnetPrefix="10.0.1.0/24" DNSSubnetPrefix="10.0.2.0/24" spokeVnetPrefix="10.1.0.0/16" workloadSubnetPrefix="10.1.2.0/24"
+           az deployment group create --resource-group network-centralus-rg --name network-centralus --template-file pattern-functions-servicebus/components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.2.0.0/16" firewallSubnetPrefix="10.2.1.0/24" DNSSubnetPrefix="10.2.2.0/24" spokeVnetPrefix="10.3.0.0/16" workloadSubnetPrefix="10.3.2.0/24"
+
 
 ## Best Practices
-- **Outputs**: Use Outputs to extract information where needed. This can be used to generate access keys and connection strings and save them in a key vault without touching the secrets. For example, to get the Storage Access Key:
+- **Outputs**: Use Outputs to extract information from ARM Templates where needed. This can be used to generate access keys, connection strings, and secrets, and save them in a key vault without touching the secrets. For example, to get a Azure Storage access key, add this code to the outputs section of the ARM template:
 
       "outputs": {
         "storageAccountKey": {
@@ -46,26 +59,26 @@ We currently have just 2 builds:
         }
       }
 
-  To deploy the deploy and extract the outputs in the script:
+  Then in the PowerShell script, use this to deploy the storage account and extract the outputs:
 
       $storageOutput = az deployment group create --resource-group $resourceGroupName --name $storageAccountName --template-file "$templatesLocation\Storage.json" --parameters storageAccountName=$storageAccountName
       $storageJSON = $storageOutput | ConvertFrom-Json
       $storageAccountAccessKey = $storageJSON.properties.outputs.storageAccountKey.value
 
-  To upload the secret into a keyvault, use:
+  Now that we have the secret, we can set it in a configuration, or upload it. The sample below uploads the secret into a keyvault:
 
       az keyvault secret set --vault-name $keyVaultName --name $keyVaultSecretName --value $storageAccountAccessKey 
 
     
-- **Parallel Jobs**: With this method of deployment, we can make use of parallel jobs. For example, to deploy storage, cdn and sql. Storage (30s) is a dependency for CDN (30s), but SQL (120s) can be deployed independently - we could argue that running this in 3 jobs will be fast
+- **Parallel Jobs**: By default, an Azure Pipeline has one job that runs the tasks in serial. If we add multiple jobs, we can parallelize the tasks. For example, to deploy storage, CDN and SQL: Storage (30s) is a dependency for CDN (30s), but SQL (120s) can be deployed independently. - we could argue that running this in 3 jobs will be fast
 
-    Diagram showing serial deployment in 6 minutes. Each item must wait for the previous item to deploy.
+    When deploying with one job, the tasks require 6 minutes to deploy. Each item must wait for the previous item to deploy.
     ![serial deployment](https://github.com/microsoft/implementation-patterns/blob/main/azure-pipelines/serialJobPipelines.png)
     
-    Diagram showing parallel deployment in 3-4 minutes. We group items that don't have dependencies, and separate long running tasks into their own job.
+    When using multiple parallel jobs, the tasks only require 3-4 minutes. We group items that don't have dependencies, and separate long running tasks into their own job. I have a real world sample 
     ![parallel deployment](https://github.com/microsoft/implementation-patterns/blob/main/azure-pipelines/parallelJobPipelines.png)
     
-    We can see see the use of multiple jobs in the sample YAML below, with the usage of "dependsOn", to create job dependencies. We can also use conditions to run particular jobs in certain circumstances
+    We can see see the use of multiple jobs in the sample YAML below, with the usage of "dependsOn", to create job dependencies. We can also use conditions to run particular jobs in certain circumstances. This YAML is deploying storage in one job, and some CDN, Redis, and web app services in a second job, and finally deploying a SQL server in a third job.
     
         jobs:
 
