@@ -8,7 +8,7 @@
 
 ###  [Provisioning Azure Data Factory with or without CI\CD integration](https://github.com/microsoft/implementation-patterns/tree/main/pattern-datafactory-databricks/components/data-factory)
 ###  [Provisioning Self Hosted Integration Runtime, Considerations](https://github.com/microsoft/implementation-patterns/tree/main/pattern-datafactory-databricks/components/self-hosted-integration-runtime)
-###  [Provisioning Azure Integration Runtime – Custom clusters, Managed VNET concepts](https://github.com/microsoft/implementation-patterns/tree/main/pattern-datafactory-databricks/components/self-hosted-integration-runtime)
+###  [Provisioning Azure Integration Runtime – Custom clusters, Managed VNET concepts](https://github.com/microsoft/implementation-patterns/tree/main/pattern-datafactory-databricks/components/azure-integration-runtime)
 
 
 
