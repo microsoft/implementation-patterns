@@ -11,6 +11,10 @@ We currently have just 2 builds:
 
 [![Build Status](https://dev.azure.com/implementation-patterns/implementation-patterns/_apis/build/status/Servicebus%20deployment?branchName=main)](https://dev.azure.com/implementation-patterns/implementation-patterns/_build/latest?definitionId=3&branchName=main)
 
+## Sample Pipeline
+
+          more details incoming/ TBD
+
 ## Best Practices
 - **Outputs**: Use Outputs to extract information where needed. This can be used to generate access keys and connection strings and save them in a key vault without touching the secrets. For example, to get the Storage Access Key:
 
