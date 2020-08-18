@@ -9,5 +9,5 @@ Within each of the below folders you'll find a deploy.sh file that provides an e
 1. [Base Network](https://github.com/microsoft/implementation-patterns/tree/main/pattern-datafactory-databricks/components/base-network)
 2. [Data Factory](https://github.com/microsoft/implementation-patterns/tree/main/pattern-datafactory-databricks/components/data-factory)
 3. [Self Hosted Integration runtime](https://github.com/microsoft/implementation-patterns/tree/main/pattern-datafactory-databricks/components/self-hosted-integration-runtime)
-4. [Azure Integration runtime](https://github.com/microsoft/implementation-patterns/tree/main/pattern-datafactory-databricks/components/azure-integration-runtime)
+4. [Azure Integration runtime (Optional)](https://github.com/microsoft/implementation-patterns/tree/main/pattern-datafactory-databricks/components/azure-integration-runtime)
 
