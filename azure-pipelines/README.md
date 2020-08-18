@@ -14,6 +14,27 @@ We currently have just 2 builds:
 ## Sample Pipeline
 
           more details incoming/ TBD
+          name: ServiceBus deployment
+
+    trigger: none
+    
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    steps:
+    - checkout: self  
+    
+    - task: AzureCLI@2
+      displayName: Deploy ARM Templates
+      inputs:
+        azureSubscription: 'Azure implementation patterns connection'
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: | 
+       
+           az deployment group create --resource-group network-eastus2-rg --name network-eastus2 --template-file pattern-functions-servicebus/components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.0.0.0/16" firewallSubnetPrefix="10.0.1.0/24" DNSSubnetPrefix="10.0.2.0/24" spokeVnetPrefix="10.1.0.0/16" workloadSubnetPrefix="10.1.2.0/24"
+           az deployment group create --resource-group network-centralus-rg --name network-centralus --template-file pattern-functions-servicebus/components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.2.0.0/16" firewallSubnetPrefix="10.2.1.0/24" DNSSubnetPrefix="10.2.2.0/24" spokeVnetPrefix="10.3.0.0/16" workloadSubnetPrefix="10.3.2.0/24"
+
 
 ## Best Practices
 - **Outputs**: Use Outputs to extract information where needed. This can be used to generate access keys and connection strings and save them in a key vault without touching the secrets. For example, to get the Storage Access Key:
