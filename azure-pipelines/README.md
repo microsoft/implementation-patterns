@@ -1,8 +1,9 @@
 Common Azure DevOps patterns when consuming ARM templates, following best practices.
 
-## Sample Pipeline
+## Sample Pipeline to deploy ARM templates
 
 Linux runner:
+
     name: ServiceBus deployment
 
     trigger: 
@@ -160,10 +161,4 @@ Windows runner:
                 scriptLocation: inlineScript
                 inlineScript: |             
                 #Deploy abc/def/ghi/klm
-    
-- **Dependencies**: watch out for missing DependsOn. Troubleshooting - use a Azure CLI window. 
 
-          more details incoming/ TBD
-- **Secrets**: Don't have secrets visible in code. 
-
-          more details incoming/ TBD
