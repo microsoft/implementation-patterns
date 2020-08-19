@@ -2,7 +2,7 @@
 
 Often times there are situations where you want to do maintenance or patching on the Windows VM's which run Self hosted Integration runtime. In these situations, you may want to **take your node out of the node pool** for the self hosted integration runtime and then **add the node back** after all the rehydration has been complete or in some scenarios, add a new node altogether.
 
-### **Removing a node from Integration Runtime be done manually from Azure portal or using Powershell:**
+### **Removing a node from Integration Runtime can be done manually from Azure portal or using Powershell:**
 
 Azure portal:
 
