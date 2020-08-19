@@ -50,7 +50,7 @@ https://github.com/microsoft/implementation-patterns/blob/main/pattern-datafacto
 
 This will add the node back to the Integration Runtime
 
-#### Adding a new Windows VM as a node back to the node pool within the self hosted integration runtime
+### Adding a new Windows VM as a node back to the node pool within the self hosted integration runtime
 
 In this case, we are provisioning a new VM which will be added to the Self hosted Integration runtime as a node pool. You cannot add more than 4 nodes to a Self hosted Integration runtime.
 
