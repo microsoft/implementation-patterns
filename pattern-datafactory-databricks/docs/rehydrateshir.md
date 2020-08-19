@@ -2,7 +2,7 @@
 
 Often times there are situations where you want to do maintenance or patching on the Windows VM's which run Self hosted Integration runtime. In these situations, you may want to **take your node out of the node pool** for the self hosted integration runtime and then **add the node back** after all the rehydration has been complete or in some scenarios, add a new node altogether.
 
-#### **Removing a node from Integration Runtime be done manually from Azure portal or using Powershell:**
+### **Removing a node from Integration Runtime be done manually from Azure portal or using Powershell:**
 
 Azure portal:
 
@@ -16,7 +16,7 @@ Remove-AzDataFactoryV2IntegrationRuntimeNode -DataFactoryName 'srgoadfv2devopsin
 
 Once the node is removed from the Node pool for Self hosted Integration runtime, you could do all the maintenance activities on the node like Windows updates etc before its added back. In some scenarios, you can decommission this VM and provision another VM which is ready to go.
 
-#### **Adding the same node back to the node pool within the self hosted integration runtime**:
+### **Adding the same node back to the node pool within the self hosted integration runtime**:
 
 You can add the node back to the node pool again by manually registering with UI or by using Powershell
 
