@@ -1,0 +1,52 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "locations": {
+            "type": "array",
+            "defaultValue":[
+                {
+                    "locationName":"EastUS",
+                    "failoverPriority":0,
+                    "isZoneRedundant": true
+                }
+            ]
+        },
+        "sqldbId": {
+            "type": "string"
+        },
+        "sqlDbThroughput": {
+            "type": "int"
+        },
+        "sqlDbMaxThroughput": {
+            "type":"int"
+        }
+    },
+    "variables": {
+        "location":"[resourceGroup().location]",
+        "dbName":"<generate name based on naming conventions>",
+        "sqldbId": "[parameters('sqldbId')]"
+    },
+    "resources": [
+        {
+            "name":"[variables('dbName')]",
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+            "apiVersion": "2020-04-01",
+            "location":"[variables('location')]",
+            "tags":{},
+            "properties": {
+                "resource": {
+                    "id": "[variables('sqldbId')]"
+                },
+                "options":{
+                    "throughput":"[parameters('sqlDbThroughput')]",
+                    "autoscaleSettings":{
+                        "maxThroughput":"[parameters('sqlDbMaxThroughput')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+  }

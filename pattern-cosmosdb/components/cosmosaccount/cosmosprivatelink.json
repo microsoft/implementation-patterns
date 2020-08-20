@@ -1,0 +1,60 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+          "type": "string",
+          "defaultValue": "[resourceGroup().location]",
+          "metadata": {
+            "description": "Location for all resources."
+          }
+        },
+        "appId":{
+            "type":"string"
+        },
+        "privateEndpointName": {
+            "type": "string"
+        },
+        "resourceId": {
+            "type": "string"
+        },
+        "groupId": {
+            "type": "string",
+            "metadata":{
+                "description":"for Cosmos SQL use 'Sql'"
+            }
+        },
+        "subnetId": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "name": "[parameters('privateEndpointName')]",
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2019-04-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "subnet": {
+                    "id": "[parameters('subnetId')]"
+                },
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[concat(parameters('appId'), 'cosmosdblink')]",
+                        "properties": {
+                            "privateLinkServiceId": "[parameters('resourceId')]",
+                            "groupIds": [ "[parameters('groupId')]" ],
+                            "requestMessage": ""
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+        "privateEndpointNetworkInterface": {
+          "type": "string",
+          "value": "[reference(concat('Microsoft.Network/privateEndpoints/', parameters('privateEndpointName'))).networkInterfaces[0].id]"
+        }
+    }
+}
