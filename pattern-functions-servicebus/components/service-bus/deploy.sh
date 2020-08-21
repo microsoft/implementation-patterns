@@ -32,6 +32,11 @@ az deployment group create --name secondaryns --resource-group $resourceGroup2Na
 az deployment group create --name georep --resource-group $resourceGroup1Name --template-file azuredeploy-georeplication.json --parameters namespaceName=$namespace1Name pairedNamespaceName=$namespace2Name pairedNamespaceResourceGroup=$resourceGroup2Name aliasName=$aliasName
 
 # Enable Private Endpoints, Private Zones
+# Create East US 2 Zone
+az deployment group create --name eastuszone --resource-group $resourceGroup1Name --template-file azuredeploy-privatezone.json --parameters privateDnsZoneName=privatelink.servicebus.windows.net
+# Create Central US Zone
+az deployment group create --name centraluszone --resource-group $resourceGroup2Name --template-file azuredeploy-privatezone.json --parameters privateDnsZoneName=privatelink.servicebus.windows.net
+
 # Endpoint in Central pointing to Central Namespace
 az deployment group create --name centralusep1 --resource-group $resourceGroup2Name --template-file azuredeploy-privatelink.json --parameters namespaceName=$namespace2Name privateEndpointName=CentraltoCentral privateDnsZoneName=privatelink.servicebus.windows.net vnetName=spoke-vnet subnetName=workload-subnet networkResourceGroup=$centralNetworkResourceGroupName namespaceResourceGroup=$resourceGroup2Name primary=false
 # Endpoint in Central pointing to East Namespace
