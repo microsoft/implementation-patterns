@@ -25,5 +25,10 @@
             },
             "properties": {}
         }
-    ]
+    ],
+    "outputs": {
+        "datafactoryname": {
+            "type": "string",
+            "value":"[parameters('name')]"
+        }
 }
