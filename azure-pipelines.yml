@@ -16,5 +16,13 @@ steps:
     scriptType: pscore
     scriptLocation: inlineScript
     inlineScript: | 
-   
-       az deployment group create --resource-group network-eastus2-rg --name network-eastus2 --template-file pattern-functions-servicebus/components/base-network/azuredeploy-vnet.json --parameters hubVnetPrefix="10.0.0.0/16" firewallSubnetPrefix="10.0.1.0/24" DNSSubnetPrefix="10.0.2.0/24" spokeVnetPrefix="10.1.0.0/16" workloadSubnetPrefix="10.1.2.0/24"
+
+                  resourceGroup1Location="eastus2"
+                  resourceGroup2Location="centralus"
+
+                  eastNetworkResourceGroupName="Network-RG-EastUS2"
+                  centralNetworkResourceGroupName="Network-RG-CentralUS"
+
+                  az group create --name $eastNetworkResourceGroupName --location $resourceGroup1Location
+                  az group create --name $centralNetworkResourceGroupName --location $resourceGroup2Location
+                  az deployment group create --resource-group network-eastus2-rg --name network-eastus2 --template-file pattern-functions-servicebus/components/base-network/azuredeploy-vnet.json --parameters hubVnetPrefix="10.0.0.0/16" firewallSubnetPrefix="10.0.1.0/24" DNSSubnetPrefix="10.0.2.0/24" spokeVnetPrefix="10.1.0.0/16" workloadSubnetPrefix="10.1.2.0/24"
