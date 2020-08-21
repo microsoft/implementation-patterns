@@ -21,4 +21,7 @@ steps:
               $adfOutput = az deployment group create --resource-group "Network-RG-EastUS2" --name ADFdeployment  --template-file pattern-datafactory-databricks/components/data-factory/adfazuredeploy.json --parameters name="adfsrgoeastus3"
               $adfJSON = $adfOutput | ConvertFrom-Json
               $adfName = $adfJSON.properties.outputs.datafactoryname.value
-              az deployment group create --resource-group "Network-RG-EastUS2"  --template-file pattern-datafactory-databricks/components/self-hosted-integration-runtime/adf-template.json --parameters dataFactoryName=$adfName
+              $shirOutput = az deployment group create --resource-group "Network-RG-EastUS2"  --template-file pattern-datafactory-databricks/components/self-hosted-integration-runtime/adf-template.json --parameters dataFactoryName=$adfName
+              $shirJSON = $shirOutput | ConvertFrom-Json
+              $shirName = $shirJSON.properties.outputs.IntegrationRuntime.value
+              az deployment group create --resource-group "Network-RG-EastUS2" --template-file pattern-datafactory-databricks/components/self-hosted-integration-runtime/vm-windows.json --parameters pattern-datafactory-databricks/components/self-hosted-integration-runtime/vm-windows.parameters.json --parameters dataFactoryName=$adfName selfHostedIRName=$shirName
