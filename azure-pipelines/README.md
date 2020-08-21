@@ -104,7 +104,7 @@ Windows runner:
                 artifactName: 'drop'
                 downloadPath: '$(build.artifactstagingdirectory)'
             - task: AzureCLI@2
-              displayName: 'Deploy ARM templates'
+              displayName: 'Deploy Key Vault and Azure Storage ARM templates'
               inputs:
                 azureSubscription: 'Service connection to Azure Portal'
                 scriptType: ps
@@ -138,13 +138,13 @@ Windows runner:
                 artifactName: 'drop'
                 downloadPath: '$(build.artifactstagingdirectory)'
             - task: AzureCLI@2
-              displayName: 'Deploy ARM templates'
+              displayName: 'Deploy CDN, Redis, App insights, and Web apps ARM templates'
               inputs:
                 azureSubscription: 'Service connection to Azure Portal'
                 scriptType: ps
                 scriptLocation: inlineScript
                 inlineScript: |             
-                #Deploy abc/def/ghi/klm
+                #Deploy CDN, Redis, App insights, and Web apps 
 
 
           - job: DeploySQL
@@ -161,11 +161,11 @@ Windows runner:
                 artifactName: 'drop'
                 downloadPath: '$(build.artifactstagingdirectory)'
             - task: AzureCLI@2
-              displayName: 'Deploy ARM templates'
+              displayName: 'Deploy Azure SQL ARM template'
               inputs:
                 azureSubscription: 'Service connection to Azure Portal'
                 scriptType: ps
                 scriptLocation: inlineScript
                 inlineScript: |             
-                #Deploy abc/def/ghi/klm
+                #Deploy Azure SQL
 
