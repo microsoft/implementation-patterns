@@ -8,7 +8,7 @@ This guide assumes that you are deploying your solution into a networking enviro
 
 - Azure Cosmos DB can be deployed to one or more Azure Regions transparently. For reads, Azure Traffic manager handles routing requests to the requestor's nearest region.
 
-###TODO: Check below to make certain it all appiles
+##### TODO: Check below to make certain it all appiles
 #### Deployment
 1. Create a resource group for each region's network resources
 	```bash
@@ -44,6 +44,7 @@ This guide assumes that you are deploying your solution into a networking enviro
 - No accessibility from public networks
 - Cross Region Replication
 #### Implementation
+##### TODO: 2 Azure Region Image (It's confusing to talk about 2 adn show 3)
 ![](https://www.gotcosmos.com/images/architecture/web.png?v=v5wUB5Zw9Tq66qcMudl0AA6uVu5QImOsEjuUxY1ULwU)  
 The base-level resource for Azure Cosmos DB is an Azure Cosmos DB Account. Accounts contain the entities that we will be working with ( Databases, Containers, Collestions, Documents ).
 
@@ -55,11 +56,10 @@ This reference implementation will deploy a SQL API Account. This is the most co
   
 - Create an account in one Azure Region (1)  
 
-###TODO: 2 or 3 Azure Regions
+
 - We'll configure geo-redundancy (2) with the another Azure Region by adding it to the Azure Cosmos DB Account. This replicaiton is at the Azure Comos DB Account level, not at the individual database/container level.
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/how-to-manage-database-account/replicate-data-globally.png)
 
-###TODO: Change all below
 - The account will be set up in the same region as the Resource Group it is in. 
 
 - Geo Redundancy will be enabled by deploying to specific regions
@@ -69,25 +69,20 @@ This reference implementation will deploy a SQL API Account. This is the most co
 - Default Consistency level
 
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/strong-consistency.gif)
+
 - Key Vault
 
-### TODO: Make this Cosmos Specific
+##### TODO: Make this Cosmos Specific
 #### Deployment
-1. Create resource groups for our reference workload
+1. Create resource group for our reference workload
 	```bash
 	# for East resources
-	az group create --location eastus2 --name refworkload-eastus2-rg  
-
-	# for Central resources
-	az group create --location centralus --name refworkload-centralus-rg
+	az group create --location eastus2 --name refworkload-eastus2-rg
 	```
-2. Create Private DNS Zone for Service Bus ([ARM Template](../components/service-bus/azuredeploy-privatezone.json))
+2. Create Comos DB Account ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
 	```bash
 	# for East
-	az deployment group create --resource-group refworkload-eastus2-rg --name zone-eastus2 --template-file ./../components/service-bus/azuredeploy-privatezone.json --parameters privateDnsZoneName=privatelink.servicebus.windows.net   
-
-	# for Central
-	az deployment group create --resource-group refworkload-centralus-rg --name zone-centralus --template-file ./../components/service-bus/azuredeploy-privatezone.json --parameters privateDnsZoneName=privatelink.servicebus.windows.net 
+	az deployment group create --resource-group refworkload-eastus2-rg --name zone-eastus2 --template-file ./../components/cosmosaccount/cosmosaccount.json --parameters accountName=   
 	```
 3. Link the Private DNS Zones ([ARM Template](../components/service-bus/azuredeploy-zonelink.json))
 	```bash
