@@ -8,15 +8,40 @@
         "location": {
             "defaultValue": "[resourceGroup().location]",
             "type": "String"
+        },
+        "applicationId": {
+            "type": "String"
+        },
+        "employeeId": {
+            "type": "String"
+        },
+        "organization": {
+            "type": "String"
+        },
+        "environment": {
+            "type": "String"
+        },
+        "timestamp": {
+            "type": "String",
+            "defaultValue": "[utcNow('u')]"
         }
     },
-    "variables": {},
+    "variables": {
+        "resourceTags": {
+            "ApplicationId": "[parameters('applicationId')]",
+            "CreatedBy": "[parameters('employeeId')]",
+            "Organization": "[parameters('organization')]",
+            "Environment": "[parameters('environment')]",
+            "Timestamp": "[parameters('timestamp')]"
+        }
+    },
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "name": "[parameters('storageAccountName')]",
             "location": "[parameters('location')]",
+            "tags": "[variables('resourceTags')]",
             "sku": {
                 "name": "Standard_LRS",
                 "tier": "Standard"

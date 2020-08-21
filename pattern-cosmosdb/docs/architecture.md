@@ -1,23 +1,14 @@
-# Producer / Consumer Pattern Using Azure Service Bus and Azure Functions
+# Azure Cosmos DB Account Multi Region Pattern
 ## Architecture and Composable Deployment Code
-### Virtual Network Foundation
-#### Implementation
-![](images/networking-foundation.png)
+### Implementation
+![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/introduction/azure-cosmos-db.png)
 This guide assumes that you are deploying your solution into a networking environment with the following characteristics:
 
-- [Hub and Spoke](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/hub-spoke-network-topology)  network architecture.   
+![Azure Cosmos DB](https://www.gotcosmos.com/images/architecture/web.png?v=v5wUB5Zw9Tq66qcMudl0AA6uVu5QImOsEjuUxY1ULwU)  Azure Cosmos DB architecture.   
 
-- The hub VNet (1) is used for hosting shared services like Azure Firewall, DNS forwarding and providing connectivity to on-premises networks. In a real implementation, the hub network would be connected to an on-premises network via ExpressRoute, S2S VPN, etc (2). In our reference examples we'll, exclude this portion of the architecture for simplicity.  
+- Azure Cosmos DB can be deployed to one or more Azure Regions transparently. For reads, Azure Traffic manager handles routing requests to the requestor's nearest region.
 
-- The spoke network (3) is used for hosting business workloads. In this case we're integrating our Function App to a dedicated subnet ("Integration Subnet") that sits within the spoke network. We'll use a second subnet ("Workload Subnet") for hosting other components of the solution including private endpoints for our Service Bus namespaces, etc.  
-
-- The Hub is peered to Spoke using Azure VNet Peering.  
-
-- In many locked down environments [Forced tunneling](https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-forced-tunneling-rm) is in place. E.G. routes are being published over ExpressRoute via BGP that override the default 0.0.0.0/0 -> Internet system route in all connected Azure subnets. The effect is that there is **no** direct route to the internet from within Azure subnets. Internet destined traffic is sent to the VPN/ER gateway. We can simulate this in a test environment by using restrictive NSGs and Firewall rules to prohibit internet egress. We'll route any internet egress traffic to Azure firewall (4) using a UDR (5) where it can be filtered and audited.  
-
-- Generally, custom DNS is configured on the spoke VNet settings. DNS forwarders in the hub are referenced. These forwarders  provide conditional forwarding to the Azure internal resolver and on premises DNS servers as needed. In this reference implementation we'll deploy a simple BIND forwarder (6) into our hub network that will be configured to forward requests to the Azure internal resolver.   
-
-- We'll deploy an identical configuration across two regions.
+###TODO: Check below to make certain it all appiles
 #### Deployment
 1. Create a resource group for each region's network resources
 	```bash
@@ -46,33 +37,41 @@ This guide assumes that you are deploying your solution into a networking enviro
 	```
 
 [top ->](#Architecture-and-Composable-Deployment-Code)    
-### Azure Service Bus
+### Azure Cosmo DB
 #### Requirements
 - Predictable / Consistent Performance
 - Direct integration to and accessibility from private networks
 - No accessibility from public networks
-- Cross Region Entity Replication
-- No message loss on regional failure
-- Ability to fail back and forth between primary and secondary regions on a scheduled basis for DR drills
+- Cross Region Replication
 #### Implementation
-![](images/networking-servicebus.png)  
-The base-level resource for Azure Service Bus is a Service Bus Namespace. Namespaces contain the entities that we will be working with ( Queues, Topics and Subscriptions ).
+![](https://www.gotcosmos.com/images/architecture/web.png?v=v5wUB5Zw9Tq66qcMudl0AA6uVu5QImOsEjuUxY1ULwU)  
+The base-level resource for Azure Cosmos DB is an Azure Cosmos DB Account. Accounts contain the entities that we will be working with ( Databases, Containers, Collestions, Documents ).
 
-When creating a namespace in a single region, there are relatively few decisions you'll need to make. You will need to specify the name, pricing tier, initial scale and redundancy settings, subscription, resource group and location.
+![](https://azurecomcdn.azureedge.net/mediahandler/acomblog/media/Default/blog/8d036cf9-df49-45d3-b540-00f18c4f5c31.png)
 
-In our reference implementation we will be deploying a Premium namespace. This is the tier that is recommended for most production workloads due to it's performance characteristics. In addition, the Premium tier supports VNet integration which allows us to isolate the namespace to a private network. This is key to achieving our overall security objectives.   
+When creating an account in a single region, there are relatively few decisions needed. The delpoyment requires the name, pricing tier, initial scale and redundancy settings, subscription, resource group, consistency levey and location.
+
+This reference implementation will deploy a SQL API Account. This is the most commonly deployed API and is recommended for most production workloads due to it's flexability and ease of development.    
   
-- We'll create a namespace in both regions. (1)   
+- Create an account in one Azure Region (1)  
 
-- We'll configure geo-redundancy (2) with the EastUS2 namespace being primary and the CentralUS namespace being secondary. This will replicate all entity information between regions (but not messages).
+###TODO: 2 or 3 Azure Regions
+- We'll configure geo-redundancy (2) with the another Azure Region by adding it to the Azure Cosmos DB Account. This replicaiton is at the Azure Comos DB Account level, not at the individual database/container level.
+![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/how-to-manage-database-account/replicate-data-globally.png)
 
-- The namespace will be set up with two private endpoints each. One in the region that the namespace is deployed in (3) and one in the other region (4). This will allow private access from both regions. We will configure access restrictions (per-namespace firewall) on the namespace such that the endpoint will be the only method one can use to connect to the namespace. This effectively takes the namespace off the Internet.    
-TODO: Elaborate on this path vs via ER GW.
+###TODO: Change all below
+- The account will be set up in the same region as the Resource Group it is in. 
 
-- A set of private DNS zones (5), requisite A records and VNet links will be created such that queries originating from any VNet that is configured to use our bind forwarders will resolve the namespace name to the IP of the private endpoint and not the public IP. This is done via split horizon DNS. E.G. externally, the namespace URLs will continue to resolve to the public IP's which will be inaccessible due to the access restriction configuration. Internally the same URLs will resolve to the IP of the private endpoint.  
-  Normally, we would maintain a single zone per service for private link. Because we need DNS queries for the namespace to resolve to different endpoint IP's depending on where the queries are initiated from we'll use two zones which we can link to different networks in this scenario.
-  
-- TODO: Add specifics on DNS resolution and network path to private endpoints for both regions from on-premises.
+- Geo Redundancy will be enabled by deploying to specific regions
+
+- RUs at account or Datbase Level?
+
+- Default Consistency level
+
+![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/strong-consistency.gif)
+- Key Vault
+
+### TODO: Make this Cosmos Specific
 #### Deployment
 1. Create resource groups for our reference workload
 	```bash

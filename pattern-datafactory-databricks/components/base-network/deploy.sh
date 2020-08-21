@@ -3,9 +3,8 @@
 # Params
 resourceGroup1Location="eastus2"
 resourceGroup2Location="centralus"
-
-eastNetworkResourceGroupName="Network-RG-EastUS2"
-centralNetworkResourceGroupName="Network-RG-CentralUS"
+eastNetworkResourceGroupName="Foundation-HubAndSpoke-EastUS2"
+centralNetworkResourceGroupName="Foundation-HubAndSpoke-CentralUS"
 
 # Create RGs
 az group create --name $eastNetworkResourceGroupName --location $resourceGroup1Location

@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "srgoadfv2devopsint"
+        },
+        "version": {
+            "value": "V2"
+        },
+        "location": {
+            "value": "eastus2"
+        },
+        "gitConfigureLater": {
+            "value": false
+        },
+        "gitRepoType": {
+            "value": "FactoryVSTSConfiguration"
+        },
+        "gitAccountName": {
+            "value": "srgolladevops"
+        },
+        "gitProjectName": {
+            "value": "ADFRepos"
+        },
+        "gitRepositoryName": {
+            "value": "adfrepos2"
+        },
+        "gitCollaborationBranch": {
+            "value": "master"
+        },
+        "gitRootFolder": {
+            "value": "/"
+        },
+        "tagsByResource": {
+            "value": {}
+        }
+    }
+}

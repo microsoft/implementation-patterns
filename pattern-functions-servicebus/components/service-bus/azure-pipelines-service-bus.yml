@@ -1,7 +1,7 @@
 name: ServiceBus deployment
 
-trigger:
-- main
+trigger: none
+#- main
 
 pool:
   vmImage: 'ubuntu-latest'

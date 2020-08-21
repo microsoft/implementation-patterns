@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
-            "value":  "[resourceGroup().location]"
+            "value":  "eastus2"
         },
-        "factoryName": {
-            "value": "poctestadfv2-32"
+        "dataFactoryName": {
+            "value": "srgoadfv2devopsint"
         }
     }
 }
