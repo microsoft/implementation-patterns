@@ -18,4 +18,7 @@ steps:
     inlineScript: | 
              
               az deployment group create --resource-group "Network-RG-EastUS2" --name network-eastus2 --template-file pattern-datafactory-databricks/components/base-network/azuredeploy-vnet.json --parameters hubVnetPrefix="10.0.0.0/16" firewallSubnetPrefix="10.0.1.0/24" DNSSubnetPrefix="10.0.2.0/24" spokeVnetPrefix="10.1.0.0/16" workloadSubnetPrefix="10.1.2.0/24"
-              az deployment group create --resource-group "Network-RG-EastUS2" --name ADFdeployment  --template-file pattern-datafactory-databricks/components/data-factory/adfazuredeploy.json --parameters name="adfsrgoeastus3"
+              $adfOutput = az deployment group create --resource-group "Network-RG-EastUS2" --name ADFdeployment  --template-file pattern-datafactory-databricks/components/data-factory/adfazuredeploy.json --parameters name="adfsrgoeastus3"
+              $adfJSON = $adfOutput | ConvertFrom-Json
+              $adfName = $adfJSON.properties.outputs.datafactoryname.value
+              az deployment group create --resource-group "Network-RG-EastUS2"  --template-file adf-template.json --parameters dataFactoryName=$adfName
