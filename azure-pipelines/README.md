@@ -2,7 +2,7 @@ Common Azure DevOps patterns when consuming ARM templates, following best practi
 
 ## Sample Pipeline to deploy ARM templates
 
-Linux runner:
+Linux runner (including sample utilizing storage account outputs and uploading the secret to Azure Key Vault):
 
     name: ServiceBus deployment
 
