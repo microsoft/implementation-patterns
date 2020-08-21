@@ -1,4 +1,4 @@
-Common Azure DevOps patterns when consuming ARM templates, following best practices.
+Common Azure DevOps YAML pattern when deploying ARM templates, and some best practices.
 
 ## Sample Pipeline to deploy ARM templates
 
