@@ -11,13 +11,21 @@
         "networkResourceGroupName": {
             "value":"Foundation-HubAndSpoke-EastUS2"
         },
+        "numOfIntegrationRunTimeInstances":{
+            "value":2
+        },
         "virtualMachineName": {
             "value": "SHIRNode1" 
         },
         "selfHostedIRName": {
             "value": "ofhwzklincclu" 
         },
-
+        "resourceTags": {
+            "value": {
+                "ApplicationId": "AD123456",
+                "Test1":"abc"
+            }
+        },
         "virtualMachineSize": {
             "value": "Standard_F4s_v2" 
         },
