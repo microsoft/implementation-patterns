@@ -123,7 +123,7 @@ try{
         New-Item -path $installLogs -type File -Force
     }
 
-    Wrtie-EventToLog $irKey
+    #Wrtie-EventToLog $irKey
     Wrtie-EventToLog "Information | Start to excute $($scriptName)" 
     Wrtie-EventToLog "Information | Log file: $($installLogs)"
 
