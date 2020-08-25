@@ -1,0 +1,27 @@
+{
+    "type": "Microsoft.Storage/storageAccounts",
+    "apiVersion": "2018-02-01",
+    "name": "[parameters('StorageAccountName')]",
+    "location": "[resourceGroup().location]",
+    "tags": {
+        "displayName": "[parameters('StorageAccountName')]"
+    },
+    "sku": {
+        "name": "Standard_LRS"
+    },
+    "kind": "StorageV2",
+    "properties": {},
+    "resources": [
+        {
+            "type": "blobServices/containers",
+            "apiVersion": "2018-03-01-preview",
+            "name": "[concat('default/', parameters('Container1Name'))]",
+            "dependsOn": [
+                "[parameters('StorageAccountName')]"
+            ],
+            "properties": {
+                "publicAccess": "Container"
+            }
+        }
+    ]
+}
