@@ -15,5 +15,5 @@ Here are some of the other considerations where you may want to create an additi
 - **Consider isolating each workspace into its own VNET**
   - VNET Injection is a feature within Azure Databricks where you can provision the Data plane of Azure databricks within your own VNET. All you need are 2 subnets within the VNET for each workspace. You can have as many workspaces as you want within the VNET. However, we recommend to use only 1 Workspace per VNET to provide workspace level isolation completely.
 
-Summarizing everything so far, For a typical enterprise customer who operates different business units, At a minimum you would need 2 Databricks workspaces for each business unit for Prod and Non-prod. All the application teams within that business unit should be able to share the cluster resources accordingly.
+Summarizing everything so far, For a typical enterprise customer who operates different business units, **At a minimum** you would need 2 Databricks workspaces for each business unit for Prod and Non-prod. All the application teams within that business unit should be able to share the workspace resources accordingly.
 
