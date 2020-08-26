@@ -14,6 +14,6 @@ Here are some of the other considerations where you may want to create an additi
   - Its always recommend to have a separate workspace for Prod and Non-prod environments. Especially related to the entitlements on the resources as you may want to limit access on a Production environment compared to a Dev\Test environment where you want to give more knobs to the developers to play with. Its also recommended to create these workspaces in different subscriptions to prevent any unnecessary issues.
 - **Consider isolating each workspace into its own VNET**
   - VNET Injection is a feature within Azure Databricks where you can provision the Data plane of Azure databricks within your own VNET. All you need are 2 subnets within the VNET for each workspace. You can have as many workspaces as you want within the VNET. However, we recommend to use only 1 Workspace per VNET to provide workspace level isolation completely.
+- **Define workspace level tags** which propagate to initially provisioned resources in managed resource group, as well as to pools and clusters in the workspace, and then to Azure billing for chargeback
 
-Summarizing everything so far, For a typical enterprise customer who operates different business units, **At a minimum** you would need 2 Databricks workspaces for each business unit for Prod and Non-prod. All the application teams within that business unit should be able to share the workspace resources accordingly.
-
+Summarizing everything so far, For a typical enterprise customer who operates different business units, At a minimum you would need 2 Databricks workspaces for each business unit for Prod and Non-prod. All the application teams within that business unit should be able to share the cluster resources accordingly.
