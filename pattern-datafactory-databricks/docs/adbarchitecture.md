@@ -6,6 +6,8 @@
 
 ![image](https://user-images.githubusercontent.com/22504173/91381485-8013b380-e7f5-11ea-99be-ed41e03d1cb4.png)
 
+## **Azure Databricks VNET Considerations:** 
+
 ## **Azure Databricks Workspace Considerations:** 
 
 Workspaces enables users to organize—and share—their Notebooks, Libraries and Dashboards. We recommend that you assign workspaces based on a related group of people working together collaboratively
