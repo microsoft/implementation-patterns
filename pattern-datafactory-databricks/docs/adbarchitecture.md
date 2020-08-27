@@ -1,3 +1,12 @@
+# Azure Databricks Architecture Patterns
+
+### Virtual Network Foundation
+
+#### Implementation
+
+![adfarch](https://user-images.githubusercontent.com/22504173/88923589-f4335980-d23f-11ea-9aa0-f69fee0d2aff.png)
+
+
 ## **Azure Databricks Workspace Considerations:** 
 
 Workspaces enables users to organize—and share—their Notebooks, Libraries and Dashboards. We recommend that you assign workspaces based on a related group of people working together collaboratively
