@@ -47,11 +47,17 @@
             "metadata": {
                 "description": "throughput in request units per second"
             }
+        },
+        "cosmosAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name for Cosmos Instance"
+            }
         }
     },
     "variables": {
         "location":"[resourceGroup().location]",
-        "accountName":"<string together some naming conventions>"
+        "accountName":"[parameters('cosmosAccountName')]"
     },
     "resources": [
         {
