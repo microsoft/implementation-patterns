@@ -12,6 +12,13 @@
         "networkResourceGroupName": {
             "type": "string"
         },
+        "numOfIntegrationRunTimeInstances":{
+            "type":"int",
+            "defaultValue":4,
+            "minValue":1,
+            "maxValue":4
+            
+        },
         "virtualNetworkName": {
             "type": "string"
         },
@@ -30,6 +37,9 @@
         "selfHostedIRName": {
             "type": "string"
         },
+        "resourceTags":{
+            "type":"object"
+            },
         "adminUsername": {
             "type": "string"
         },
@@ -57,7 +67,7 @@
     },
     "variables": {
         "datafactoryId": "[resourceId('Microsoft.DataFactory/factories/integrationruntimes', parameters('dataFactoryName'), parameters('selfHostedIRName'))]",
-        "networkInterfaceName": "[concat(parameters('virtualMachineName'),'-nic01')]",
+        "maxNumberofNodes": 3,
         "subnetRef": "[resourceId(parameters('networkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetname'))]",
         "imageId": {
             "publisher": "MicrosoftWindowsServer",
@@ -68,11 +78,12 @@
     },
     "resources": [
         {
-            "name": "[variables('networkInterfaceName')]",
+            "name": "[concat(parameters('virtualMachineName'),'-nic',copyIndex(1))]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2020-03-01",
             "location": "[parameters('location')]",
             "dependsOn": [],
+            
             "properties": {
                 "ipConfigurations": [
                     {
@@ -86,18 +97,24 @@
                     }
                 ]
             },
-            "tags": {
-                "ApplicationId": "AD123456"
-            }
+            "copy":{
+                "name":"NetworkInterfaceloop",
+                "count":"[parameters('numOfIntegrationRunTimeInstances')]"
+            }, 
+            "tags": "[parameters('resourceTags')]"
         },
         {
-            "name": "[parameters('virtualMachineName')]",
+            "name": "[concat(parameters('virtualMachineName'),copyIndex(1))]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-07-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', variables('networkInterfaceName'))]"
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'),'-nic',copyIndex(1))]"
             ],
+            "copy":{
+                "name":"IntegrationRuntimeIntances",
+                "count":"[parameters('numOfIntegrationRunTimeInstances')]"
+            },
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('virtualMachineSize')]"
@@ -117,7 +134,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(parameters('virtualMachineName'),'-nic',copyIndex(1)))]"
                         }
                     ]
                 },
@@ -131,17 +148,22 @@
                     }
                 }
             },
-            "tags": {
-                "ApplicationId": "AD123456"
-            }
+            "Zones":[
+ "[Add(mod(copyIndex(),variables('maxNumberofNodes')),1)]"
+            ],
+            "tags": "[parameters('resourceTags')]"
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('virtualMachineName'),'/IntegrationRuntime')]",
+            "name": "[concat(parameters('virtualMachineName'),copyIndex(1),'/IntegrationRuntime')]",
             "apiVersion": "2019-07-01",
             "location": "[resourceGroup().location]",
+            "copy":{
+                "name":"IntegrationRuntimeIntances",
+                "count":"[parameters('numOfIntegrationRunTimeInstances')]"
+            },
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'),copyIndex(1))]"
             ],
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -157,7 +179,8 @@
                     "storageAccountName": "[parameters('storageAccount')]",
                     "storageAccountKey": "[listKeys(resourceId(parameters('storageSubscriptionId'),parameters('storageResourceGroup'),'Microsoft.Storage/storageAccounts', parameters('storageAccount')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
                 }
-            }
+            },
+            "tags": "[parameters('resourceTags')]"
         }
     ],
     "outputs": {
