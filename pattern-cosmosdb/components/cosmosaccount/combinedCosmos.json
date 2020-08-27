@@ -1,0 +1,223 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appId":{
+            "type":"string"
+        },
+        "privateEndpointName": {
+            "type": "string"
+        },
+        "resourceId": {
+            "type": "string"
+        },
+        "groupId": {
+            "type": "string",
+            "metadata":{
+                "description":"for Cosmos SQL use 'Sql'"
+            }
+        },
+        "subnetId": {
+            "type": "string"
+        },
+        "apiName": {
+            "type": "string",
+            "allowedValues":[
+                "SQL",
+                "mongo"
+            ],
+            "metadata": {
+                "description": "Type of database being created"
+            }
+        },
+        "dbName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of Database being created"
+            }
+        },
+        "dbMaxThroughput": {
+            "type": "int",
+            "metadata": {
+                "description": "maximum throughput the resource can scale up to"
+            }
+        },
+        "dbThroughput": {
+            "type": "string",
+            "metadata": {
+                "description": "throughput in request units per second"
+            }
+        }
+    },
+    "variables": {
+        "location":"[resourceGroup().location]",
+        "accountName":"<string together some naming conventions>"
+    },
+    "resources": [
+        {
+            "name":"[variables('accountName')]",
+            "type": "Microsoft.DocumentDB/databaseAccounts",
+            "apiVersion":"2016-03-31",
+            "location": "[variables('location')]",
+            "properties":{
+                "locations": "[variables('location')]",
+                "databaseAccountOfferType":"Standard"
+            }
+        },
+        {
+            "name": "[parameters('privateEndpointName')]",
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2019-04-01",
+            "location": "[variables('location')]",
+            "properties": {
+                "subnet": {
+                    "id": "[parameters('subnetId')]"
+                },
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[concat(parameters('appId'), 'cosmosdblink')]",
+                        "properties": {
+                            "privateLinkServiceId": "[parameters('resourceId')]",
+                            "groupIds": [ "[parameters('groupId')]" ],
+                            "requestMessage": "[concat('Requesting private link connection for ', parameters('appId'))]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name":"DeploySQLAPI",
+            "condition":"[equals(parameters('apiName'), 'SQL')]",
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope":"inner"
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "dbName": {
+                            "type": "string",
+                            "metadata": {
+                                "description": "database name"
+                            }
+                        },
+                        "dbThroughput": {
+                            "type": "int"
+                        },
+                        "dbMaxThroughput": {
+                            "type":"int"
+                        }
+                    },
+                    "variables": {
+                        "location":"[resourceGroup().location]",
+                        "dbId": "[parameters('dbName')]"
+                    },
+                    "resources": [
+                        {
+                            "name":"[parameters('dbName')]",
+                            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+                            "apiVersion": "2020-04-01",
+                            "location":"[variables('location')]",
+                            "tags":{},
+                            "properties": {
+                                "resource": {
+                                    "id": "[variables('dbId')]"
+                                },
+                                "options":{
+                                    "throughput":"[parameters('dbThroughput')]",
+                                    "autoscaleSettings":{
+                                        "maxThroughput":"[parameters('dbMaxThroughput')]"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "outputs": {
+                    }
+
+                },
+                "parameters": {
+                    "dbName": {
+                        "value": "[parameters('dbName')]"
+                    },
+                    "dbMaxThroughput": {
+                        "value": "[parameters('dbMaxThroughput')]"
+                    },
+                    "dbThroughput": {
+                        "value": "[parameters('dbThroughput')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "condition": "[equals(parameters('apiName'), 'mongo')]",
+            "name":"deployMongoApi",
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope":"inner"
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "dbThroughput": {
+                            "type": "int"
+                        },
+                        "dbMaxThroughput": {
+                            "type":"int"
+                        },
+                        "dbName":{
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "location":"[resourceGroup().location]",
+                        "dbId": "[parameters('dbName')]"
+                    },
+                    "resources": [
+                        {
+                            "name":"[parameters('dbName')]",
+                            "type": "Microsoft.DocumentDB/databaseAccounts/mongodbDatabases",
+                            "apiVersion": "2020-04-01",
+                            "location":"[variables('location')]",
+                            "tags":{},
+                            "properties": {
+                                "resource": {
+                                    "id": "[variables('dbId')]"
+                                },
+                                "options":{
+                                    "throughput":"[parameters('dbThroughput')]",
+                                    "autoscaleSettings":{
+                                        "maxThroughput":"[parameters('dbMaxThroughput')]"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "outputs": {
+                    }
+                },
+                "parameters":{
+                    "dbName": {
+                        "value": "[parameters('dbName')]"
+                    },
+                    "dbMaxThroughput": {
+                        "value": "[parameters('dbMaxThroughput')]"
+                    },
+                    "dbThroughput": {
+                        "value": "[parameters('dbThroughput')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+  }
