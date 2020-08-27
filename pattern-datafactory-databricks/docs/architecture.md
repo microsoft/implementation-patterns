@@ -6,7 +6,7 @@
 
 #### Implementation
 
-![adfarch](https://user-images.githubusercontent.com/22504173/88923589-f4335980-d23f-11ea-9aa0-f69fee0d2aff.png)
+![adfarch](https://user-images.githubusercontent.com/22504173/91381485-8013b380-e7f5-11ea-99be-ed41e03d1cb4.png))
 
 
 Azure Data Factory is a PaaS service hosted within Azure. ADF by itself is just a metadata store which stores artifacts information like (*pipeline*, *trigger*, *activity*, *linked* *service* and *dataset* definitions in JSON) and is hosted in Azure public space. However, the actual data integration compute which performs data movement activity is performed by Integration Runtimes as explained below. You can create Azure Data Factory optionally with CI\CD integration to Git repo if needed as shown in the above architecture. Here are the scripts and templates to automate the setup. [Provisioning Azure Data Factory with or without CI\CD integration](https://github.com/microsoft/implementation-patterns/tree/main/pattern-datafactory-databricks/components/data-factory)
