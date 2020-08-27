@@ -4,8 +4,7 @@
 
 #### Implementation
 
-![adfarch](https://user-images.githubusercontent.com/22504173/88923589-f4335980-d23f-11ea-9aa0-f69fee0d2aff.png)
-
+![image](https://user-images.githubusercontent.com/22504173/91381485-8013b380-e7f5-11ea-99be-ed41e03d1cb4.png)
 
 ## **Azure Databricks Workspace Considerations:** 
 
