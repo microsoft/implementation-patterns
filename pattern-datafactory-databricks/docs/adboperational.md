@@ -23,7 +23,7 @@ Before you begin, ensure you have the following prerequisites in place:
 
 Though it can vary based on your needs, a typical configuration for an Azure Databricks pipeline includes the following steps:
 
-# Continuous integration:
+### Continuous integration:
 
 1. Code
     * Develop code and unit tests in an Azure Databricks notebook or using an external IDE.</li>
@@ -35,7 +35,7 @@ Though it can vary based on your needs, a typical configuration for an Azure Dat
     * Build libraries and non-notebook Apache Spark code.</li>
 3. Release: Generate a release artifact.
 
-# Continuous delivery:
+### Continuous delivery:
 
 1. Deploy
    * Deploy notebooks.
