@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "databricksSku": {
+            "value": "premium"
+        },
+        "workspaceName": {
+            "value": "dbtest1tm"
+        },
+        "vNetResourceGroup": {
+            "value": "spoke1"
+        },
+        "virtualNetworkName": {
+            "value": "spoke1-vnet"
+        },
+        "publicSubnetName": {
+            "value": "app-dbbks-public-sbt"
+        },
+        "privateSubnetName": {
+            "value": "app-dbbks-private-sbt"
+        }
+    }
+}
