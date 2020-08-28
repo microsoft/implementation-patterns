@@ -18,11 +18,6 @@ steps:
     inlineScript: | 
              
               az deployment group create --resource-group "Network-RG-EastUS2" --name network-eastus2 --template-file pattern-datafactory-databricks/components/databricks-templates/adbnsg.json --parameters pattern-datafactory-databricks/components/databricks-templates/adbnsg.parameters.json
-              $adfOutput = az deployment group create --resource-group "Network-RG-EastUS2" --name ADFdeployment  --template-file pattern-datafactory-databricks/components/data-factory/adfazuredeploy.json --parameters name="adfsrgoeastus3"
-              $adfJSON = $adfOutput | ConvertFrom-Json
-              $adfName = $adfJSON.properties.outputs.datafactoryname.value
-              $shirOutput = az deployment group create --resource-group "Network-RG-EastUS2"  --template-file pattern-datafactory-databricks/components/self-hosted-integration-runtime/adf-template.json --parameters dataFactoryName=$adfName
-              $shirJSON = $shirOutput | ConvertFrom-Json
-              $shirName = $shirJSON.properties.outputs.IntegrationRuntime.value
-              az deployment group create --resource-group "Network-RG-EastUS2" --template-file pattern-datafactory-databricks/components/self-hosted-integration-runtime/vm-windows.json --parameters pattern-datafactory-databricks/components/self-hosted-integration-runtime/vm-windows.parameters.json --parameters dataFactoryName=$adfName selfHostedIRName=$shirName storageAccount="srgoblob" numOfIntegrationRunTimeInstances=3
-              az deployment group create --resource-group "Network-RG-EastUS2" --template-file pattern-datafactory-databricks/components/azure-integration-runtime/adfazureirdeploy.json --parameters pattern-datafactory-databricks/components/azure-integration-runtime/adfazureirdeploy.parameters.json --parameters dataFactoryName=$adfName
+              az deployment group create --resource-group "Network-RG-EastUS2" --name VNET injection  --template-file pattern-datafactory-databricks/components/databricks-templates/adbvnetinjection.json --parameters pattern-datafactory-databricks/components/databricks-templates/adbvnetinjection.parameters.json
+              az deployment group create --resource-group "Network-RG-EastUS2"  --template-file --template-file pattern-datafactory-databricks/components/databricks-templates/azure-databricks.json --parameters pattern-datafactory-databricks/components/databricks-templates/azure-databricks.parameters.json
+              
