@@ -7,7 +7,21 @@
 ![image](https://user-images.githubusercontent.com/22504173/91381485-8013b380-e7f5-11ea-99be-ed41e03d1cb4.png)
 
 ## **Azure Databricks VNET Considerations:** 
+By default, Azure Databricks is deployed as a managed service within a Virtual Network (VNET ) which is Microsoft managed into a locked resource group. However, Most of the enterprises don't prefer this option but rather want the service to be injected into their own Virtual Network. We call this VNET injection so that the Data plane (Clusters) is injected into the VNET but there are few control plane components like the Webapp and Notebooks still running in Microsoft managed environment. 
 
+VNET injection provides benefits like ability to deploy Databricks into an existing VNET to access your Onpremises data, Azure Paas resources etc in a private and secure way using Private endpoints or service endpoints, Use Custom DNS for Databricks, Send traffic through any Azure NVA for traffic inspection, Use your own NSG and UDR rules giving you more flexibility and control. 
+
+[db-vnet-arch](https://user-images.githubusercontent.com/22504173/91550801-1a0f5500-e8f7-11ea-812e-62f946129e2d.png)
+
+Few considerations for VNET Injection are
+
+- The VNET location and subscription have to be the same as Databricks workspace
+
+- There are two subnets public and private which needs to be assigned to each databricks workspace. The public communicates with Control plane and private for internal communication. Do not share these subnets with other resources. These subnets will be delegated to Microsoft.Databricks/workspaces service which allows the service to create NSG rules. You cannot share multiple Databricks workspaces the same subnets. You need to create new subnet pairs for each workspace
+
+- A CIDR block between /16 - /24 for the virtual network and a CIDR block up to /26 for the private and public subnets.
+
+  
 ## **Azure Databricks Workspace Considerations:** 
 
 Workspaces enables users to organize—and share—their Notebooks, Libraries and Dashboards. We recommend that you assign workspaces based on a related group of people working together collaboratively
