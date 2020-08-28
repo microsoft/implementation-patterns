@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "nsgName": {
+        "value": "nsg-test"
+      },
+      "vnetName": {
+        "value": "databricks-vnet"
+      },
+      "privateSubnetName": {
+        "value": "private-subnet"
+      },
+      "publicSubnetName": {
+        "value": "public-subnet"
+      },
+      "location": {
+        "value": "[resourceGroup().location]"
+      },
+      "vnetCidr": {
+        "value": "10.179.0.0/16"
+      },
+      "privateSubnetCidr": {
+        "value": "10.179.0.0/18"
+      },
+      "publicSubnetCidr": {
+        "value": "10.179.64.0/18"
+      }
+    }
+  }

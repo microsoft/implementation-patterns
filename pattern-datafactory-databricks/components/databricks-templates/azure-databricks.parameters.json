@@ -9,16 +9,16 @@
             "value": "dbtest1tm"
         },
         "vNetResourceGroup": {
-            "value": "spoke1"
+            "value": "Network-RG-EastUS2"
         },
         "virtualNetworkName": {
-            "value": "spoke1-vnet"
+            "value": "databricks-vnet"
         },
         "publicSubnetName": {
-            "value": "app-dbbks-public-sbt"
+            "value": "public-subnet"
         },
         "privateSubnetName": {
-            "value": "app-dbbks-private-sbt"
+            "value": "private-subnet"
         }
     }
 }
