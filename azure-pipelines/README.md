@@ -23,9 +23,11 @@ Linux runner (including sample utilizing storage account outputs and uploading t
         scriptLocation: inlineScript
         inlineScript: | 
        
+           #Deploy the servicebus ARM template
            az deployment group create --resource-group network-eastus2-rg --name network-eastus2 --template-file pattern-functions-servicebus/components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.0.0.0/16" firewallSubnetPrefix="10.0.1.0/24" DNSSubnetPrefix="10.0.2.0/24" spokeVnetPrefix="10.1.0.0/16" workloadSubnetPrefix="10.1.2.0/24"
            az deployment group create --resource-group network-centralus-rg --name network-centralus --template-file pattern-functions-servicebus/components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.2.0.0/16" firewallSubnetPrefix="10.2.1.0/24" DNSSubnetPrefix="10.2.2.0/24" spokeVnetPrefix="10.3.0.0/16" workloadSubnetPrefix="10.3.2.0/24"
            
+           #Deploy the Azure storage ARM template, retrieving the storage account access key           
            $storageOutput = az deployment group create --resource-group $resourceGroupName --name $storageAccountName --template-file "$templatesLocation\Storage.json" --parameters storageAccountName=$storageAccountName
            $storageJSON = $storageOutput | ConvertFrom-Json
            $storageAccountAccessKey = $storageJSON.properties.outputs.storageAccountKey.value
@@ -52,7 +54,8 @@ Windows runner:
         scriptType: ps
         scriptLocation: inlineScript
         inlineScript: | 
-       
+        
+           #Deploy the servicebus ARM template       
            az deployment group create --resource-group network-eastus2-rg --name network-eastus2 --template-file pattern-functions-servicebus/components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.0.0.0/16" firewallSubnetPrefix="10.0.1.0/24" DNSSubnetPrefix="10.0.2.0/24" spokeVnetPrefix="10.1.0.0/16" workloadSubnetPrefix="10.1.2.0/24"
            az deployment group create --resource-group network-centralus-rg --name network-centralus --template-file pattern-functions-servicebus/components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.2.0.0/16" firewallSubnetPrefix="10.2.1.0/24" DNSSubnetPrefix="10.2.2.0/24" spokeVnetPrefix="10.3.0.0/16" workloadSubnetPrefix="10.3.2.0/24"
 
