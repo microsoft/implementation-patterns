@@ -11,7 +11,7 @@ By default, Azure Databricks is deployed as a managed service within a Virtual N
 
 VNET injection provides benefits like ability to deploy Databricks into an existing VNET to access your Onpremises data, Azure Paas resources etc in a private and secure way using Private endpoints or service endpoints, Use Custom DNS for Databricks, Send traffic through any Azure NVA for traffic inspection, Use your own NSG and UDR rules giving you more flexibility and control. 
 
-[db-vnet-arch](https://user-images.githubusercontent.com/22504173/91550801-1a0f5500-e8f7-11ea-812e-62f946129e2d.png)
+![image](https://user-images.githubusercontent.com/22504173/91550801-1a0f5500-e8f7-11ea-812e-62f946129e2d.png)
 
 Few considerations for VNET Injection are
 
