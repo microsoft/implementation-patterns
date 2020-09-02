@@ -14,9 +14,6 @@
       "publicSubnetName": {
         "value": "public-subnet"
       },
-      "location": {
-        "value": "[resourceGroup().location]"
-      },
       "vnetCidr": {
         "value": "10.179.0.0/16"
       },
