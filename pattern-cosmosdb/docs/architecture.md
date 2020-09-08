@@ -8,35 +8,6 @@ This guide assumes that you are deploying your solution into a networking enviro
 
 - Azure Cosmos DB can be deployed to one or more Azure Regions transparently. For reads, Azure Traffic manager handles routing requests to the requestor's nearest region.
 
-##### TODO: Check below to make certain it all appiles
-#### Deployment
-1. Create a resource group for each region's network resources
-	```bash
-	az group create --location eastus2 --name network-eastus2-rg  
-
-	az group create --location centralus --name network-centralus-rg
-	```
-2. Deploy the base VNets and Subnets to both regions ([ARM Template](../components/base-network/azuredeploy.json))
-	```bash
-	az deployment group create --resource-group network-eastus2-rg --name network-eastus2 --template-file ./../components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.0.0.0/16" firewallSubnetPrefix="10.0.1.0/24" DNSSubnetPrefix="10.0.2.0/24" spokeVnetPrefix="10.1.0.0/16" workloadSubnetPrefix="10.1.2.0/24"
-
-	az deployment group create --resource-group network-centralus-rg --name network-centralus --template-file ./../components/base-network/azuredeploy.json --parameters hubVnetPrefix="10.2.0.0/16" firewallSubnetPrefix="10.2.1.0/24" DNSSubnetPrefix="10.2.2.0/24" spokeVnetPrefix="10.3.0.0/16" workloadSubnetPrefix="10.3.2.0/24"
-	
-	```
-3. Deploy and configure Azure Firewall in both regions ([ARM Template](../components/firewall/azuredeploy.json))
-	```bash
-	az deployment group create --resource-group network-eastus2-rg --name firewall-eastus2 --template-file ./../components/firewall/azuredeploy.json --parameters  networkResourceGroup=network-eastus2-rg vnetName=hub-vnet subnetName=AzureFirewallSubnet
-	
-	az deployment group create --resource-group network-centralus-rg --name firewall-centralus --template-file ./../components/firewall/azuredeploy.json --parameters networkResourceGroup=network-centralus-rg vnetName=hub-vnet subnetName=AzureFirewallSubnet
-	```
-4. Deploy BIND DNS forwarders in both regions ([ARM Template](../components/bind-forwarder/azuredeploy.json))
-	```bash
-	az deployment group create --resource-group network-eastus2-rg --name bind-eastus2 --template-file ./../components/bind-forwarder/azuredeploy.json --parameters adminUsername=$userName sshKeyData=$sshKey vnetName=hub-vnet subnetName=DNSSubnet
-	
-	az deployment group create --resource-group network-centralus-rg --name bind-centralus --template-file ./../components/bind-forwarder/azuredeploy.json --parameters adminUsername=$userName sshKeyData=$sshKey vnetName=hub-vnet subnetName=DNSSubnet
-	```
-
-[top ->](#Architecture-and-Composable-Deployment-Code)    
 ### Azure Cosmo DB
 #### Requirements
 - Predictable / Consistent Performance
@@ -77,53 +48,58 @@ This reference implementation will deploy a SQL API Account. This is the most co
 1. Create resource group for our reference workload
 	```bash
 	# for East resources
-	az group create --location eastus2 --name refworkload-eastus2-rg
+	az group create --location eastus2 --name cosmos-db-rg
 	```
 2. Create Comos DB Account ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
 	```bash
-	# for East
-	az deployment group create --resource-group refworkload-eastus2-rg --name zone-eastus2 --template-file ./../components/cosmosaccount/cosmosaccount.json --parameters accountName=   
+	resourceGroupName='cosmos-db-rg'
+	accountName='mycosmosaccount' #needs to be lower case and less than 44 characters
+
+	az cosmosdb create \
+    		-n $accountName \
+    		-g $resourceGroupName \
+    		--default-consistency-level Session \   		
+   		--locations regionName='West US 2' failoverPriority=0 isZoneRedundant=False \
+		--locations regionName='East US 2' failoverPriority=1 isZoneRedundant=False
 	```
-3. Link the Private DNS Zones ([ARM Template](../components/service-bus/azuredeploy-zonelink.json))
-	```bash
-	# Link the East Zone to the East DNS Network
-	az deployment group create --resource-group refworkload-eastus2-rg --name link-east --template-file ./../components/service-bus/azuredeploy-zonelink.json --parameters privateDnsZoneName=privatelink.servicebus.windows.net vnetName=hub-vnet networkResourceGroup=network-eastus2-rg
 	
-	# Link the Central Zone to the Central DNS Network
-	az deployment group create --resource-group refworkload-centralus-rg --name link-east --template-file ./../components/service-bus/azuredeploy-zonelink.json --parameters privateDnsZoneName=privatelink.servicebus.windows.net vnetName=hub-vnet networkResourceGroup=network-centralus-rg
-	```
-3. Create the Namespaces ([ARM Template](../components/service-bus/azuredeploy-namespace.json))
+3. Add region ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
 	```bash
-	# East namespace
-	az deployment group create --resource-group refworkload-eastus2-rg --name namespace-eastus2 --template-file ./../components/service-bus/azuredeploy-namespace.json --parameters namespaceName=kskrefns1  
-
-	# Central namespace
-	az deployment group create --resource-group refworkload-centralus-rg --name namespace-centralus --template-file ./../components/service-bus/azuredeploy-namespace.json --parameters namespaceName=kskrefns2
+	az cosmosdb update --name $accountName --resource-group $resourceGroupName \
+		--locations regionName="East US 2" failoverPriority=0 isZoneRedundant=False \
+		--locations regionName="West US 2" failoverPriority=1 isZoneRedundant=False  \
+		--locations regionName="South Central US" failoverPriority=2 isZoneRedundant=False
 	```
-2. Enable Private Endpoints (two per region)([ARM Template](../components/service-bus/azuredeploy-privatelink.json))
+4. Enable multiple write regions([ARM Template](../components/cosmosaccount/cosmosaccount.json))
 	```bash
-	# Central to Central
-	az deployment group create --resource-group refworkload-centralus-rg --name plink-centralcentral --template-file ./../components/service-bus/azuredeploy-privatelink.json --parameters namespaceName=kskrefns2 privateEndpointName=centraltocentral privateDnsZoneName=privatelink.servicebus.windows.net vnetName=spoke-vnet subnetName=workload-subnet networkResourceGroup=network-centralus-rg namespaceResourceGroup=refworkload-centralus-rg primary=true  
-
-	# Central to East
-	az deployment group create --resource-group refworkload-centralus-rg --name plink-centraleast --template-file ./../components/service-bus/azuredeploy-privatelink.json --parameters namespaceName=kskrefns1 privateEndpointName=centraltoeast privateDnsZoneName=privatelink.servicebus.windows.net vnetName=spoke-vnet subnetName=workload-subnet networkResourceGroup=network-centralus-rg namespaceResourceGroup=refworkload-eastus2-rg primary=true  
-
-	# East to East
-	az deployment group create --resource-group refworkload-eastus2-rg --name plink-easteast --template-file ./../components/service-bus/azuredeploy-privatelink.json --parameters namespaceName=kskrefns1 privateEndpointName=easttoeast privateDnsZoneName=privatelink.servicebus.windows.net vnetName=spoke-vnet subnetName=workload-subnet networkResourceGroup=network-eastus2-rg namespaceResourceGroup=refworkload-eastus2-rg primary=true  
-
-	# East to Central
-	az deployment group create --resource-group refworkload-eastus2-rg --name plink-eastcentral --template-file ./../components/service-bus/azuredeploy-privatelink.json --parameters namespaceName=kskrefns2 privateEndpointName=easttocentral privateDnsZoneName=privatelink.servicebus.windows.net vnetName=spoke-vnet subnetName=workload-subnet networkResourceGroup=network-eastus2-rg namespaceResourceGroup=refworkload-centralus-rg primary=true
+	# Get the account resource id for an existing account
+	accountId=$(az cosmosdb show -g $resourceGroupName -n $accountName --query id -o tsv)
+	az cosmosdb update --ids $accountId --enable-multiple-write-locations true
 	```
-
-4. Establish Geo-Redundancy ([ARM Template](../components/service-bus/azuredeploy-georeplication.json))
+5. Set failover policy
 	```bash
-	az deployment group create --resource-group refworkload-eastus2-rg --name link-east --template-file ./../components/service-bus/azuredeploy-georeplication.json --parameters namespaceName=kskrefns1 pairedNamespaceResourceGroup=refworkload-centralus-rg pairedNamespaceName=kskrefns2 aliasName=kskrefns
-	```
-5. Create a test queue and topic in the primary namespace ([ARM Template](../components/service-bus/azuredeploy-queuestopics.json))
-	```bash
-	 az deployment group create --resource-group refworkload-eastus2-rg --name link-east --template-file ./../components/service-bus/azuredeploy-queuestopics.json --parameters namespaceName=kskrefns1 queueName=queue1 topicName=topic1
-	```
+	# Assume region order is initially 'West US 2'=0 'East US 2'=1 'South Central US'=2 for account
+	resourceGroupName='myResourceGroup'
+	accountName='mycosmosaccount'
 
+	# Get the account resource id for an existing account
+	accountId=$(az cosmosdb show -g $resourceGroupName -n $accountName --query id -o tsv)
+
+	# Make South Central US the next region to fail over to instead of East US 2
+	az cosmosdb failover-priority-change --ids $accountId \
+		--failover-policies 'West US 2=0' 'South Central US=1' 'East US 2=2'
+	```
+6. Enable Automaic Failover
+	```bash
+	# Enable automatic failover on an existing account
+	resourceGroupName='myResourceGroup'
+	accountName='mycosmosaccount'
+
+	# Get the account resource id for an existing account
+	accountId=$(az cosmosdb show -g $resourceGroupName -n $accountName --query id -o tsv)
+
+	az cosmosdb update --ids $accountId --enable-automatic-failover true
+	```
 [top ->](#Architecture-and-Composable-Deployment-Code)    
 
 ### Azure Functions
