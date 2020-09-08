@@ -102,13 +102,13 @@ This reference implementation will deploy a SQL API Account. This is the most co
 	```
 [top ->](#Architecture-and-Composable-Deployment-Code)    
 
-### Azure Functions
-#### Requirements
-- Support for Java (version 8)
-- Support for .NET Core C# (version 3.1)
-- Ability to run in multiple regions (East US 2 and Central US)
-- Connectivity to Azure and on-premises private networks
-- Dynamic scaling based on incoming event load / queue depth
+### Azure Cosmos DB database
+#### The following sections demonstrate how to manage the Azure Cosmos DB database, including:
+- Create a database
+- Create a database with shared throughput
+- Change database throughput
+- Manage locks on a database
+
 #### Implementation
 ![](images/networking-functions.png)  
 - A function app (1) will be deployed into each region for hosting our producer and consumer functions  
@@ -121,52 +121,7 @@ This reference implementation will deploy a SQL API Account. This is the most co
 
 - DNS settings on the Spoke VNet will be configured such that all DNS queries (4) originating from subnets in the VNet will be sent to our custom DNS forwarders.
 #### Deploy Infrastructure
-1. Deploy and Configure the Integration Subnet for Regional VNet Integration for both regions ([ARM Template](../components/integration-subnet/azuredeploy.json)) - *Requires Network Perms*
-	```bash
-	az deployment group create --resource-group network-eastus2-rg --name integration-eastus2 --template-file ./../components/integration-subnet/azuredeploy.json --parameters existingVnetName=spoke-vnet integrationSubnetPrefix="10.1.6.0/24"
-	
-	az deployment group create --resource-group network-centralus-rg --name integration-centralus --template-file ./../components/integration-subnet/azuredeploy.json --parameters existingVnetName=spoke-vnet integrationSubnetPrefix="10.3.6.0/24"
-	```
-2. Deploy App Service Plans ([ARM Template](../components/functions/azuredeploy-plan.json))
-	```bash
-	# East
-	az deployment group create --resource-group refworkload-eastus2-rg --name appplan-eastus2 --template-file ./../components/functions/azuredeploy-plan.json --parameters planName="kskrefeastus2"
-	
-	# Central
-	az deployment group create --resource-group refworkload-centralus-rg --name appplan-centralus --template-file ./../components/functions/azuredeploy-plan.json --parameters planName="kskrefcentralus"
-	```
-3. Deploy the Function App Storage Accounts ([ARM Template](../components/functions/azuredeploy-storage.json))
-	```bash
-	# East
-	az deployment group create --resource-group refworkload-eastus2-rg --name funcstor-eastus2 --template-file ./../components/functions/azuredeploy-storage.json --parameters storageAccountName="kskrefeastus2"
-	
-	# Central
-	az deployment group create --resource-group refworkload-centralus-rg --name funcstor-centralus --template-file ./../components/functions/azuredeploy-storage.json --parameters storageAccountName="kskrefcentralus"
-	```
-4. Deploy Function Apps ([ARM Template](../components/functions/azuredeploy-app.json)) TODO: Add Storage to template.
-	```bash
-	# East
-	az deployment group create --resource-group refworkload-eastus2-rg --name app-eastus2 --template-file ./../components/functions/azuredeploy-app.json --parameters planName="kskrefeastus2" appName="kskrefeastus2" vnetName=spoke-vnet subnetName=integration-subnet networkResourceGroup=network-eastus2-rg
-	
-	# Central
-	az deployment group create --resource-group refworkload-centralus-rg --name app-centralus --template-file ./../components/functions/azuredeploy-app.json --parameters planName="kskrefcentralus" appName="kskrefcentralus" vnetName=spoke-vnet subnetName=integration-subnet networkResourceGroup=network-centralus-rg
-	```
-5. Update Function App Config for routing and storage 
-	```bash
-	```
-#### Deploy Reference Function Code
-1. TBD
-	```bash
-	TBD
-	```
-2. TBD
-	```bash
-	TBD
-	```
-3. TBD
-	```bash
-	TBD
-	```
+1
 [top ->](#Architecture-and-Composable-Deployment-Code) 
 ---
 > [Back to TOC](../README.md#TOC) 
