@@ -57,7 +57,9 @@ This reference implementation will deploy a SQL API Account. This is the most co
 		--locations regionName='East US 2' failoverPriority=1 isZoneRedundant=False
 	```
 	Default consistency level
+	
 	![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/strong-consistency.gif)
+	
 	[Consistency Levels and Latency](..reliability.md)
 	
 3. Add region ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
