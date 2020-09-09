@@ -9,6 +9,7 @@ Azure Cosmos DB approaches data consistency as a spectrum of choices. This appro
 - Session
 - Constant Prefix
 - Eventual
+
 Each level provides availability and performance tradeoffs and is backed by comprehensive SLAs.
 
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/five-consistency-levels.png)
