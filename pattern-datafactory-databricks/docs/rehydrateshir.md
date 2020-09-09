@@ -1,6 +1,14 @@
 ## Rehydration\Maintenance of Self hosted Integration Runtime
 
-Often times there are situations where you want to do maintenance or patching on the Windows VM's which run Self hosted Integration runtime. In these situations, you may want to **take your node out of the node pool** for the self hosted integration runtime and then **add the node back** after all the rehydration has been complete or in some scenarios, add a new node altogether.
+Often times there are situations where you want to do maintenance or patching on the Windows VM's which run Self hosted Integration runtime. In these situations, you  can either **Stop the Service on the Self hosted IR Node** OR **Remove the node out of the node pool** for the self hosted integration runtime and then **add the node back** after all the rehydration has been complete or in some scenarios, add a new node altogether.
+
+
+
+### **Stop the Service on the Self hosted IR Node:**
+
+![image](https://user-images.githubusercontent.com/22504173/92654719-409d9a80-f2be-11ea-9458-43a6081e96f3.png)
+
+OR 
 
 ### **Removing a node from Integration Runtime can be done manually from Azure portal or using Powershell:**
 
@@ -14,7 +22,16 @@ Powershell:
 Remove-AzDataFactoryV2IntegrationRuntimeNode -DataFactoryName 'srgoadfv2devopsint' -IntegrationRuntimeName 'ofhwzklincclu' -NodeName 'Node_3' -ResourceGroupName 'TESTRG'
 ```
 
+
 Once the node is removed from the Node pool for Self hosted Integration runtime, you could do all the maintenance activities on the node like Windows updates etc before its added back. In some scenarios, you can decommission this VM and provision another VM which is ready to go.
+
+
+
+### **Start the Service on the Self hosted IR Node:**
+
+![image](https://user-images.githubusercontent.com/22504173/92655179-02ed4180-f2bf-11ea-8d38-7f76402429a8.png)
+
+
 
 ### **Adding the same node back to the node pool within the self hosted integration runtime**:
 
