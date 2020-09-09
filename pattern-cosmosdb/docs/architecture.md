@@ -60,22 +60,30 @@ This reference implementation will deploy a SQL API Account. This is the most co
 	
 	![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/strong-consistency.gif)
 	
+	
+3. Change consistency level ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
+	```bash
+	# update an existing account's default consistency
+	az cosmosdb update --name $accountName --resource-group $resourceGroupName --default-consistency-level Strong
+	```
 	[Consistency Levels and Latency](../docs/reliability.md)
 	
-3. Add region ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
+	!()[https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/five-consistency-levels.png)
+
+4. Add region ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
 	```bash
 	az cosmosdb update --name $accountName --resource-group $resourceGroupName \
 		--locations regionName="East US 2" failoverPriority=0 isZoneRedundant=False \
 		--locations regionName="West US 2" failoverPriority=1 isZoneRedundant=False  \
 		--locations regionName="South Central US" failoverPriority=2 isZoneRedundant=False
 	```
-4. Enable multiple write regions([ARM Template](../components/cosmosaccount/cosmosaccount.json))
+5. Enable multiple write regions([ARM Template](../components/cosmosaccount/cosmosaccount.json))
 	```bash
 	# Get the account resource id for an existing account
 	accountId=$(az cosmosdb show -g $resourceGroupName -n $accountName --query id -o tsv)
 	az cosmosdb update --ids $accountId --enable-multiple-write-locations true
 	```
-5. Set failover policy
+6. Set failover policy
 	```bash
 	# Assume region order is initially 'West US 2'=0 'East US 2'=1 'South Central US'=2 for account
 	resourceGroupName='myResourceGroup'
@@ -88,7 +96,7 @@ This reference implementation will deploy a SQL API Account. This is the most co
 	az cosmosdb failover-priority-change --ids $accountId \
 		--failover-policies 'West US 2=0' 'South Central US=1' 'East US 2=2'
 	```
-6. Enable Automaic Failover
+7. Enable Automaic Failover
 	```bash
 	# Enable automatic failover on an existing account
 	resourceGroupName='myResourceGroup'
