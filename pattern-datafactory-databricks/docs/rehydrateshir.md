@@ -1,6 +1,6 @@
 ## Rehydration\Maintenance of Self hosted Integration Runtime
 
-Often times there are situations where you want to do maintenance or patching on the Windows VM's which run Self hosted Integration runtime. In these situations, you  can either **Stop the Service on the Self hosted IR Node** OR **Remove the node out of the node pool** for the self hosted integration runtime and then **add the node back** after all the rehydration has been complete or in some scenarios, add a new node altogether.
+Often times there are situations where you want to do maintenance or patching on the Windows VM's which run Self hosted Integration runtime. In these situations, you  can either **Stop the Service on the Self hosted IR Node** OR **Remove the node out of the node pool** for the self hosted integration runtime and then **start the service** or **add the node back** after all the node rehydration has been completed or in some scenarios, add a new node altogether.
 
 
 
