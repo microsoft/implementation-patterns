@@ -1,51 +1,131 @@
 #!/bin/bash
 
 # Params
-resourceGroup1Name="ServiceBusDem-EastUS2"
-resourceGroup2Name="ServiceBusDem-CentralUS"
+infix="ipfsb"
+
+subscription_id=""
 
 resourceGroup1Location="eastus2"
 resourceGroup2Location="centralus"
 
-namespace1Name="namespace1ksk"
-namespace2Name="namespace2ksk"
+resourceGroup1NameNet="$infix-net-$resourceGroup1Location"
+resourceGroup2NameNet="$infix-net-$resourceGroup2Location"
 
-aliasName="namespacekskalias"
+resourceGroup1NameSB="$infix-sb-$resourceGroup1Location"
+resourceGroup2NameSB="$infix-sb-$resourceGroup2Location"
 
-eastNetworkResourceGroupName="Network-RG-EastUS2"
-centralNetworkResourceGroupName="Network-RG-CentralUS"
+namespace1Name="$infix""namespace1"
+namespace2Name="$infix""namespace2"
+
+aliasName="$infix""namespacealias"
+
+privateDnsZoneName="privatelink.servicebus.windows.net"
+
+privateEndpointNameR1NS1="pepr1ns1"
+privateEndpointNameR1NS2="pepr1ns2"
+privateEndpointNameR2NS1="pepr2ns1"
+privateEndpointNameR2NS2="pepr2ns2"
+
+spokeVnetName="spoke-vnet"
+workloadSubnetName="workload-subnet"
+
+templateFileNamespace="azuredeploy-namespace.json"
+templateFileQueuesTopics="azuredeploy-queuestopics.json"
+templateFileGeoReplication="azuredeploy-georeplication.json"
+templateFilePrivateZone="azuredeploy-privatezone.json"
+templateFilePrivateLink="azuredeploy-privatelink.json"
+templateFileZoneLink="azuredeploy-zonelink.json"
 
 # Create RGs
-az group create --name $resourceGroup1Name --location $resourceGroup1Location
-az group create --name $resourceGroup2Name --location $resourceGroup2Location
+az group create --subscription "$subscription_id" --name "$resourceGroup1NameSB" --location "$resourceGroup1Location"
+az group create --subscription "$subscription_id" --name "$resourceGroup2NameSB" --location "$resourceGroup2Location"
 
 # Deploy Primary Namespace
-az deployment group create --name primaryns --resource-group $resourceGroup1Name --template-file azuredeploy-namespace.json --parameters namespaceName=$namespace1Name
+az deployment group create --subscription "$subscription_id" --name "ns1" --verbose \
+	--resource-group "$resourceGroup1NameSB" --template-file "$templateFileNamespace" --parameters namespaceName="$namespace1Name"
+
 # Create Topics and Queues
-az deployment group create --name queuestopics --resource-group $resourceGroup1Name --template-file azuredeploy-queuestopics.json --parameters namespaceName=$namespace1Name
+az deployment group create --subscription "$subscription_id" --name "ns1qt" --verbose \
+	--resource-group "$resourceGroup1NameSB" --template-file "$templateFileQueuesTopics" --parameters namespaceName="$namespace1Name"
 
 # Deploy Secondary Namespace
 # No entities on this namespace as they will come over with replication
-az deployment group create --name secondaryns --resource-group $resourceGroup2Name --template-file azuredeploy-namespace.json --parameters namespaceName=$namespace2Name
+az deployment group create --subscription "$subscription_id" --name "ns2" --verbose \
+	--resource-group "$resourceGroup2NameSB" --template-file "$templateFileNamespace" --parameters namespaceName="$namespace2Name"
 
 # Set up Geo-Replication
-az deployment group create --name georep --resource-group $resourceGroup1Name --template-file azuredeploy-georeplication.json --parameters namespaceName=$namespace1Name pairedNamespaceName=$namespace2Name pairedNamespaceResourceGroup=$resourceGroup2Name aliasName=$aliasName
+az deployment group create --subscription "$subscription_id" --name "georep" --verbose \
+	--resource-group "$resourceGroup1NameSB" --template-file "$templateFileGeoReplication" --parameters \
+	namespaceName="$namespace1Name" pairedNamespaceName="$namespace2Name" pairedNamespaceResourceGroup="$resourceGroup2NameSB" aliasName="$aliasName"
 
 # Enable Private Endpoints, Private Zones
-# Create East US 2 Zone
-az deployment group create --name eastuszone --resource-group $resourceGroup1Name --template-file azuredeploy-privatezone.json --parameters privateDnsZoneName=privatelink.servicebus.windows.net
-# Create Central US Zone
-az deployment group create --name centraluszone --resource-group $resourceGroup2Name --template-file azuredeploy-privatezone.json --parameters privateDnsZoneName=privatelink.servicebus.windows.net
+# Create region 1
+az deployment group create --subscription "$subscription_id" --name "pz1" --verbose \
+	--resource-group "$resourceGroup1NameSB" --template-file "$templateFilePrivateZone" \
+	--parameters privateDnsZoneName="$privateDnsZoneName"
 
-# Endpoint in Central pointing to Central Namespace
-az deployment group create --name centralusep1 --resource-group $resourceGroup2Name --template-file azuredeploy-privatelink.json --parameters namespaceName=$namespace2Name privateEndpointName=CentraltoCentral privateDnsZoneName=privatelink.servicebus.windows.net vnetName=spoke-vnet subnetName=workload-subnet networkResourceGroup=$centralNetworkResourceGroupName namespaceResourceGroup=$resourceGroup2Name primary=false
-# Endpoint in Central pointing to East Namespace
-az deployment group create --name centralusep2 --resource-group $resourceGroup2Name --template-file azuredeploy-privatelink.json --parameters namespaceName=$namespace1Name privateEndpointName=CentraltoEast privateDnsZoneName=privatelink.servicebus.windows.net vnetName=spoke-vnet subnetName=workload-subnet networkResourceGroup=$centralNetworkResourceGroupName namespaceResourceGroup=$resourceGroup1Name primary=false
-# Endpoint in East pointing to East Namespace
-az deployment group create --name eastusep1 --resource-group $resourceGroup1Name --template-file azuredeploy-privatelink.json --parameters namespaceName=$namespace1Name privateEndpointName=EasttoEast privateDnsZoneName=privatelink.servicebus.windows.net vnetName=spoke-vnet subnetName=workload-subnet networkResourceGroup=$eastNetworkResourceGroupName  namespaceResourceGroup=$resourceGroup1Name primary=true
-# Endpoint in East pointing to Central Namespace
-az deployment group create --name eastusep2 --resource-group $resourceGroup1Name --template-file azuredeploy-privatelink.json --parameters namespaceName=$namespace2Name privateEndpointName=EasttoCentral privateDnsZoneName=privatelink.servicebus.windows.net vnetName=spoke-vnet subnetName=workload-subnet networkResourceGroup=$eastNetworkResourceGroupName   namespaceResourceGroup=$resourceGroup2Name primary=true
+# Create region 2
+az deployment group create --subscription "$subscription_id" --name "pz2" --verbose \
+	--resource-group "$resourceGroup2NameSB" --template-file "$templateFilePrivateZone" \
+	--parameters privateDnsZoneName="$privateDnsZoneName"
+
+# Endpoint in region 2 pointing to Namespace 2
+az deployment group create --subscription "$subscription_id" --name "epr2ns2" --verbose \
+	--resource-group "$resourceGroup2NameSB" --template-file "$templateFilePrivateLink" --parameters \
+	namespaceName="$namespace2Name" \
+	privateEndpointName="$privateEndpointNameR2NS2" \
+	privateDnsZoneName="$privateDnsZoneName" \
+	vnetName="$spokeVnetName" \
+	subnetName="$workloadSubnetName" \
+	networkResourceGroup="$resourceGroup2NameNet" \
+	namespaceResourceGroup="$resourceGroup2NameSB" \
+	primary=false
+
+# Endpoint in region 2 pointing to Namespace 1
+az deployment group create --subscription "$subscription_id" --name "epr2ns1" --verbose \
+	--resource-group "$resourceGroup2NameSB" --template-file "$templateFilePrivateLink" --parameters \
+	namespaceName="$namespace1Name" \
+	privateEndpointName="$privateEndpointNameR2NS1" \
+	privateDnsZoneName="$privateDnsZoneName" \
+	vnetName="$spokeVnetName" \
+	subnetName="$workloadSubnetName" \
+	networkResourceGroup="$resourceGroup2NameNet" \
+	namespaceResourceGroup="$resourceGroup1NameSB" \
+	primary=false
+
+# Endpoint in region 1 pointing to Namespace 1
+az deployment group create --subscription "$subscription_id" --name "epr1ns1" --verbose \
+	--resource-group "$resourceGroup1NameSB" --template-file "$templateFilePrivateLink" --parameters \
+	namespaceName="$namespace1Name" \
+	privateEndpointName="$privateEndpointNameR1NS1" \
+	privateDnsZoneName="$privateDnsZoneName" \
+	vnetName="$spokeVnetName" \
+	subnetName="$workloadSubnetName" \
+	networkResourceGroup="$resourceGroup1NameNet" \
+	namespaceResourceGroup="$resourceGroup1NameSB" \
+	primary=true
+
+# Endpoint in region 1 pointing to Namespace 2
+az deployment group create --subscription "$subscription_id" --name "epr1ns2" --verbose \
+	--resource-group "$resourceGroup1NameSB" --template-file "$templateFilePrivateLink" --parameters \
+	namespaceName="$namespace2Name" \
+	privateEndpointName="$privateEndpointNameR1NS2" \
+	privateDnsZoneName="$privateDnsZoneName" \
+	vnetName="$spokeVnetName" \
+	subnetName="$workloadSubnetName" \
+	networkResourceGroup="$resourceGroup1NameNet"  \
+	namespaceResourceGroup="$resourceGroup2NameSB" \
+	primary=true
 
 # Link Zones to VNets
-az deployment group create --name eastuszonelink --resource-group $resourceGroup1Name --template-file azuredeploy-zonelink.json --parameters privateDnsZoneName=privatelink.servicebus.windows.net vnetName=spoke-vnet networkResourceGroup=$eastNetworkResourceGroupName
-az deployment group create --name centraluszonelink --resource-group $resourceGroup2Name --template-file azuredeploy-zonelink.json --parameters privateDnsZoneName=privatelink.servicebus.windows.net vnetName=spoke-vnet networkResourceGroup=$centralNetworkResourceGroupName
+az deployment group create --subscription "$subscription_id" --name "zv1" --verbose \
+	--resource-group "$resourceGroup1NameSB" --template-file "$templateFileZoneLink" --parameters \
+	privateDnsZoneName="$privateDnsZoneName" \
+	vnetName="$spokeVnetName" \
+	networkResourceGroup=$resourceGroup1NameNet
+
+az deployment group create --subscription "$subscription_id" --name "zv2" --verbose \
+	--resource-group "$resourceGroup2NameSB" --template-file "$templateFileZoneLink" --parameters \
+	privateDnsZoneName="$privateDnsZoneName" \
+	vnetName="$spokeVnetName" \
+	networkResourceGroup="$resourceGroup2NameNet"
