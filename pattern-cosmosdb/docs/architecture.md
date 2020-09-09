@@ -56,9 +56,9 @@ This reference implementation will deploy a SQL API Account. This is the most co
    		--locations regionName='West US 2' failoverPriority=0 isZoneRedundant=False \
 		--locations regionName='East US 2' failoverPriority=1 isZoneRedundant=False
 	```
-	Default consistency level
+	Session consistency level
 	
-	![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/strong-consistency.gif)
+	![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/session-consistency.gif)
 	
 	
 3. Change consistency level ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
@@ -67,6 +67,10 @@ This reference implementation will deploy a SQL API Account. This is the most co
 	az cosmosdb update --name $accountName --resource-group $resourceGroupName --default-consistency-level Strong
 	```
 	[Consistency Levels and Latency](../docs/reliability.md)
+	
+	The new consistency level is Strong Consistency
+	
+	![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/strong-consistency.gif)
 	
 	![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/five-consistency-levels.png)
 
