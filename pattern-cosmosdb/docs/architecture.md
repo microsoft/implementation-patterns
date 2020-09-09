@@ -68,7 +68,7 @@ This reference implementation will deploy a SQL API Account. This is the most co
 	```
 	[Consistency Levels and Latency](../docs/reliability.md)
 	
-	!()[https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/five-consistency-levels.png)
+	![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/five-consistency-levels.png)
 
 4. Add region ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
 	```bash
