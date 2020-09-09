@@ -15,8 +15,7 @@ This guide assumes that you are deploying your solution into a networking enviro
 - No accessibility from public networks
 - Cross Region Replication
 #### Implementation
-##### TODO: 2 Azure Region Image (It's confusing to talk about 2 adn show 3)
-![](https://www.gotcosmos.com/images/architecture/web.png?v=v5wUB5Zw9Tq66qcMudl0AA6uVu5QImOsEjuUxY1ULwU)  
+
 The base-level resource for Azure Cosmos DB is an Azure Cosmos DB Account. Accounts contain the entities that we will be working with ( Databases, Containers, Collestions, Documents ).
 
 ![](https://azurecomcdn.azureedge.net/mediahandler/acomblog/media/Default/blog/8d036cf9-df49-45d3-b540-00f18c4f5c31.png)
@@ -25,23 +24,18 @@ When creating an account in a single region, there are relatively few decisions 
 
 This reference implementation will deploy a SQL API Account. This is the most commonly deployed API and is recommended for most production workloads due to it's flexability and ease of development.    
   
-- Create an account in one Azure Region (1)  
+- Create an account in 2 Azure Regions (1)  
 
-
-- We'll configure geo-redundancy (2) with the another Azure Region by adding it to the Azure Cosmos DB Account. This replicaiton is at the Azure Comos DB Account level, not at the individual database/container level.
+- Configure geo-redundancy (2) with the another Azure Region by adding it to the Azure Cosmos DB Account. This replicaiton is at the Azure Comos DB Account level, not at the individual database/container level.
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/how-to-manage-database-account/replicate-data-globally.png)
 
-- The account will be set up in the same region as the Resource Group it is in. 
+- The account should be set up in the same region as the Resource Group it is in. 
 
-- Geo Redundancy will be enabled by deploying to specific regions
+- Geo Redundancy can be enabled by deploying to multiple regions
 
 - RUs at account or Datbase Level?
 
 - Default Consistency level
-
-![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/strong-consistency.gif)
-
-- Key Vault
 
 ##### TODO: Make this Cosmos Specific
 #### Deployment
@@ -50,7 +44,7 @@ This reference implementation will deploy a SQL API Account. This is the most co
 	# for East resources
 	az group create --location eastus2 --name cosmos-db-rg
 	```
-2. Create Comos DB Account ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
+2. Create Comos DB Account with default consistency level ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
 	```bash
 	resourceGroupName='cosmos-db-rg'
 	accountName='mycosmosaccount' #needs to be lower case and less than 44 characters
@@ -62,6 +56,9 @@ This reference implementation will deploy a SQL API Account. This is the most co
    		--locations regionName='West US 2' failoverPriority=0 isZoneRedundant=False \
 		--locations regionName='East US 2' failoverPriority=1 isZoneRedundant=False
 	```
+	Default consistency level
+	![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/strong-consistency.gif)
+	[Consistency Levels and Latency](..reliability.md)
 	
 3. Add region ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
 	```bash
