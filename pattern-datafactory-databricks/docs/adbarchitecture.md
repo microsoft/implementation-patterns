@@ -21,6 +21,9 @@ Few considerations for VNET Injection are
 
 - A CIDR block between /16 - /24 for the virtual network and a CIDR block up to /26 for the private and public subnets.
 
+Please refer to this link for detailed implementation of Azure Databricks with VNET injection
+https://cloudsafari.ca/2020/09/data-platform/Azure-Databricks-VNET-Integration
+
   
 ## **Azure Databricks Workspace Considerations:** 
 
