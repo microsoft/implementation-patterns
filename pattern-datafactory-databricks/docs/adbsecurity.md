@@ -36,8 +36,6 @@ Azure Databricks supports SCIM, an open standard that allows you to automate use
 
   
 
-  
-
   ## Enable Azure AD Credential Passthrough
 
   When enabled, authentication automatically takes place in Azure Data Lake Storage (ADLS Gen2) from Azure Databricks clusters using the same Azure Active Directory (Azure AD) identity that one uses to log into Azure Databricks. Commands running on a configured cluster will be able to read and write data in ADLS without needing to configure service principal credentials. Any ACLs applied at the folder or file level in ADLS are enforced based on the user's identity. ADLS Gen2 support hierarchical namespaces which can provide granular permissions at a folder or file level using ACL's. This will reduce another layer of permissioning needed to grant to databricks users. This currently works for SparkSQL and Python workloads only.
@@ -92,9 +90,11 @@ Azure Databricks supports SCIM, an open standard that allows you to automate use
 
   ***This recommendation doesn't apply to Blob or ADLS folders explicitly mounted as DBFS by the end user***
 
-  
 
-  
+
+  ## Configure Customer-managed keys on Notebooks
+You can now encrypt Notebooks within your workspace with a Customer Managed Key in your Azure Key vault. You enable the key for Azure Databricks notebook encryption and open a support ticket to deliver the resource identifier of the key who will then encrypt the encrypted key as documented in this link https://docs.microsoft.com/en-us/azure/databricks/security/keys/customer-managed-key-notebook
+  ![image](https://user-images.githubusercontent.com/22504173/92971967-69a16500-f44f-11ea-9ca8-1ce3d1c5dcf7.png)
 
   ## Configure Customer-managed keys on default (root) DBFS
 
