@@ -16,7 +16,7 @@ Here are some of the considerations within Azure Databricks that deals with all 
 
 ## **Regulate user provisioning**
 
-Azure Databricks provides enterprise-grade Azure security, including Azure Active Directory integration, role-based access controls with Single sign on (SSO) capabilities
+Azure Databricks provides enterprise-grade Azure security, including Azure Active Directory integration, role-based access controls with Single sign on (SSO) capabilities. It allows for Multi Factory Authentication and Azure AD conditional access.
 
 - Initial Account admins: Users that have Contributor or Owner role on the Azure Databricks workspace in the Azure Portal can sign in as account admins by clicking Launch Workspace. Please make sure that you have only the right users\groups part of the IAM for the workspace resource. They will automatically get Admin access within Databricks workspace as shown below
 
@@ -86,6 +86,19 @@ Azure Databricks provides enterprise-grade Azure security, including Azure Activ
   2. One can't restrict access to this default folder and its contents.
 
   ***This recommendation doesn't apply to Blob or ADLS folders explicitly mounted as DBFS by the end user***
+
+  
+
+  
+
+  ## Configure Customer-managed keys on default (root) DBFS
+
+  Please encrypt the default root DBFS storage account which is present in the locked storage encrypted with a Customer Managed Key (CMK) from Azure Key Vault. By default, Its managed by a Microsoft managed key but changing it to a CMK with proper key rotation is the best way to secure the root DBFS. This is currently in preview and your subscription needs to be whitelisted for this service. Create a Managed Identity on the DBFS root and then add it to the Access policy on the Key vault.
+
+  ![image](https://user-images.githubusercontent.com/22504173/92959241-74e99600-f439-11ea-865b-84d528ff6571.png)
+  ![image](https://user-images.githubusercontent.com/22504173/92959255-79ae4a00-f439-11ea-86a3-9ef6efe4bd9c.png)
+
+  
 
   
 
