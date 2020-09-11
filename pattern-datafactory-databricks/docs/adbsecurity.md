@@ -105,7 +105,20 @@ Azure Databricks supports SCIM, an open standard that allows you to automate use
 
  Apart from the Root DBFS, Any Blob storage or ADLS Gen2 mounted to the cluster needs to have Encryption with CMK and ACL's applied at folder and file level for security purposes.
 
+  ## Configure Audit logs via Diagnostic settings in Azure Monitor
+  Databricks provides comprehensive end-to-end audit logs of activities performed by Databricks users, allowing your enterprise to monitor detailed Databricks usage patterns. This is available via seamless integration with Azure Monitor.
   
+Services / Entities included are:
+Accounts
+Clusters
+Notebooks
+DBFS
+Workspace
+Jobs
+Secrets
+SSH
+SQL Permissions
+
 
   ## **Enable Access controls**
 
