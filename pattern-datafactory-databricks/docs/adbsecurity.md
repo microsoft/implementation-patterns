@@ -109,15 +109,15 @@ Azure Databricks supports SCIM, an open standard that allows you to automate use
   Databricks provides comprehensive end-to-end audit logs of activities performed by Databricks users, allowing your enterprise to monitor detailed Databricks usage patterns. This is available via seamless integration with Azure Monitor.
   
 Services / Entities included are:
-Accounts
-Clusters
-Notebooks
-DBFS
-Workspace
-Jobs
-Secrets
-SSH
-SQL Permissions
+      Accounts
+      Clusters
+      Notebooks
+      DBFS
+      Workspace
+      Jobs
+      Secrets
+      SSH
+      SQL Permissions
 
 
   ## **Enable Access controls**
