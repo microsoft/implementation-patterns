@@ -98,7 +98,7 @@ Azure Databricks provides enterprise-grade Azure security, including Azure Activ
   ![image](https://user-images.githubusercontent.com/22504173/92959241-74e99600-f439-11ea-865b-84d528ff6571.png)
   ![image](https://user-images.githubusercontent.com/22504173/92959255-79ae4a00-f439-11ea-86a3-9ef6efe4bd9c.png)
 
-  
+ Apart from the Root DBFS, Any Blob storage or ADLS Gen2 mounted to the cluster needs to have Encryption with CMK and ACL's applied at folder and file level for security purposes.
 
   
 
