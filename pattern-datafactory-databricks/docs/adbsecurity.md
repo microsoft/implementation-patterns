@@ -12,6 +12,8 @@ Here are some of the considerations within Azure Databricks that deals with all 
 
 - Make sure that you have your own custom DNS assigned to the VNET
 
+- Enable IP Access lists for your workspace https://docs.microsoft.com/en-us/azure/databricks/security/network/ip-access-list
+
   
 
 ## **Regulate user provisioning**
