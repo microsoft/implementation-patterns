@@ -1,4 +1,3 @@
-
 #  Azure Databricks Security Considerations
 
 Here are some of the considerations within Azure Databricks that deals with all the security related nuances
@@ -15,7 +14,7 @@ Here are some of the considerations within Azure Databricks that deals with all 
 
   
 
-## **Authentication and user provisioning**
+## **Regulate user provisioning**
 
 Azure Databricks provides enterprise-grade Azure security, including Azure Active Directory integration, role-based access controls with Single sign on (SSO) capabilities
 
@@ -32,7 +31,65 @@ Azure Databricks provides enterprise-grade Azure security, including Azure Activ
 
   
 
-  ## **Access controls**
+  
+
+  ## Enable Azure AD Credential Passthrough
+
+  When enabled, authentication automatically takes place in Azure Data Lake Storage (ADLS Gen2) from Azure Databricks clusters using the same Azure Active Directory (Azure AD) identity that one uses to log into Azure Databricks. Commands running on a configured cluster will be able to read and write data in ADLS without needing to configure service principal credentials. Any ACLs applied at the folder or file level in ADLS are enforced based on the user's identity. ADLS Gen2 support hierarchical namespaces which can provide granular permissions at a folder or file level using ACL's. This will reduce another layer of permissioning needed to grant to databricks users. This currently works for SparkSQL and Python workloads only.
+
+  ![image](https://user-images.githubusercontent.com/22504173/92925511-98e0b380-f408-11ea-9711-6fba5b78c805.png)
+
+  For Standard clusters, You need to provide the user name which will be used to access ADLS Gen2. For High concurrency cluster, you just need to check the box to enable credential passthrough. 
+
+  ADLS Passthrough is configured when you create a cluster in the Azure Databricks workspace. ADLS Gen1 requires Databricks Runtime 5.1+. ADLS Gen2 requires 5.3+.
+
+  
+
+  ## Always Hide secrets in a Key vault
+
+  Please make sure not to expose any sensitive information like Connection strings or passwords in Clear text. This can be a security violation for many compliance scenarios. You should always use a vault to securely store and access them. You can either use Data bricks internal Key Vault for this purpose or use Azure's Key Vault.
+
+  If using Azure Key Vault, create separate AKV-backed secret scopes and corresponding AKVs to store credentials pertaining to different data stores. This will help prevent users from accessing credentials that they might not have access to. Since access controls are applicable to the entire secret scope, users with access to the scope will see all secrets for the AKV associated with that scope.
+
+  For Azure Key Vault backed secret scope
+
+  You need to access the following URL  https://<databricks workspace URL>#secrets/createScope
+
+  ![image](https://user-images.githubusercontent.com/22504173/92942989-33002600-f420-11ea-8131-13d568efb3de.png)
+
+  
+
+  Running the below command within the notebook will be able to retrieve the keys from AKV during execution
+
+  ```bash
+  dbutils.secrets.get(scope = "akvtest", key = "MySecret")
+  ```
+
+  The following command in Databricks CLI will allow you to see all the secret scopes associated with your workspace
+
+  ```bash
+  C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python37_64>databricks secrets list-scopes
+  Scope    Backend         KeyVault URL
+  -------  --------------  ---------------------------------
+  akvtest  AZURE_KEYVAULT  https://srgo****.vault.azure.net/
+  ```
+
+  
+
+  
+
+  ## Do not store anything on the Default DBFS location
+
+  This recommendation is driven by security and data availability concerns. Every Workspace comes with a default DBFS, primarily designed to store libraries and other system-level configuration artifacts such as Init scripts. You should not store any production data in it, because:
+
+  1. The lifecycle of default DBFS is tied to the Workspace. Deleting the workspace will also delete the default DBFS and permanently remove its contentents.
+  2. One can't restrict access to this default folder and its contents.
+
+  ***This recommendation doesn't apply to Blob or ADLS folders explicitly mounted as DBFS by the end user***
+
+  
+
+  ## **Enable Access controls**
 
   By default, all users can create and modify clusters unless an administrator enables cluster access control. Admins need to enable **Cluster access control** as part of the Admin console. This will allow the admins to now give fine grain access to users on performing certain operations. Example Attach to cluster, edit cluster etc. Table, cluster, pool, job, and workspace access control are available only in the [Azure Databricks Premium Plan](https://databricks.com/product/azure-pricing). You can then enable **No permissions, Can attach to, Can Restart or Can Manage** to your individual users
 
@@ -47,6 +104,7 @@ Azure Databricks provides enterprise-grade Azure security, including Azure Activ
 ![image](https://user-images.githubusercontent.com/22504173/92913462-c4f43880-f3f8-11ea-9e97-eafd073fe456.png)
 
 
+
 - Similarly we need to enable **Jobs access control** to provide fine grain access control to users to manage Jobs. By default, all users can create and modify jobs unless an administrator enables jobs access control. With jobs access control, individual permissions determine a user’s abilities.
 
   ![image](https://user-images.githubusercontent.com/22504173/92915285-69c34580-f3fa-11ea-9991-f97fd64aaf7c.png)
@@ -54,3 +112,6 @@ Azure Databricks provides enterprise-grade Azure security, including Azure Activ
 - Table access control (table ACLs) lets you programmatically grant and revoke access to your data from SQL, Python, and PySpark. Databricks supports fine-grained access control via the Spark SQL interface. By default, all users have access to all data stored in a cluster’s managed tables unless an administrator enables table access control for that cluster. Once table access control is enabled for a cluster, users can set permissions for data objects on that c luster. Once you enable Table access control at the cluster level, you should be able to set data object privileges accordingly similar to any RDBMS permissions. Example DENY SELECT ON <table-name> TO `<user>@<domain-name>`. Its only available on a High Concurrency cluster.
 
   ![image](https://user-images.githubusercontent.com/22504173/92916985-09cd9e80-f3fc-11ea-92e2-a80a7976505d.png)
+
+
+
