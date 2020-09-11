@@ -25,6 +25,9 @@ Azure Databricks provides enterprise-grade Azure security, including Azure Activ
 
 - Azure Databricks admins are members of the `admin` group. To give a user admin privileges, add them to the `admin` group using the [Admin Console](https://docs.microsoft.com/en-us/azure/databricks/administration-guide/admin-console), the [Groups API](https://docs.microsoft.com/en-us/azure/databricks/dev-tools/api/latest/groups), the [SCIM API](https://docs.microsoft.com/en-us/azure/databricks/dev-tools/api/latest/scim/), or a [SCIM-enabled Identity Provider](https://docs.microsoft.com/en-us/azure/databricks/administration-guide/users-groups/scim/).
 
+Azure Databricks supports SCIM, an open standard that allows you to automate user/group provisioning via a gallery application. SCIM lets you use Azure Active Directory to create users in Azure Databricks and give them the proper level of access, as well as remove access for users (deprovision them) when they leave the organization or no longer need access to Azure Databricks.
+
+
 - You should be manually able to add other users as Admins by going to the "Admin Console" within the workspace and adding the email id's of the users manually. You should be able to grant them **Allow Cluster creation** and **Admin** rights on the workspace. Please make sure that you are granting these permissions only to your super users as these are elevated privileges
 
   ![image](https://user-images.githubusercontent.com/22504173/92907414-4c3ead80-f3f3-11ea-86f0-e99cce3fb572.png)
