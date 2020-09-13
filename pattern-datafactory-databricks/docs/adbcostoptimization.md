@@ -1,0 +1,1 @@
+- Leverage Azure Databricks cluster policies where possible to regulate the cluster configurations for all the clusters running within the workspace
