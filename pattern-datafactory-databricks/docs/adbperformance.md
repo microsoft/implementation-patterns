@@ -1,1 +1,13 @@
+#  Azure Databricks Cluster types and modes
+
+Pick the Right Databricks Cluster Type and Mode for your workload.
+
+![image](https://user-images.githubusercontent.com/22504173/93029745-8d011700-f5eb-11ea-83db-54de6ffc04da.png)
+![image](https://user-images.githubusercontent.com/22504173/93029756-a30ed780-f5eb-11ea-9403-587b7b942185.png)
+
+Clusters are the set of Azure Linux VMs that host the Spark Worker and Driver Nodes, Spark application code (i.e. Jobs) runs on the provisioned clusters. Clusters are launched in your subscription but are managed through the Azure Databricks portal. Databricks clusters are divided along the notions of “type”, and “mode.” There are two ***types*** of ADB clusters, according to how they are created. Clusters created using UI and [Clusters API](https://docs.databricks.com/api/latest/clusters.html) are called Interactive Clusters, whereas those created using [Jobs API](https://docs.databricks.com/api/latest/jobs.html) are called Jobs Clusters.Interactive clusters are mainly for exploratory reasons where users and data scientists wants to explore the data and build ETL pipelines etc. Job clusters on the other hand is to build a cluster specific for a ETL job which can be scheduled on demand. Each cluster can be either Standard or High Concurrency mode. 
+
+High concurrency is designed for Multi users and doesnt support Scala. It has code which guarantees Fault Isolation, Low latency, Table level security, Query preemption, and AAD PassThrough which is not available on Standard clusters. You can enable or disable preemption on a High concurrency cluster by adjusting the setting **spark.databricks.preemption**. Creating Interactive clusters with High Concurrency helps is saving costs as this can be used as a shared explorative cluster, Optimized for latency among multiple users in a fair share manner, Query watchdog feature in place to put any rogue user queries at check. 
+
+Standard Clusters are suitable for single user scenarios  which require more throughput and engine is optimized in delivering that value preventing any noisy neighbors scenarios. So if you have a scheduled pipeline which needs to run daily without multi user interaction then a Standard Job cluster would make more sense. It is more secure as yours is the only code which is running. Its also cheaper as it uses lower DBUs (Databricks Units) as its an ephemeral cluster. You get better throughput as cluster resources are only dedicated to one job, making the job finish faster while running in a shared environment. There is a cost involved with the cluster start times ~7 mins for short duration jobs. Instance pools is a feature which will address this issue.
 
