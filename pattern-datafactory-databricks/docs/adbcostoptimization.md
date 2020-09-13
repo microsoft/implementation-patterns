@@ -1,2 +1,3 @@
 - Leverage Azure Databricks cluster policies where possible to regulate the cluster configurations for all the clusters running within the workspace
 - Use cluster tags for project / team based chargeback.
+- Configure Autoscale and Auto terminate settings on the clusters to attain scalability and reduce costs
