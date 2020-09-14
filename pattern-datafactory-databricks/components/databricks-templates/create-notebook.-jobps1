@@ -1,0 +1,76 @@
+param(
+    [string]$dbxToken,
+    [string]$clusterName,
+    [string]$workspaceId,
+    [string]$notebook
+
+)
+<#
+  Generic RestCall
+#>
+Function Invoke-DataBricksRestCall{
+    param(
+    [String]$uri,
+    [string]$accessToken,
+    [string]$invokeVerb,
+    [psobject]$requestBody
+    )
+
+    try{
+        $body = @{ 
+         
+            OutVariable     = 'status' 
+            Method          = $invokeVerb 
+            UseBasicParsing = $true 
+            Headers         = @{ 
+                Authorization  = "Bearer $($accessToken)" 
+                'Content-Type' = 'application/json' 
+            } 
+        } 
+
+        Invoke-WebRequest -uri $uri -Body $requestBody @body 
+ 
+        $body.Method = 'Get' 
+        $status[0].RawContent -split "\n" | Where-Object {$_ -match "(^Location: )(?<GetURL>https://.+)"} 
+ 
+        while ($status[0].StatusCode -eq 202) 
+        { 
+            start-sleep -Seconds 60
+            Invoke-WebRequest -uri $Matches.GetURL @Body | select StatusCode,StatusDescription,Headers 
+        
+        } 
+
+        $response = $Status[0].StatusCode
+    }
+    catch{
+        Return "Exception $_"
+    }
+    Return $response
+} 
+
+
+
+<#
+
+#>
+
+
+$uri = "https://$workspaceId.azuredatabricks.net/api/2.0/jobs/create"
+
+
+    $body = @{
+        name = $notebook
+        exisiting_cluster_id= $clusterName
+        language = "Python"
+        spark_pythan_task = @{
+            python_file="dbfs:/$notebook.py"
+        }
+        max_retries= 1
+      } | ConvertTo-json  
+try{
+  $status = Invoke-ResourceMangerRestCall -uri $uri -accessToken $dbxToken -requestBody $body -invokeVerb "POST"
+
+  return $status
+} catch {
+    throw $_
+}
