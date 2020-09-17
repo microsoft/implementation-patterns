@@ -120,18 +120,85 @@ This reference implementation will deploy a SQL API Account. This is the most co
 - Change database throughput
 - Manage locks on a database
 
-#### Implementation
-![](images/networking-functions.png)  
-- A function app (1) will be deployed into each region for hosting our producer and consumer functions  
+After you create an Azure Cosmos DB account under your Azure subscription, you can manage data in your account by creating databases, containers, and items. You can create one or multiple Azure Cosmos databases under your account. A database is analogous to a namespace. A database is the unit of management for a set of Azure Cosmos containers. The following table shows how an Azure Cosmos database is mapped to various API-specific entities:
 
-- Both function apps (1) will be configured to leverage regional VNet integration (2) to send all egress traffic from all functions into a newly created integration subnet in each region.  
+The following image shows the hierarchy of different entities in an Azure Cosmos DB account:
+![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/databases-containers-items/cosmos-entities.png)
 
-- A UDR (3) will be created and assigned to the integration subnet such that all traffic destined for the internet will be sent through Azure Firewall in the hub VNet. This will allow us to filter and audit all outbound traffic.  
+1. Create a Cosmos database.
+	```bash
+	resourceGroupName='MyResourceGroup'
+	accountName='mycosmosaccount'
+	databaseName='database1'
 
-- The Firewall will be configured to allow traffic to public App Insights endpoints to enable built-in monitoring facilitated by the Azure Functions host running in the Function App.
+	az cosmosdb sql database create \
+    		-a $accountName \
+    		-g $resourceGroupName \
+    		-n $databaseName
+	```
+2. Create a database with shared throughput
+	```bash
+	resourceGroupName='MyResourceGroup'
+	accountName='mycosmosaccount'
+	databaseName='database1'
+	throughput=400
 
-- DNS settings on the Spoke VNet will be configured such that all DNS queries (4) originating from subnets in the VNet will be sent to our custom DNS forwarders.
-#### Deploy Infrastructure
+	az cosmosdb sql database create \
+ 	   -a $accountName \
+ 	   -g $resourceGroupName \
+  	  -n $databaseName \
+  	  --throughput $throughput
+	```
+3. Change database throughput
+	```bash
+	resourceGroupName='MyResourceGroup'
+	accountName='mycosmosaccount'
+	databaseName='database1'
+	newRU=1000
+	
+	# Get minimum throughput to make sure newRU is not lower than minRU
+	minRU=$(az cosmosdb sql database throughput show \
+	    -g $resourceGroupName -a $accountName -n $databaseName \
+	    --query resource.minimumThroughput -o tsv)
+	
+	if [ $minRU -gt $newRU ]; then
+	    newRU=$minRU
+	fi
+	
+	az cosmosdb sql database throughput update \
+	    -a $accountName \
+	    -g $resourceGroupName \
+	    -n $databaseName \
+	    --throughput $newRU
+	```
+4. Manage lock on a database
+	```bash
+	resourceGroupName='myResourceGroup'
+	accountName='my-cosmos-account'
+	databaseName='myDatabase'
+	
+	lockType='CanNotDelete' # CanNotDelete or ReadOnly
+	databaseParent="databaseAccounts/$accountName"
+	databaseLockName="$databaseName-Lock"
+	
+	# Create a delete lock on database
+	az lock create --name $databaseLockName \
+	    --resource-group $resourceGroupName \
+	    --resource-type Microsoft.DocumentDB/sqlDatabases \
+	    --lock-type $lockType \
+	    --parent $databaseParent \
+	    --resource $databaseName
+	
+	# Delete lock on database
+	lockid=$(az lock show --name $databaseLockName \
+	        --resource-group $resourceGroupName \
+	        --resource-type Microsoft.DocumentDB/sqlDatabases \
+	        --resource $databaseName \
+	        --parent $databaseParent \
+	        --output tsv --query id)
+	az lock delete --ids $lockid
+	```
+
 1
 [top ->](#Architecture-and-Composable-Deployment-Code) 
 ---
