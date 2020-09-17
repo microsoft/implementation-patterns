@@ -91,6 +91,29 @@ The exact RTT latency is a function of speed-of-light distance and the Azure net
 - For strong and bounded staleness, reads are done against two replicas in a four replica set (minority quorum) to provide consistency guarantees. Session, consistent prefix and eventual do single replica reads. The result is that, for the same number of request units, read throughput for strong and bounded staleness is half of the other consistency levels.  
 
 - For a given type of write operation, such as insert, replace, upsert, and delete, the write throughput for request units is identical for all consistency levels.
-- Describe backup / recovery process.
+
+## High availability with Azure Cosmos DB
+Azure Cosmos DB transparently replicates your data across all the Azure regions associated with your Azure Cosmos account. 
+
+![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/high-availability/cosmosdb-data-redundancy.png)
+
+- The data within Azure Cosmos containers is horizontally partitioned.
+
+- A partition-set is a collection of multiple replica-sets. Within each region, every partition is protected by a replica-set with all writes replicated and durably committed by a majority of replicas. Replicas are distributed across as many as 10-20 fault domains.
+
+- Each partition across all the regions is replicated. Each region contains all the data partitions of an Azure Cosmos container and can accept writes and serve reads.
+
+If your Azure Cosmos account is distributed across N Azure regions, there will be at least N x 4 copies of all your data. Generally having an Azure Cosmos account in more than 2 regions improves the availability of your application and provides low latency across the associated regions.
+
+### SLAs for availability
+As a globally distributed database, Azure Cosmos DB provides comprehensive SLAs that encompass throughput, latency at the 99th percentile, consistency, and high availability. The table below shows the guarantees for high availability provided by Azure Cosmos DB for single and multi-region accounts. For high availability, always configure your Azure Cosmos accounts to have multiple write regions(also called multi-master).
+
+SLAS FOR AVAILABILITY
+|Operation type |	Single region | Multi-region (single region writes) | Multi-region (multi-region writes)|
+|---------------|---------------|-------------------------------------|-----------------------------------|
+|Writes         |99.99          |99.99                                |99.999                             |
+|Reads          |99.99          |99.999                               |99.999                             |
+
+
 ---
 > [Back to TOC](../README.md#TOC)
