@@ -73,7 +73,7 @@ This reference implementation will deploy a SQL API Account. This is the most co
 	
 	![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/five-consistency-levels.png)
 
-4. Add region ([ARM Template](../components/cosmosaccount/combinedCosmos.json#L1))
+4. Add region ([ARM Template](../components/cosmosaccount/combinedCosmos.json#L59))
 	```bash
 	az cosmosdb update --name $accountName --resource-group $resourceGroupName \
 		--locations regionName="East US 2" failoverPriority=0 isZoneRedundant=False \
