@@ -37,7 +37,6 @@ This reference implementation will deploy a SQL API Account. This is the most co
 
 - Default Consistency level
 
-##### TODO: Make this Cosmos Specific
 #### Deployment
 1. Create resource group for our reference workload
 	```bash
@@ -81,7 +80,7 @@ This reference implementation will deploy a SQL API Account. This is the most co
 		--locations regionName="West US 2" failoverPriority=1 isZoneRedundant=False  \
 		--locations regionName="South Central US" failoverPriority=2 isZoneRedundant=False
 	```
-5. Enable multiple write regions([ARM Template](../components/cosmosaccount/cosmosaccount.json))
+5. Enable multiple write regions([ARM Template](../components/cosmosaccount/combinedCosmos.json#L122))
 	```bash
 	# Get the account resource id for an existing account
 	accountId=$(az cosmosdb show -g $resourceGroupName -n $accountName --query id -o tsv)
@@ -125,7 +124,7 @@ After you create an Azure Cosmos DB account under your Azure subscription, you c
 The following image shows the hierarchy of different entities in an Azure Cosmos DB account:
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/databases-containers-items/cosmos-entities.png)
 
-1. Create a Cosmos database.
+1. Create a Cosmos database.([ARM Template](../components/cosmosaccount/combinedCosmos.json#L97))
 	```bash
 	resourceGroupName='MyResourceGroup'
 	accountName='mycosmosaccount'
@@ -136,7 +135,7 @@ The following image shows the hierarchy of different entities in an Azure Cosmos
     		-g $resourceGroupName \
     		-n $databaseName
 	```
-2. Create a database with shared throughput
+2. Create a database with shared throughput ([ARM Template](../components/cosmosaccount/combinedCosmos.json#L114))
 	```bash
 	resourceGroupName='MyResourceGroup'
 	accountName='mycosmosaccount'
@@ -149,7 +148,7 @@ The following image shows the hierarchy of different entities in an Azure Cosmos
   	  -n $databaseName \
   	  --throughput $throughput
 	```
-3. Change database throughput
+3. Change database throughput ([ARM Template](../components/cosmosaccount/combinedCosmos.json#L137))
 	```bash
 	resourceGroupName='MyResourceGroup'
 	accountName='mycosmosaccount'
