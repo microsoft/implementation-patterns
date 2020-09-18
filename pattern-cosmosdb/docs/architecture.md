@@ -57,7 +57,7 @@ This reference implementation will deploy a SQL API Account. This is the most co
 	```
 	[ARM Template Region](../components/cosmosaccount/cosmosaccount.json#L9)
 	
-	[Session consistency level](../components/cosmosaccount/cosmosaccount.json#L28)
+	[Session consistency level](reliability.md#Session)
 	
 	![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/session-consistency.gif)
 	
@@ -69,7 +69,7 @@ This reference implementation will deploy a SQL API Account. This is the most co
 	```
 	[Consistency Levels and Latency](../docs/reliability.md)
 	
-	The new consistency level is Strong Consistency
+	The new consistency level is [Strong Consistency](/reliability.md#strong)
 	
 	![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/strong-consistency.gif)
 	
