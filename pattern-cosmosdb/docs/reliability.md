@@ -5,13 +5,13 @@ Distributed databases that rely on replication for high availability, low latenc
 
 Azure Cosmos DB approaches data consistency as a spectrum of choices. This approach includes more options than the two extremes of strong and eventual consistency. You can choose from five well-defined levels on the consistency spectrum. From strongest to weakest, the levels are:
 
-**Strong** Strong consistency offers a linearizability guarantee. Linearizability refers to serving requests concurrently. The reads are guaranteed to return the most recent committed version of an item. A client never sees an uncommitted or partial write. Users are always guaranteed to read the latest committed write.
+* **Strong** Strong consistency offers a linearizability guarantee. Linearizability refers to serving requests concurrently. The reads are guaranteed to return the most recent committed version of an item. A client never sees an uncommitted or partial write. Users are always guaranteed to read the latest committed write.
 
 The following graphic illustrates the strong consistency with musical notes. After the data is written to the "West US 2" region, when you read the data from other regions, you get the most recent value:
 
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/strong-consistency.gif)
 
-**Bounded Stateless** The reads are guaranteed to honor the consistent-prefix guarantee. The reads might lag behind writes by at most "K" versions (that is, "updates") of an item or by "T" time interval, whichever is reached first. In other words, when you choose bounded staleness, the "staleness" can be configured in two ways:
+* **Bounded Stateless** The reads are guaranteed to honor the consistent-prefix guarantee. The reads might lag behind writes by at most "K" versions (that is, "updates") of an item or by "T" time interval, whichever is reached first. In other words, when you choose bounded staleness, the "staleness" can be configured in two ways:
 
    - The number of versions (K) of the item
    - The time interval (T) by which the reads might lag behind the writes
@@ -28,7 +28,7 @@ Bounded staleness is frequently chosen by globally distributed applications that
 
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/bounded-staleness-consistency.gif)
 
-**Session** Within a single client session reads are guaranteed to honor the consistent-prefix, monotonic reads, monotonic writes, read-your-writes, and write-follows-reads guarantees. This assumes a single "writer" session or sharing the session token for multiple writers.
+* **Session** Within a single client session reads are guaranteed to honor the consistent-prefix, monotonic reads, monotonic writes, read-your-writes, and write-follows-reads guarantees. This assumes a single "writer" session or sharing the session token for multiple writers.
 
    - Clients outside of the session performing writes will see the following guarantees:
    - Consistency for clients in same region for a single-master account = Consistent Prefix
@@ -40,7 +40,7 @@ Session consistency is the most widely used consistency level for both single re
 
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/session-consistency.gif)
 
-**Constant Prefix** Updates that are returned contain some prefix of all the updates, with no gaps. Consistent prefix consistency level guarantees that reads never see out-of-order writes.
+* **Constant Prefix** Updates that are returned contain some prefix of all the updates, with no gaps. Consistent prefix consistency level guarantees that reads never see out-of-order writes.
 
 If writes were performed in the order A, B, C, then a client sees either A, A,B, or A,B,C, but never out-of-order permutations like A,C or B,A,C. Consistent Prefix provides write latencies, availability, and read throughput comparable to that of eventual consistency, but also provides the order guarantees that suit the needs of scenarios where order is important.
 
@@ -54,7 +54,7 @@ The following graphic illustrates the consistency prefix consistency with musica
 
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/consistent-prefix.gif)
 
-**Eventual** There's no ordering guarantee for reads. In the absence of any further writes, the replicas eventually converge.
+* **Eventual** There's no ordering guarantee for reads. In the absence of any further writes, the replicas eventually converge.
 Eventual consistency is the weakest form of consistency because a client may read the values that are older than the ones it had read before. Eventual consistency is ideal where the application does not require any ordering guarantees. Examples include count of Retweets, Likes, or non-threaded comments. The following graphic illustrates the eventual consistency with musical notes.
 
 ![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/eventual-consistency.gif)
