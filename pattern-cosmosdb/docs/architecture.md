@@ -55,6 +55,7 @@ This reference implementation will deploy a SQL API Account. This is the most co
    		--locations regionName='West US 2' failoverPriority=0 isZoneRedundant=False \
 		--locations regionName='East US 2' failoverPriority=1 isZoneRedundant=False
 	```
+	([ARM Template Region](../components/cosmosaccount/cosmosaccount.json#L9)]
 	Session consistency level
 	
 	![](https://docs.microsoft.com/en-us/azure/cosmos-db/media/consistency-levels/session-consistency.gif)
