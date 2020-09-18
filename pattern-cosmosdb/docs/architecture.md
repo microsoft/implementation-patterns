@@ -43,7 +43,7 @@ This reference implementation will deploy a SQL API Account. This is the most co
 	# for East resources
 	az group create --location eastus2 --name cosmos-db-rg
 	```
-2. Create Comos DB Account with default consistency level ([ARM Template](../components/cosmosaccount/cosmosaccount.json))
+2. Create Comos DB Account with default consistency level ([ARM Template](../components/cosmosaccount/cosmosaccount.json#L1))
 	```bash
 	resourceGroupName='cosmos-db-rg'
 	accountName='mycosmosaccount' #needs to be lower case and less than 44 characters
