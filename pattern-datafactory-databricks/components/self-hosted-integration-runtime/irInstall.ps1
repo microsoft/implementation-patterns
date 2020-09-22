@@ -21,7 +21,7 @@ function Get-Time{
 }
 
 
-function Wrtie-EventToLog{
+function Write-EventToLog{
     Param(
     [string] $event
     )
@@ -50,12 +50,12 @@ function Download-IntegrationRuntime{
         
         $client = New-Object System.Net.WebClient
         $client.DownloadFile($url, $dgwPath)
-        Wrtie-EventToLog "Information | Download Integration runtime successfully. Integration runtime location $($dgwPath)"
+        Write-EventToLog "Information | Download Integration runtime successfully. Integration runtime location $($dgwPath)"
     }
     catch
     {
-        Wrtie-EventToLog "Error | Failed to download Integration Runtime msi"
-        Wrtie-EventToLog "Error | $_.Exception.ToString()"
+        Write-EventToLog "Error | Failed to download Integration Runtime msi"
+        Write-EventToLog "Error | $_.Exception.ToString()"
         throw "Error | $_"
     }
 }
@@ -74,15 +74,15 @@ function Install-Gateway([string] $dgwPath)
     
     try{
 	
-	    Wrtie-EventToLog "Information | Start Gateway installation"
+	    Write-EventToLog "Information | Start Gateway installation"
 	    start-Process "msiexec.exe" "/i gateway.msi INSTALLTYPE=AzureTemplate /quiet /norestart" -Wait	
 	
 	    Start-Sleep -Seconds 30	
 
-	    Wrtie-EventToLog "Information | Installation of gateway is successful"
+	    Write-EventToLog "Information | Installation of gateway is successful"
     }
     catch{
-        Wrtie-EventToLog "Error | $_.Exception.ToString()"
+        Write-EventToLog "Error | $_.Exception.ToString()"
         throw "Error | $_"
     }
 }
@@ -96,7 +96,7 @@ function Get-InstalledFilePath()
 	    {
 		    Throw "Error | Get-InstalledFilePath: Cannot find installed File Path"
 	    }
-        Wrtie-EventToLog "Information | Integration Runtime installation file: $filePath"
+        Write-EventToLog "Information | Integration Runtime installation file: $filePath"
     }
     catch{
         throw "Error | $_"
@@ -123,31 +123,31 @@ try{
         New-Item -path $installLogs -type File -Force
     }
 
-    #Wrtie-EventToLog $irKey
-    Wrtie-EventToLog "Information | Start to excute $($scriptName)" 
-    Wrtie-EventToLog "Information | Log file: $($installLogs)"
+    #Write-EventToLog $irKey
+    Write-EventToLog "Information | Start to excute $($scriptName)" 
+    Write-EventToLog "Information | Log file: $($installLogs)"
 
     Download-IntegrationRuntime -url $url -dgwPath $dgwPath
 	
-    Wrtie-EventToLog "Information | Start Integration runtime installation"
+    Write-EventToLog "Information | Start Integration runtime installation"
     $proc = Start-Process "msiexec.exe" "/i $($dgwPath) INSTALLTYPE=AzureTemplate /quiet /norestart" -Wait -Passthru -NoNewWindow -ErrorVariable errVariable
 	
     Start-Sleep -Seconds 30	
     if($proc.ExitCode -ne 0 -or $errVariable -ne "")
     {		
-	    Wrtie-EventToLog  "Error | Failed to run process: exitCode=$($proc.ExitCode), errVariable=$errVariable,"
+	    Write-EventToLog  "Error | Failed to run process: exitCode=$($proc.ExitCode), errVariable=$errVariable,"
         throw
     }
 
-    Wrtie-EventToLog "Information | Installation of Integration runtime is successful"
-    Wrtie-EventToLog "Information | Integration Runtime Agent Registration"
+    Write-EventToLog "Information | Installation of Integration runtime is successful"
+    Write-EventToLog "Information | Integration Runtime Agent Registration"
 
     $ircmd = Get-InstalledFilePath
     $proc = start-Process -FilePath $ircmd -ArgumentList "-k $irKey" -Wait -Passthru -NoNewWindow -ErrorVariable errVariable
 
     if($proc.ExitCode -ne 0 -or $errVariable -ne "")
     {		
-	    Wrtie-EventToLog  "Error | Failed to run process: exitCode=$($proc.ExitCode), errVariable=$errVariable."
+	    Write-EventToLog  "Error | Failed to run process: exitCode=$($proc.ExitCode), errVariable=$errVariable."
         throw
     }
 
@@ -155,5 +155,5 @@ try{
 catch{
     throw "Error | $_"
 }
-Wrtie-EventToLog "Information | Integration Runtime Agent registration is successful! ExitCode=$($proc.ExitCode)"
+Write-EventToLog "Information | Integration Runtime Agent registration is successful! ExitCode=$($proc.ExitCode)"
 

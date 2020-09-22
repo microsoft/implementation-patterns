@@ -16,7 +16,7 @@ function Get-Time{
 }
 
 
-function Wrtie-EventToLog{
+function Write-EventToLog{
     Param(
     [string] $event
     )
@@ -48,23 +48,23 @@ try{
     {
         New-Item -path $installLogs -type File -Force
     }
-    Wrtie-EventToLog "Information | Log file: $($installLogs)"
-    Wrtie-EventToLog "Information | Starting Integration runtime 'Execute IR Setup' scheduled task configuration" 
+    Write-EventToLog "Information | Log file: $($installLogs)"
+    Write-EventToLog "Information | Starting Integration runtime 'Execute IR Setup' scheduled task configuration" 
 
     $installScript = "$path\$scriptName"
     $scriptToRun = "C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe "
     $arguments = "-ExecutionPolicy Unrestricted -File $installScript $irKey"
 
-    Wrtie-EventToLog "Information | Scheduled task powershell script path '$($installScript)'" 
+    Write-EventToLog "Information | Scheduled task powershell script path '$($installScript)'" 
 
     $taskToRun = New-ScheduledTaskAction -Execute $scriptToRun -Argument $arguments  
     $setTimer = New-ScheduledTaskTrigger -Once -At (Get-Date -DisplayHint Time).AddMinutes(5) 
     $registerTask = Register-ScheduledTask -User "NT AUTHORITY\SYSTEM" -TaskName "Execute IR Setup" -Action $taskToRun -Trigger $setTimer -Force 
 
-    Wrtie-EventToLog "Information | Integration runtime scheduled task configuration Completed." 
+    Write-EventToLog "Information | Integration runtime scheduled task configuration Completed." 
 }
 catch{ 
 
-    Wrtie-EventToLog "Information | Integration runtime scheculed task configuration Failed.`n$_" 
+    Write-EventToLog "Information | Integration runtime scheculed task configuration Failed.`n$_" 
     throw
 }
