@@ -19,11 +19,14 @@
             "type": "String"
         }
     },
-    "variables": {},
+    "variables": {
+        "apiVersionVnet": "2018-02-01",
+        "apiVersionWeb": "2016-08-01"
+    },
     "resources": [
         {
             "type": "Microsoft.Web/sites",
-            "apiVersion": "2016-08-01",
+            "apiVersion": "[variables('apiVersionWeb')]",
             "name": "[parameters('appName')]",
             "location": "[parameters('location')]",
             "kind": "functionapp",
@@ -31,7 +34,7 @@
             "resources": [
                 {
                     "type": "config",
-                    "apiVersion": "2018-02-01",
+                    "apiVersion": "[variables('apiVersionVnet')]",
                     "name": "virtualNetwork",
                     "location": "[parameters('location')]",
                     "dependsOn": [

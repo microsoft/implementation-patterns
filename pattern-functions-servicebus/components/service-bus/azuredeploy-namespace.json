@@ -14,11 +14,13 @@
             "type": "String"
         }
     },
-    "variables": {},
+    "variables": {
+        "apiVersionSB": "2018-01-01-preview"
+    },
     "resources": [
         {
             "type": "Microsoft.ServiceBus/namespaces",
-            "apiVersion": "2018-01-01-preview",
+            "apiVersion": "[variables('apiVersionSB')]",
             "name": "[parameters('namespaceName')]",
             "location": "[parameters('location')]",
             "sku": {

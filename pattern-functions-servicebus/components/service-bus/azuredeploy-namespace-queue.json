@@ -1,0 +1,86 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String"
+        },
+        "namespaceName": {
+            "type": "String"
+        },
+        "queueName": {
+            "type": "String",
+            "defaultValue": "queue1"
+        },
+        "lockDuration": {
+            "type": "String",
+            "defaultValue": "PT30S"
+        },
+        "maxSizeInMegabytes": {
+            "type": "Int",
+            "defaultValue": 1024
+        },
+        "requiresDuplicateDetection": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "requiresSession": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "defaultMessageTimeToLive": {
+            "type": "String",
+            "defaultValue": "P14D"
+        },
+        "deadLetteringOnMessageExpiration": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "enableBatchedOperations": {
+            "type": "bool",
+            "defaultValue": true
+        },
+        "duplicateDetectionHistoryTimeWindow": {
+            "type": "String",
+            "defaultValue": "PT10M"
+        },
+        "maxDeliveryCount": {
+            "type": "Int",
+            "defaultValue": 10
+        },
+        "enablePartitioning": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "enableExpress": {
+            "type": "bool",
+            "defaultValue": false
+        }
+    },
+    "variables": {
+        "apiVersionSB": "2017-04-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces/queues",
+            "apiVersion": "[variables('apiVersionSB')]",
+            "name": "[concat(parameters('namespaceName'), '/', parameters('queueName'))]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "status": "Active",
+                "lockDuration": "[parameters('lockDuration')]",
+                "maxSizeInMegabytes": "[parameters('maxSizeInMegabytes')]",
+                "requiresDuplicateDetection": "[parameters('requiresDuplicateDetection')]",
+                "requiresSession": "[parameters('requiresSession')]",
+                "defaultMessageTimeToLive": "[parameters('defaultMessageTimeToLive')]",
+                "deadLetteringOnMessageExpiration": "[parameters('deadLetteringOnMessageExpiration')]",
+                "enableBatchedOperations": "[parameters('enableBatchedOperations')]",
+                "duplicateDetectionHistoryTimeWindow": "[parameters('duplicateDetectionHistoryTimeWindow')]",
+                "maxDeliveryCount": "[parameters('maxDeliveryCount')]",
+                "enablePartitioning": "[parameters('enablePartitioning')]",
+                "enableExpress": "[parameters('enableExpress')]"
+            }
+        }
+    ]
+}

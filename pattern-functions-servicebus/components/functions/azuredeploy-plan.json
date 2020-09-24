@@ -33,12 +33,13 @@
             "Organization": "[parameters('organization')]",
             "Environment": "[parameters('environment')]",
             "Timestamp": "[parameters('timestamp')]"
-        }
+        },
+        "apiVersion": "2018-02-01"
     },
     "resources": [
         {
             "type": "Microsoft.Web/serverfarms",
-            "apiVersion": "2018-02-01",
+            "apiVersion": "[variables('apiVersion')]",
             "name": "[parameters('planName')]",
             "location": "[parameters('location')]",
             "tags": "[variables('resourceTags')]",

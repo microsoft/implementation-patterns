@@ -15,11 +15,13 @@
             "type": "String"
         }
     },
-    "variables": {},
+    "variables": {
+        "apiVersionDR": "2017-04-01"
+    },
     "resources": [
         {
             "type": "Microsoft.ServiceBus/namespaces/disasterRecoveryConfigs",
-            "apiVersion": "2017-04-01",
+            "apiVersion": "[variables('apiVersionDR')]",
             "name": "[concat(parameters('namespaceName'), '/', parameters('aliasName'))]",
             "properties": {
                 "partnerNamespace": "[resourceId(parameters('pairedNamespaceResourceGroup'), 'Microsoft.ServiceBus/namespaces', parameters('pairedNamespaceName'))]"

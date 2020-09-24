@@ -1,0 +1,75 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String"
+        },
+        "namespaceName": {
+            "type": "String"
+        },
+        "topicName": {
+            "defaultValue": "topic1",
+            "type": "String"
+        },
+        "subscriptionName": {
+            "defaultValue": "subscription1",
+            "type": "String"
+        },
+        "lockDuration": {
+            "type": "String",
+            "defaultValue": "PT30S"
+        },
+        "requiresSession": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "defaultMessageTimeToLive": {
+            "type": "String",
+            "defaultValue": "P14D"
+        },
+        "deadLetteringOnMessageExpiration": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "deadLetteringOnFilterEvaluationExceptions": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "maxDeliveryCount": {
+            "type": "Int",
+            "defaultValue": 10
+        },
+        "enableBatchedOperations": {
+            "type": "bool",
+            "defaultValue": true
+        },
+        "autoDeleteOnIdle": {
+            "type": "string",
+            "defaultValue": "P14D"
+        }
+    },
+    "variables": {
+        "apiVersionSB": "2017-04-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces/topics/subscriptions",
+            "apiVersion": "[variables('apiVersionSB')]",
+            "name": "[concat(parameters('namespaceName'), '/', parameters('topicName'), '/', parameters('subscriptionName'))]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "status": "Active",
+                "lockDuration": "[parameters('lockDuration')]",
+                "requiresSession": "[parameters('requiresSession')]",
+                "defaultMessageTimeToLive": "[parameters('defaultMessageTimeToLive')]",
+                "deadLetteringOnMessageExpiration": "[parameters('deadLetteringOnMessageExpiration')]",
+                "deadLetteringOnFilterEvaluationExceptions": "[parameters('deadLetteringOnFilterEvaluationExceptions')]",
+                "maxDeliveryCount": "[parameters('maxDeliveryCount')]",
+                "enableBatchedOperations": "[parameters('enableBatchedOperations')]",
+                "autoDeleteOnIdle": "[parameters('autoDeleteOnIdle')]"
+            }
+        }
+    ]
+}

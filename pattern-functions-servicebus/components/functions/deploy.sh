@@ -1,27 +1,27 @@
 #!/bin/bash
 
 # Params
-infix="ipfsb"
+infix=""
 
 subscription_id=""
 
-resourceGroup1Location="eastus2"
-resourceGroup2Location="centralus"
+location1="eastus2"
+location2="centralus"
 
-resourceGroup1NameNet="$infix-net-$resourceGroup1Location"
-resourceGroup2NameNet="$infix-net-$resourceGroup2Location"
+resourceGroup1NameNet="$infix-net-$location1"
+resourceGroup2NameNet="$infix-net-$location2"
 
-resourceGroup1NameWorkload="$infix-wl-$resourceGroup1Location"
-resourceGroup2NameWorkload="$infix-wl-$resourceGroup2Location"
+resourceGroup1NameWorkload="$infix-wl-$location1"
+resourceGroup2NameWorkload="$infix-wl-$location2"
 
-appName1="$infix-app-$resourceGroup1Location"
-appName2="$infix-app-$resourceGroup2Location"
+appName1="$infix-app-$location1"
+appName2="$infix-app-$location2"
 
-planName1="$infix-plan-$resourceGroup1Location"
-planName2="$infix-plan-$resourceGroup2Location"
+planName1="$infix-plan-$location1"
+planName2="$infix-plan-$location2"
 
-storageName1="$infix""sa""$resourceGroup1Location"
-storageName2="$infix""sa""$resourceGroup2Location"
+storageName1="$infix""sa""$location1"
+storageName2="$infix""sa""$location2"
 
 spokeVnetName="spoke-vnet"
 subnetName="integration-subnet"
@@ -40,8 +40,8 @@ templateFileIntegrationSubnet="azuredeploy-integrationsubnet.json"
 templateFileIntegrationVnet="azuredeploy-vnetintegration.json"
 
 # Create RGs
-az group create --subscription "$subscription_id" --name "$resourceGroup1NameWorkload" --location "$resourceGroup1Location"
-az group create --subscription "$subscription_id" --name "$resourceGroup2NameWorkload" --location "$resourceGroup2Location"
+az group create --subscription "$subscription_id" --name "$resourceGroup1NameWorkload" --location "$location1"
+az group create --subscription "$subscription_id" --name "$resourceGroup2NameWorkload" --location "$location2"
 
 # Create App Service Plans
 az deployment group create --subscription "$subscription_id" --resource-group $resourceGroup1NameWorkload --name "plan1" \

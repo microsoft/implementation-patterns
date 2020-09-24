@@ -7,11 +7,12 @@
         }
     },
     "variables": {
+        "apiVersionDnsZones": "2020-01-01"
     },
     "resources": [
         {
             "type": "Microsoft.Network/privateDnsZones",
-            "apiVersion": "2018-09-01",
+            "apiVersion": "[variables('apiVersionDnsZones')]",
             "name": "[parameters('privateDnsZoneName')]",
             "location": "global",
             "properties": {}
