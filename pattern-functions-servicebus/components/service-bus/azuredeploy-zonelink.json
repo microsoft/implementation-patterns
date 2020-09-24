@@ -14,11 +14,12 @@
         }
     },
     "variables": {
+        "apiVersionDns": "2020-01-01"
     },
     "resources": [
         {
             "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-            "apiVersion": "2018-09-01",
+            "apiVersion": "[variables('apiVersionDns')]",
             "name": "[concat(parameters('privateDnsZoneName'), '/link')]",
             "location": "global",
             "properties": {

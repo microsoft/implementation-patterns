@@ -33,12 +33,14 @@
         }
     },
     "variables": {
+        "apiVersionSB": "2018-01-01-preview",
+        "apiVersionDns": "2020-05-01"
     },
     "resources": [
         {
             "type": "Microsoft.ServiceBus/namespaces/networkRuleSets",
             "condition": "[equals(parameters('primary'), 'true')]",
-            "apiVersion": "2018-01-01-preview",
+            "apiVersion": "[variables('apiVersionSB')]",
             "name": "[concat(parameters('namespaceName'), '/default')]",
             "location": "[parameters('location')]",
             "properties": {
@@ -49,7 +51,7 @@
         },
         {
             "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
-            "apiVersion": "2020-04-01",
+            "apiVersion": "[variables('apiVersionDns')]",
             "name": "[concat(parameters('privateEndpointName'), '/default')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpointName'))]"
@@ -57,7 +59,7 @@
             "properties": {
                 "privateDnsZoneConfigs": [
                     {
-                        "name": "privatelink-servicebus-windows-net",
+                        "name": "[parameters('privateDnsZoneName')]",
                         "properties": {
                             "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
                         }
@@ -67,7 +69,7 @@
         },
         {
             "type": "Microsoft.Network/privateEndpoints",
-            "apiVersion": "2020-04-01",
+            "apiVersion": "[variables('apiVersionDns')]",
             "name": "[parameters('privateEndpointName')]",
             "location": "[parameters('location')]",
             "properties": {

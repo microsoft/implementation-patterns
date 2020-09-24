@@ -1,0 +1,71 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String"
+        },
+        "namespaceName": {
+            "type": "String"
+        },
+        "topicName": {
+            "defaultValue": "topic1",
+            "type": "String"
+        },
+        "defaultMessageTimeToLive": {
+            "type": "String",
+            "defaultValue": "P14D"
+        },
+        "maxSizeInMegabytes": {
+            "type": "Int",
+            "defaultValue": 1024
+        },
+        "requiresDuplicateDetection": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "duplicateDetectionHistoryTimeWindow": {
+            "type": "String",
+            "defaultValue": "PT10M"
+        },
+        "enableBatchedOperations": {
+            "type": "bool",
+            "defaultValue": true
+        },
+        "supportOrdering": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "enablePartitioning": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "enableExpress": {
+            "type": "bool",
+            "defaultValue": false
+        }
+    },
+    "variables": {
+        "apiVersionSB": "2017-04-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces/topics",
+            "apiVersion": "[variables('apiVersionSB')]",
+            "name": "[concat(parameters('namespaceName'), '/', parameters('topicName'))]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "status": "Active",
+                "defaultMessageTimeToLive": "[parameters('defaultMessageTimeToLive')]",
+                "maxSizeInMegabytes": "[parameters('maxSizeInMegabytes')]",
+                "requiresDuplicateDetection": "[parameters('requiresDuplicateDetection')]",
+                "duplicateDetectionHistoryTimeWindow": "[parameters('duplicateDetectionHistoryTimeWindow')]",
+                "enableBatchedOperations": "[parameters('enableBatchedOperations')]",
+                "supportOrdering": "[parameters('supportOrdering')]",
+                "enablePartitioning": "[parameters('enablePartitioning')]",
+                "enableExpress": "[parameters('enableExpress')]"
+            }
+        }
+    ]
+}

@@ -16,11 +16,11 @@
                 "description": "Name of VNet to add subnet to."
             }
         },
-        "newSubnetName": {
+        "integrationSubnetName": {
             "type": "string",
             "defaultValue": "integration-subnet",
             "metadata": {
-                "description": "Name of subnet to add to the Vnet."
+                "description": "IP to let in to NSGs for testing"
             }
         },
         "integrationSubnetPrefix": {
@@ -28,14 +28,21 @@
             "metadata": {
                 "description": "IP to let in to NSGs for testing"
             }
+        },
+        "integrationSubnetNsgName": {
+            "type": "string",
+            "defaultValue": "integration-subnet-nsg"
         }
     },
-    "variables": {},
+    "variables": {
+        "apiVersionNsg": "2019-11-01",
+        "apiVersionSubnet": "2019-11-01"
+    },
     "resources": [
         {
             "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2019-11-01",
-            "name": "integration-subnet-nsg",
+            "apiVersion": "[variables('apiVersionNsg')]",
+            "name": "[parameters('integrationSubnetNsgName')]",
             "location": "[parameters('location')]",
             "properties": {
                 "securityRules": [
@@ -108,7 +115,7 @@
                         }
                     },
                     {
-                        "name": "AllowCosmos",
+                        "name": "AllowCosmosDB",
                         "properties": {
                             "protocol": "*",
                             "sourcePortRange": "*",
@@ -164,12 +171,12 @@
             }
         },
         {
-            "apiVersion": "2018-04-01",
+            "apiVersion": "[variables('apiVersionSubnet')]",
             "type": "Microsoft.Network/virtualNetworks/subnets",
-            "name": "[concat(parameters('existingVNETName'), '/', parameters('newSubnetName'))]",
+            "name": "[concat(parameters('existingVnetName'), '/', parameters('integrationSubnetName'))]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', 'integration-subnet-nsg')]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('integrationSubnetNsgName'))]"
             ],
             "properties": {
                 "addressPrefix": "[parameters('integrationSubnetPrefix')]",
@@ -214,8 +221,8 @@
                     }
                 ],
                 "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'integration-subnet-nsg')]"
-                            },
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('integrationSubnetNsgName'))]"
+                },
                 "privateEndpointNetworkPolicies": "Enabled",
                 "privateLinkServiceNetworkPolicies": "Enabled"
             }

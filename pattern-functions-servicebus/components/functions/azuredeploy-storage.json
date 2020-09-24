@@ -33,12 +33,13 @@
             "Organization": "[parameters('organization')]",
             "Environment": "[parameters('environment')]",
             "Timestamp": "[parameters('timestamp')]"
-        }
+        },
+        "apiVersionStorage": "2019-06-01"
     },
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2019-06-01",
+            "apiVersion": "[variables('apiVersionStorage')]",
             "name": "[parameters('storageAccountName')]",
             "location": "[parameters('location')]",
             "tags": "[variables('resourceTags')]",

@@ -11,11 +11,12 @@
         }
     },
      "variables": {
+         "apiVersion": "2018-11-01"
     },
     "resources": [
         {
             "type": "Microsoft.Web/sites",
-            "apiVersion": "2018-11-01",
+            "apiVersion": "[variables('apiVersion')]",
             "name": "[parameters('appName')]",
             "location": "[parameters('location')]",
             "kind": "functionapp",

@@ -9,48 +9,59 @@
                 "description": "Azure region"
             }
         },
+        "hubVnetName": {
+            "type": "string",
+            "defaultValue": "hub-vnet"
+        },
         "hubVnetPrefix": {
             "type": "string",
-            "defaultValue": "10.0.0.0/16",
-            "metadata": {
-                "description": "hubVnetPrefix"
-            }
+            "defaultValue": "10.0.0.0/16"
+        },
+        "firewallSubnetName": {
+            "type": "string",
+            "defaultValue": "AzureFirewallSubnet"
         },
         "firewallSubnetPrefix": {
             "type": "string",
-            "defaultValue": "10.0.1.0/24",
-            "metadata": {
-                "description": "firewallSubnetPrefix"
-            }
+            "defaultValue": "10.0.1.0/24"
         },
-        "DNSSubnetPrefix": {
+        "dnsSubnetName": {
             "type": "string",
-            "defaultValue": "10.0.2.0/24",
-            "metadata": {
-                "description": "DNSSubnetPrefix"
-            }
+            "defaultValue": "DNSSubnet"
+        },
+        "dnsSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.2.0/24"
+        },
+        "spokeVnetName": {
+            "type": "string",
+            "defaultValue": "spoke-vnet"
         },
         "spokeVnetPrefix": {
             "type": "string",
-            "defaultValue": "10.1.0.0/16",
-            "metadata": {
-                "description": "spokeVnetPrefix"
-            }
+            "defaultValue": "10.1.0.0/16"
+        },
+        "workloadSubnetName": {
+            "type": "string",
+            "defaultValue": "workload-subnet"
         },
         "workloadSubnetPrefix": {
             "type": "string",
-            "defaultValue": "10.1.2.0/24",
-            "metadata": {
-                "description": "workloadSubnetPrefix"
-            }
-        } 
+            "defaultValue": "10.1.2.0/24"
+        },
+        "workloadNsgName": {
+            "type": "string",
+            "defaultValue": "workload-nsg"
+        }
     },
-    "variables": {},
+    "variables": {
+        "apiVersionNet": "2020-05-01"
+    },
     "resources": [
         {
             "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2019-11-01",
-            "name": "workload-nsg",
+            "apiVersion": "[variables('apiVersionNet')]",
+            "name": "[parameters('workloadNsgName')]",
             "location": "[parameters('location')]",
             "properties": {
                 "securityRules": []
@@ -58,8 +69,8 @@
         },
         {
             "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2019-11-01",
-            "name": "hub-vnet",
+            "apiVersion": "[variables('apiVersionNet')]",
+            "name": "[parameters('hubVnetName')]",
             "location": "[parameters('location')]",
             "properties": {
                 "addressSpace": {
@@ -72,18 +83,18 @@
                 },
                 "subnets": [
                     {
-                        "name": "AzureFirewallSubnet",
+                        "name": "[parameters('firewallSubnetName')]",
                         "properties": {
-                            "addressPrefix":  "[parameters('firewallSubnetPrefix')]",
+                            "addressPrefix": "[parameters('firewallSubnetPrefix')]",
                             "delegations": [],
                             "privateEndpointNetworkPolicies": "Enabled",
                             "privateLinkServiceNetworkPolicies": "Enabled"
                         }
                     },
                     {
-                        "name": "DNSSubnet",
+                        "name": "[parameters('dnsSubnetName')]",
                         "properties": {
-                            "addressPrefix":  "[parameters('DNSSubnetPrefix')]",
+                            "addressPrefix": "[parameters('dnsSubnetPrefix')]",
                             "delegations": [],
                             "privateEndpointNetworkPolicies": "Enabled",
                             "privateLinkServiceNetworkPolicies": "Enabled"
@@ -96,12 +107,12 @@
         },
         {
             "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2019-11-01",
-            "name": "spoke-vnet",
+            "apiVersion": "[variables('apiVersionNet')]",
+            "name": "[parameters('spokeVnetName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', 'workload-nsg')]",
-                "[resourceId('Microsoft.Network/virtualNetworks', 'hub-vnet')]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('workloadNsgName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('hubVnetName'))]"
             ],
             "properties": {
                 "addressSpace": {
@@ -111,11 +122,11 @@
                 },
                 "subnets": [
                     {
-                        "name": "workload-subnet",
+                        "name": "[parameters('workloadSubnetName')]",
                         "properties": {
                             "addressPrefix": "[parameters('workloadSubnetPrefix')]",
                             "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'workload-nsg')]"
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('workloadNsgName'))]"
                             },
                             "serviceEndpoints": [],
                             "delegations": [],
@@ -128,18 +139,17 @@
                 "enableVmProtection": false
             }
         },
-        
         {
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-            "apiVersion": "2019-11-01",
-            "name": "[concat('hub-vnet', '/hubtospoke')]",
+            "apiVersion": "[variables('apiVersionNet')]",
+            "name": "[concat(parameters('hubVnetName'), '/', parameters('hubVnetName'), '-to-', parameters('spokeVnetName'))]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', 'spoke-vnet')]",
-                "[resourceId('Microsoft.Network/virtualNetworks', 'hub-vnet')]"
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('spokeVnetName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('hubVnetName'))]"
             ],
             "properties": {
                 "remoteVirtualNetwork": {
-                    "id": "[resourceId('Microsoft.Network/virtualNetworks', 'spoke-vnet')]"
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('spokeVnetName'))]"
                 },
                 "allowVirtualNetworkAccess": true,
                 "allowForwardedTraffic": false,
@@ -154,15 +164,15 @@
         },
         {
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-            "apiVersion": "2019-11-01",
-            "name": "[concat('spoke-vnet', '/spoketohub')]",
+            "apiVersion": "[variables('apiVersionNet')]",
+            "name": "[concat(parameters('spokeVnetName'), '/', parameters('spokeVnetName'), '-to-', parameters('hubVnetName'))]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', 'spoke-vnet')]",
-                "[resourceId('Microsoft.Network/virtualNetworks', 'hub-vnet')]"
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('spokeVnetName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('hubVnetName'))]"
             ],
             "properties": {
                 "remoteVirtualNetwork": {
-                    "id": "[resourceId('Microsoft.Network/virtualNetworks', 'hub-vnet')]"
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('hubVnetName'))]"
                 },
                 "allowVirtualNetworkAccess": true,
                 "allowForwardedTraffic": false,
