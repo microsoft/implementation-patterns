@@ -55,7 +55,7 @@ if [ $logAnalyticsResourceGroupName1 ]
 then
 	echo "Create Diagnostics Settings for Network Resources 1"
 
-	# Get Primary Namespace Resource ID for Diagnostics
+	# Get Resource IDs for Diagnostics
 	hubVnetResourceId="$(az network vnet show --subscription "$subscription_id" --resource-group "$resourceGroup1NameNet" --name "$hubVnetName"  -o tsv --query "id")"
 	spokeVnetResourceId="$(az network vnet show --subscription "$subscription_id" --resource-group "$resourceGroup1NameNet" --name "$spokeVnetName"  -o tsv --query "id")"
 	workloadNsgResourceId="$(az network nsg show --subscription "$subscription_id" --resource-group "$resourceGroup1NameNet" --name "$spokeVnetWorkloadNSGName"  -o tsv --query "id")"
@@ -169,7 +169,7 @@ if [ $logAnalyticsResourceGroupName2 ]
 then
 	echo "Create Diagnostics Settings for Network Resources 2"
 
-	# Get Primary Namespace Resource ID for Diagnostics
+	# Get Resource IDs for Diagnostics
 	hubVnetResourceId="$(az network vnet show --subscription "$subscription_id" --resource-group "$resourceGroup2NameNet" --name "$hubVnetName"  -o tsv --query "id")"
 	spokeVnetResourceId="$(az network vnet show --subscription "$subscription_id" --resource-group "$resourceGroup2NameNet" --name "$spokeVnetName"  -o tsv --query "id")"
 	workloadNsgResourceId="$(az network nsg show --subscription "$subscription_id" --resource-group "$resourceGroup2NameNet" --name "$spokeVnetWorkloadNSGName"  -o tsv --query "id")"
