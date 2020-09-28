@@ -1,0 +1,64 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"location": {
+			"type": "String",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Azure region",
+				"description": "The Azure region within which to deploy. See https://azure.microsoft.com/regions/."
+			}
+		},
+		"workspace_name": {
+			"type": "String",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Log Analytics workspace name",
+				"description": "Log Analytics workspace name"
+			}
+		},
+		"workspace_sku": {
+			"type": "String",
+			"defaultValue": "pergb2018",
+			"metadata": {
+				"displayName": "Log Analytics workspace SKU",
+				"description": "Log Analytics workspace SKU"
+			}
+		},
+		"workspace_retention_days": {
+			"type": "Int",
+			"defaultValue": 90
+		},
+		"public_access_ingest": {
+			"type": "String",
+			"defaultValue": "Disabled"
+		},
+		"public_access_query": {
+			"type": "String",
+			"defaultValue": "Disabled"
+		}
+	},
+	"variables": {
+		"api_version": "2020-08-01"
+	},
+	"resources": [
+		{
+			"type": "microsoft.operationalinsights/workspaces",
+			"apiVersion": "[variables('api_version')]",
+			"name": "[parameters('workspace_name')]",
+			"location": "[parameters('location')]",
+			"properties": {
+				"sku": {
+					"name": "[parameters('workspace_sku')]"
+				},
+				"retentionInDays": "[parameters('workspace_retention_days')]",
+                "workspaceCapping": {
+                    "dailyQuotaGb": -1
+                },
+                "publicNetworkAccessForIngestion": "[parameters('public_access_ingest')]",
+                "publicNetworkAccessForQuery": "[parameters('public_access_query')]"
+			}
+		}
+	]
+}

@@ -5,23 +5,14 @@ infix=""
 
 subscription_id=""
 
-location1="eastus2"
-location2="centralus"
+location1=""
+location2=""
 
 resourceGroup1NameNet="$infix""-net-""$location1"
 resourceGroup2NameNet="$infix""-net-""$location2"
 
 resourceGroup1NameSB="$infix""-sb-""$location1"
 resourceGroup2NameSB="$infix""-sb-""$location2"
-
-#logAnalyticsWorkspaceName="sbp-la"  # Leave blank if you don't want LA diagnostics. Workspace should already exist - not created here
-#logAnalyticsResourceGroupName="sbtest"  # Should already exist - not created here
-# Log Analytics RG - can be per region or only one
-logAnalyticsResourceGroupName1="sbtest" # Leave blank if you don't want LA diagnostics. Should already exist - not created here
-logAnalyticsResourceGroupName2="sbtest" # Leave blank if you don't want LA diagnostics. Should already exist - not created here
-# Log Analytics Workspace
-logAnalyticsWorkspaceName1="sbp-la-""$location1" # Workspace should already exist - not created here
-logAnalyticsWorkspaceName2="sbp-la-""$location2" # Workspace should already exist - not created here
 
 namespace1Name="$infix""-ns-""$location1"
 namespace2Name="$infix""-ns-""$location2"
@@ -52,42 +43,10 @@ templateFileZoneLink="azuredeploy-zonelink.json"
 az group create --subscription "$subscription_id" --name "$resourceGroup1NameSB" --location "$location1"
 az group create --subscription "$subscription_id" --name "$resourceGroup2NameSB" --location "$location2"
 
+
 # Deploy Primary Namespace
 az deployment group create --subscription "$subscription_id" --name "ns1" --verbose \
 	--resource-group "$resourceGroup1NameSB" --template-file "$templateFileNamespace" --parameters namespaceName="$namespace1Name"
-
-if [ $logAnalyticsResourceGroupName1 ]
-then
-	echo "Create Diagnostics Setting for Namespace1 to Log Analytics"
-
-	# Get Primary Namespace Resource ID for Diagnostics
-	namespace1ResourceId="$(az servicebus namespace show --subscription "$subscription_id" --resource-group "$resourceGroup1NameSB" --name "$namespace1Name" -o tsv --query "id")"
-
-	# Configure Log Analytics Diagnostics for primary namespace
-	# Get categories using https://docs.microsoft.com/cli/azure/monitor/diagnostic-settings/categories?view=azure-cli-latest#az_monitor_diagnostic_settings_categories_list
-	az monitor diagnostic-settings create --subscription "$subscription_id" --name "$namespace1Name""-diag" --verbose \
-		--resource "$namespace1ResourceId" --resource-group "$logAnalyticsResourceGroupName1" --workspace "$logAnalyticsWorkspaceName1" \
-		--logs '[
-			{
-				"category": "OperationalLogs",
-				"enabled": true,
-				"retentionPolicy": {
-					"enabled": false,
-					"days": 0
-				}
-			}
-		]' \
-		--metrics '[
-			{
-				"category": "AllMetrics",
-				"enabled": true,
-				"retentionPolicy": {
-					"enabled": false,
-					"days": 0
-				}
-			}
-		]'
-fi
 
 # Deploy Primary Namespace Access Policy
 az deployment group create --subscription "$subscription_id" --name "ns1sas" --verbose \
@@ -97,39 +56,6 @@ az deployment group create --subscription "$subscription_id" --name "ns1sas" --v
 # No entities on this namespace as they will come over with replication
 az deployment group create --subscription "$subscription_id" --name "ns2" --verbose \
 	--resource-group "$resourceGroup2NameSB" --template-file "$templateFileNamespace" --parameters namespaceName="$namespace2Name"
-
-if [ $logAnalyticsResourceGroupName2 ]
-then
-	echo "Create Diagnostics Setting for Namespace2 to Log Analytics"
-
-	# Get Secondary Namespace Resource ID for Diagnostics
-	namespace2ResourceId="$(az servicebus namespace show --subscription "$subscription_id" --resource-group "$resourceGroup2NameSB" --name "$namespace2Name" -o tsv --query "id")"
-
-	# Configure Log Analytics Diagnostics for secondary namespace
-	az monitor diagnostic-settings create --subscription "$subscription_id" --name "$namespace2Name""-diag" --verbose \
-		--resource "$namespace2ResourceId" --resource-group "$logAnalyticsResourceGroupName2" --workspace "$logAnalyticsWorkspaceName2" \
-		--logs '[
-			{
-				"category": "OperationalLogs",
-				"enabled": true,
-				"retentionPolicy": {
-					"enabled": false,
-					"days": 0
-				}
-			}
-		]' \
-		--metrics '[
-			{
-				"category": "AllMetrics",
-				"enabled": true,
-				"retentionPolicy": {
-					"enabled": false,
-					"days": 0
-				}
-			}
-		]'
-fi
-
 
 # Set up Geo-Replication
 az deployment group create --subscription "$subscription_id" --name "georep" --verbose \
