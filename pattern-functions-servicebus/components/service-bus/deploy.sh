@@ -5,8 +5,11 @@ infix=""
 
 subscription_id=""
 
-location1=""
-location2=""
+location1="eastus2"
+location2="centralus"
+
+# Set to true to pair namespaces and configure for geo-DR to get entity replication
+deploy_geo_dr=false
 
 resourceGroup1NameNet="$infix""-net-""$location1"
 resourceGroup2NameNet="$infix""-net-""$location2"
@@ -34,10 +37,12 @@ templateFileNamespaceSasPolicy="azuredeploy-namespace-saspolicy.json"
 templateFileQueue="azuredeploy-namespace-queue.json"
 templateFileTopic="azuredeploy-namespace-topic.json"
 templateFileTopicSubscription="azuredeploy-namespace-topic-subscription.json"
-templateFileGeoReplication="azuredeploy-georeplication.json"
 templateFilePrivateZone="azuredeploy-privatezone.json"
 templateFilePrivateLink="azuredeploy-privatelink.json"
 templateFileZoneLink="azuredeploy-zonelink.json"
+
+templateFileGeoReplication="azuredeploy-georeplication.json"
+
 
 # Create RGs
 az group create --subscription "$subscription_id" --name "$resourceGroup1NameSB" --location "$location1"
@@ -57,11 +62,13 @@ az deployment group create --subscription "$subscription_id" --name "ns1sas" --v
 az deployment group create --subscription "$subscription_id" --name "ns2" --verbose \
 	--resource-group "$resourceGroup2NameSB" --template-file "$templateFileNamespace" --parameters namespaceName="$namespace2Name"
 
-# Set up Geo-Replication
-az deployment group create --subscription "$subscription_id" --name "georep" --verbose \
-	--resource-group "$resourceGroup1NameSB" --template-file "$templateFileGeoReplication" --parameters \
-	namespaceName="$namespace1Name" pairedNamespaceName="$namespace2Name" pairedNamespaceResourceGroup="$resourceGroup2NameSB" aliasName="$aliasName"
-
+if [ $deploy_geo_dr = true ]
+then
+	# Set up Geo-Replication
+	az deployment group create --subscription "$subscription_id" --name "georep" --verbose \
+		--resource-group "$resourceGroup1NameSB" --template-file "$templateFileGeoReplication" --parameters \
+		namespaceName="$namespace1Name" pairedNamespaceName="$namespace2Name" pairedNamespaceResourceGroup="$resourceGroup2NameSB" aliasName="$aliasName"
+fi
 
 # Enable Private Endpoints, Private Zones
 # Create region 1
