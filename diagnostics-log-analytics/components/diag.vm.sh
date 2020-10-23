@@ -9,7 +9,7 @@ log_analytics_workspace_name=""
 resource_group_name=""
 resource_name=""
 
-storage_acct_name="pztestlasaeus" # Leave blank to not configure VM and boot diagnostics
+storage_acct_name="" # Leave blank to not configure VM and boot diagnostics
 
 # Get Resource ID for Diagnostics
 resource_id="$(az vm show --subscription "$subscription_id" -g "$resource_group_name" -n "$resource_name"  -o tsv --query "id")"
