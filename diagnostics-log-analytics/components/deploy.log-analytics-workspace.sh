@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Params
-infix="x"
+infix=""
 
 subscription_id=""
-location=""
-resource_group_name="latest"
+location="eastus"
+resource_group_name=""
 
 workspace_name="$infix""-""$location"
 workspace_sku="pergb2018"
@@ -26,6 +26,10 @@ az deployment group create --verbose --subscription "$subscription_id" --resourc
 	location="$location" workspace_name="$workspace_name" workspace_sku="$workspace_sku" \
 	workspace_retention_days="$workspace_retention_days" public_access_ingest=$public_access_ingest \
 	public_access_query=$public_access_query
+
+echo "Wait for workspace to provision"
+
+az monitor log-analytics workspace linked-service wait --verbose --subscription "$subscription_id" --resource-group "$resource_group_name" --workspace-name "$workspace_name" --name cluster --exists
 
 echo "Get workspace info"
 
