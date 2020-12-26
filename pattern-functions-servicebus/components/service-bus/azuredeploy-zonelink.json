@@ -14,7 +14,7 @@
         }
     },
     "variables": {
-        "apiVersionDns": "2020-01-01"
+        "apiVersionDns": "2018-09-01"
     },
     "resources": [
         {

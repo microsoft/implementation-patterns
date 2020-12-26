@@ -2,34 +2,33 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-
-        "namespaceName": {
-            "type": "String"
-        },
-        "privateEndpointName": {
-            "type": "String"
-        },
-        "privateDnsZoneName": {
-            "type": "String"
-        },
-        "vnetName": {
-            "type": "String"
-        },
-        "subnetName": {
-            "type": "String"
-        },
-        "networkResourceGroup": {
-            "type": "String"
-        },
-        "namespaceResourceGroup": {
-            "type": "String"
-        },
-        "primary": {
-            "type": "Bool"
-        },
         "location": {
             "defaultValue": "[resourceGroup().location]",
-            "type": "String"
+            "type": "string"
+        },
+        "namespaceName": {
+            "type": "string"
+        },
+        "privateEndpointName": {
+            "type": "string"
+        },
+        "privateDnsZoneName": {
+            "type": "string"
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "networkResourceGroup": {
+            "type": "string"
+        },
+        "namespaceResourceGroup": {
+            "type": "string"
+        },
+        "primary": {
+            "type": "bool"
         }
     },
     "variables": {
@@ -39,7 +38,7 @@
     "resources": [
         {
             "type": "Microsoft.ServiceBus/namespaces/networkRuleSets",
-            "condition": "[equals(parameters('primary'), 'true')]",
+            "condition": "[equals(bool(parameters('primary')), true())]",
             "apiVersion": "[variables('apiVersionSB')]",
             "name": "[concat(parameters('namespaceName'), '/default')]",
             "location": "[parameters('location')]",

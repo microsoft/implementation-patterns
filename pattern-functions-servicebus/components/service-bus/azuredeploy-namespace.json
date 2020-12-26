@@ -12,6 +12,10 @@
         "location": {
             "defaultValue": "[resourceGroup().location]",
             "type": "String"
+        },
+        "zoneRedundant": {
+            "type": "bool",
+            "defaultValue": false
         }
     },
     "variables": {
@@ -29,7 +33,7 @@
                 "capacity": "[parameters('scaleUnits')]"
             },
             "properties": {
-                "zoneRedundant": true
+                "zoneRedundant": "[bool(parameters('zoneRedundant'))]"
             }
         }
     ]
