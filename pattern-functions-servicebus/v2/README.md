@@ -77,9 +77,11 @@ Additionally, Subnets are configured as follows:
 - Network Interfaces are deployed to provide connectivity for Private Endpoints
 - Service Delegation is configured for the Workload Integration subnet, to allow the delegated-to service to deploy other components as needed.
 
-The VNets are Peered, so that resources in one VNet can resolve resources in the other VNet and, where allowed by network access restrictions, can connect to resources in the other VNet.
+The VNets are Peered, so that resources in one VNet can resolve resources in the other VNet and can connect to resources in the other VNet, as allowed by network access restrictions.
 
-Each VNet is also linked to a set of Private DNS Zones, which are globally-deployed resources. This permits resolution of resources protected by Private Endpoints by their internal FQDNs and private IP addresses.
+Each VNet is also linked to a set of Private DNS Zones, which are globally-deployed resources. This permits resolution of resources protected by Private Endpoints by their internal FQDNs and private IP addresses. Recall that these DNS Zones will only be used by resources in the VNet, since this pattern includes VNet-DNS Zone link deployment, whereas DNS clients outside of these VNets will use public Azure DNS resolution (split-horizon DNS).
+
+This diagram shows the network configuration.
 
 ![Azure Network](assets/Architecture-Network.png)
 
