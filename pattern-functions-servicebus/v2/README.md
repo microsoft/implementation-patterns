@@ -48,7 +48,7 @@ This pattern has some similarities to [v1](../v1). Please review the README ther
 
 The motivation for this pattern is to deploy a set of inter-related resources, including a secured network, shared resources such as Azure Service Bus Namespaces, and individual workloads such as Azure Functions which use the shared resources, and run in the same network environment.
 
-The pattern shows how to implement network security for each resource type, so that resources are not publicly addressable or accessible. This is accomplished using Azure Private Link and Private Endpoints, Virtual Networks with Network Security Groups, and per-resource network access restrictions.
+The pattern's intent is to show how to implement network security for each resource type, so that resources are not publicly addressable or accessible. This is accomplished using Azure Private Link and Private Endpoints, Virtual Networks with Network Security Groups, and per-resource network access restrictions.
 
 Azure Private DNS is used so that resources _within_ the network environment resolve each other using private FQDNs and IP addresses, so that all traffic between components stays on the Azure backbone and uses Private Link connections. Other resources _outside_ the network environment (such as workloads on premise or outside of the VNets in this pattern) will still resolve deployed components by their public FQDNs - i.e. split-horizon DNS. Actual connectivity will be secured as described above.
 
@@ -81,7 +81,11 @@ The VNets are Peered, so that resources in one VNet can resolve resources in the
 
 Each VNet is also linked to a set of Private DNS Zones, which are globally-deployed resources. This permits resolution of resources protected by Private Endpoints by their internal FQDNs and private IP addresses. Recall that these DNS Zones will only be used by resources in the VNet, since this pattern includes VNet-DNS Zone link deployment, whereas DNS clients outside of these VNets will use public Azure DNS resolution (split-horizon DNS).
 
-This diagram shows the network configuration.
+This diagram shows the logical network design with Azure services used in each VNet/subnet, as well as globally:
 
-![Azure Network](assets/Architecture-Network.png)
+![Azure Network Services](assets/Architecture-Network-Services.png)
+
+This diagram shows connection flow between Azure services within each VNet, between the peered VNets, and also shows workloads outside the VNets failing to connect to services within each VNet, as intended.
+
+![Azure Network Services](assets/Architecture-Network-Flow.png)
 
