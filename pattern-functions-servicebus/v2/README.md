@@ -12,6 +12,7 @@
   - [Custom VM Images](Custom-VM-Images)
 - [Network Security Tests](Network-Security-Tests)
 - [Deployment Assets](Deployment-Assets)
+  - [Preparation for Production](Preparation-for-Production)
 
 ## Pre-Requisites
 
@@ -227,4 +228,16 @@ Alternative approaches could include:
 - Conditional deployment: [ARM conditional deployment](https://docs.microsoft.com/azure/azure-resource-manager/templates/conditional-resource-deployment) permits for some deployment customization, but customization at levels "above" and within individual resources was desired, whereas the ARM condition element does not cascade to child resources and is limited to deploy/not deploy, and cannot be used to conditionally control individual resource configuration properties.
 
 The scripted approach used in this pattern does result in potentially longer deployment times than a composite/nested ARM template approach, as strict procedural scripting prevents the ARM deployment controller from decomposing and parallelizing a composite template. This trade-off was accepted for greater programmatic flexibility.
+
+#### Preparation for Production
+
+##### NSG Access Rules
+
+The deployment includes a network access rule on the NSG to allow for inbound (into the VNets/subnets) access for testing purposes. You may decide to remove this for production purposes.
+
+To do so, edit [`arm.net.nsg.json`](./arm/arm.net.nsg.json) and remove the `DevTestInbound` rule with priority 100. You may also need to edit this file to remove (or add) other network access rules required in your environment.
+
+##### VNet / Subnet Configuration
+
+The VNet configuration in [`arm.net.vnet.json`](arm/arm.net.vnet.json) deploys the three subnets described above (Shared, Workload, Workload VNet Integration) and configures a set of Service Endpoints on each subnet. You may need to edit this file to correspond to your subnet and Service Endpoint requirements.
 
