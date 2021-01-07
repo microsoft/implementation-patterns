@@ -54,6 +54,7 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-""$location
 	location="$location1" \
 	vnetName="$vnetNameLocation1" \
 	vnetPrefix="$vnetPrefixLocation1" \
+	subnetPrefixFirewall="$subnetPrefixFirewallLocation1" \
 	subnetNameShared="$subnetNameShared" \
 	subnetPrefixShared="$subnetPrefixSharedLocation1" \
 	subnetNameWorkload="$subnetNameWorkload" \
@@ -79,6 +80,7 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-""$location
 	location="$location2" \
 	vnetName="$vnetNameLocation2" \
 	vnetPrefix="$vnetPrefixLocation2" \
+	subnetPrefixFirewall="$subnetPrefixFirewallLocation2" \
 	subnetNameShared="$subnetNameShared" \
 	subnetPrefixShared="$subnetPrefixSharedLocation2" \
 	subnetNameWorkload="$subnetNameWorkload" \
@@ -111,6 +113,91 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Peering-""$
 	vnetNameLocal="$vnetNameLocation2" \
 	vnetNameRemote="$vnetNameLocation1" \
 	vnetAddressSpaceRemote="$vnetPrefixLocation1"
+
+echo -e "\n"
+
+if $deployFirewall
+then
+	echo "Deploy Azure Firewall Public IPs"
+
+	az deployment group create --subscription "$subscriptionId" -n "FW-PIP-""$location1" --verbose \
+		-g "$rgNameNetworkLocation1" --template-file "$templatePublicIp" \
+		--parameters \
+		applicationId="$applicationId" \
+		productId="$productId" \
+		productLine="$productLine" \
+		employeeId="$employeeId" \
+		businessUnit="$businessUnit" \
+		environment="$environment" \
+		organization="$organization" \
+		timestamp="$timestamp" \
+		location="$location1" \
+		publicIpName="$firewallPublicIpLocation1" \
+		publicIpType="$publicIpType" \
+		publicIpSku="$publicIpSku" \
+		domainNameLabel="$firewallNameLocation1"
+
+	az deployment group create --subscription "$subscriptionId" -n "FW-PIP-""$location2" --verbose \
+		-g "$rgNameNetworkLocation2" --template-file "$templatePublicIp" \
+		--parameters \
+		applicationId="$applicationId" \
+		productId="$productId" \
+		productLine="$productLine" \
+		employeeId="$employeeId" \
+		businessUnit="$businessUnit" \
+		environment="$environment" \
+		organization="$organization" \
+		timestamp="$timestamp" \
+		location="$location2" \
+		publicIpName="$firewallPublicIpLocation2" \
+		publicIpType="$publicIpType" \
+		publicIpSku="$publicIpSku" \
+		domainNameLabel="$firewallNameLocation2"
+
+	echo "Deploy Azure Firewalls"
+
+	az deployment group create --subscription "$subscriptionId" -n "FW-""$location1" --verbose \
+		-g "$rgNameNetworkLocation1" --template-file "$templateFirewall" \
+		--parameters \
+		applicationId="$applicationId" \
+		productId="$productId" \
+		productLine="$productLine" \
+		employeeId="$employeeId" \
+		businessUnit="$businessUnit" \
+		environment="$environment" \
+		organization="$organization" \
+		timestamp="$timestamp" \
+		location="$location1" \
+		vnetResourceGroup="$rgNameNetworkLocation1" \
+		vnetName="$vnetNameLocation1" \
+		firewallName="$firewallNameLocation1" \
+		firewallSku="$firewallSku" \
+		firewallTier="$firewallTier" \
+		firewallThreatIntelMode="$firewallThreatIntelMode" \
+		publicIpResourceGroup="$rgNameNetworkLocation1" \
+		publicIpName="$firewallPublicIpLocation1"
+
+	az deployment group create --subscription "$subscriptionId" -n "FW-""$location2" --verbose \
+		-g "$rgNameNetworkLocation2" --template-file "$templateFirewall" \
+		--parameters \
+		applicationId="$applicationId" \
+		productId="$productId" \
+		productLine="$productLine" \
+		employeeId="$employeeId" \
+		businessUnit="$businessUnit" \
+		environment="$environment" \
+		organization="$organization" \
+		timestamp="$timestamp" \
+		location="$location2" \
+		vnetResourceGroup="$rgNameNetworkLocation2" \
+		vnetName="$vnetNameLocation2" \
+		firewallName="$firewallNameLocation2" \
+		firewallSku="$firewallSku" \
+		firewallTier="$firewallTier" \
+		firewallThreatIntelMode="$firewallThreatIntelMode" \
+		publicIpResourceGroup="$rgNameNetworkLocation2" \
+		publicIpName="$firewallPublicIpLocation2"
+fi
 
 echo -e "\n"
 

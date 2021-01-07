@@ -152,7 +152,7 @@ then
 	echo "Deploy Private Endpoints for Service Bus Namespaces"
 
 	az deployment group create --subscription "$subscriptionId" -n "ASB-PE-""$location1" --verbose \
-		-g "$rgNameWorkloadLocation1" --template-file "$templatePrivateEndpoint" \
+		-g "$rgNameSharedLocation1" --template-file "$templatePrivateEndpoint" \
 		--parameters \
 		applicationId="$applicationId" \
 		productId="$productId" \
@@ -175,7 +175,7 @@ then
 		subnetName="$subnetNameShared"
 
 	az deployment group create --subscription "$subscriptionId" -n "ASB-PE-""$location2" --verbose \
-		-g "$rgNameWorkloadLocation2" --template-file "$templatePrivateEndpoint" \
+		-g "$rgNameSharedLocation2" --template-file "$templatePrivateEndpoint" \
 		--parameters \
 		applicationId="$applicationId" \
 		productId="$productId" \
