@@ -21,6 +21,7 @@ adminPassword="PROVIDE"
 
 # ==================================================
 # Deployment - set to false to not deploy that set of resources; see deploy.main. for use.
+deployResourceGroups="true"
 deployNetwork="true"
 deployServiceBus="true"
 deployWorkloads="true"
@@ -29,13 +30,13 @@ deployVms="true"
 
 # ==================================================
 # Business/Naming
-applicationId="ap"
-productId="pr"
-productLine="pl"
-employeeId="em"
-businessUnit="bu"
+applicationId="a1"
+productId="p1"
+productLine="pl1"
+employeeId="e1"
+businessUnit="bu1"
 environment="dev"
-organization="org"
+organization="o1"
 timestamp="$(date +%FT%T%z)"
 # ==================================================
 
@@ -67,6 +68,8 @@ nsgNameLocation2="$businessUnit""-""$environment""-""$productLine""-""$location2
 
 # ==================================================
 # Networking
+deployFirewall="true"
+
 subnetNameShared="$businessUnit""-""$environment""-shared-sbt"
 subnetNameWorkload="$businessUnit""-""$environment""-""$productId""-sbt"
 subnetDelegationServiceNameWorkload="Microsoft.Web/serverFarms"
@@ -74,15 +77,25 @@ subnetNameWorkloadVnetIntegration="$businessUnit""-""$environment""-""$productId
 
 vnetNameLocation1="$businessUnit""-""$environment""-""$productLine""-""$location1""-vnet"
 vnetPrefixLocation1="10.11.0.0/16"
-subnetPrefixSharedLocation1="10.11.1.0/24"
-subnetPrefixWorkloadLocation1="10.11.10.0/24"
-subnetPrefixWorkloadVnetIntegrationLocation1="10.11.11.0/28"
+subnetPrefixFirewallLocation1="10.11.1.0/24"
+subnetPrefixSharedLocation1="10.11.10.0/24"
+subnetPrefixWorkloadLocation1="10.11.20.0/24"
+subnetPrefixWorkloadVnetIntegrationLocation1="10.11.21.0/28"
 
 vnetNameLocation2="$businessUnit""-""$environment""-""$productLine""-""$location2""-vnet"
 vnetPrefixLocation2="10.12.0.0/16"
-subnetPrefixSharedLocation2="10.12.1.0/24"
-subnetPrefixWorkloadLocation2="10.12.10.0/24"
-subnetPrefixWorkloadVnetIntegrationLocation2="10.12.11.0/28"
+subnetPrefixFirewallLocation2="10.12.1.0/24"
+subnetPrefixSharedLocation2="10.12.10.0/24"
+subnetPrefixWorkloadLocation2="10.12.20.0/24"
+subnetPrefixWorkloadVnetIntegrationLocation2="10.12.21.0/28"
+
+firewallSku="AZFW_VNet"
+firewallTier="Standard"
+firewallThreatIntelMode="Alert"
+firewallNameLocation1="$businessUnit""-""$environment""-""$location1""-fw"
+firewallNameLocation2="$businessUnit""-""$environment""-""$location2""-fw"
+firewallPublicIpLocation1="$firewallNameLocation1""-pip"
+firewallPublicIpLocation2="$firewallNameLocation2""-pip"
 
 subnetIdWorkloadLocation1="/subscriptions/""$subscriptionId""/resourceGroups/""$rgNameNetworkLocation1""/providers/Microsoft.Network/virtualNetworks/""$vnetNameLocation1""/subnets/""$subnetNameWorkload"
 subnetIdWorkloadLocation2="/subscriptions/""$subscriptionId""/resourceGroups/""$rgNameNetworkLocation2""/providers/Microsoft.Network/virtualNetworks/""$vnetNameLocation2""/subnets/""$subnetNameWorkload"
@@ -92,14 +105,15 @@ subnetIdWorkloadVnetIntegrationLocation2="/subscriptions/""$subscriptionId""/res
 
 # ==================================================
 # Azure Service Bus
-asbResourceType="Microsoft.ServiceBus/namespaces"
-asbSubResource="namespace"
 asbZoneRedundant="true"
-asbSendListenSasPolicyName="SendListen"
 asbAllowTrustedServices="true"
-asbDefaultAction="Deny"
 asbVnetAccessRules="true"
 asbPrivateEndpoint="true"
+
+asbResourceType="Microsoft.ServiceBus/namespaces"
+asbSubResource="namespace"
+asbSendListenSasPolicyName="SendListen"
+asbDefaultAction="Deny"
 asbPrivateDnsZoneName="privatelink.servicebus.windows.net"
 asbMessagingUnits=1
 
@@ -116,10 +130,11 @@ asbPrivateEndpointNameLocation2="$businessUnit""-""$environment""-asb-pe-""$loca
 
 # ==================================================
 # Storage
+storageAccountPrivateEndpoint="true"
+
 storageAccountResourceType="Microsoft.Storage/storageAccounts"
 storageBlobSubResource="blob"
 storageFileSubResource="file"
-storageAccountPrivateEndpoint="true"
 storageBlobPrivateDnsZoneName="privatelink.blob.core.windows.net"
 storageFilePrivateDnsZoneName="privatelink.file.core.windows.net"
 
@@ -134,6 +149,9 @@ storageFilePrivateEndpointNameLocation2="$businessUnit""-""$environment""-sf-pe-
 
 # ==================================================
 # Workload - Function
+workloadVnetIntegration="true"
+workloadPrivateEndpoint="true"
+
 workloadResourceType="Microsoft.Web/sites"
 workloadSubResource="sites"
 workloadHostingPlanSkuTier="PremiumV2"
@@ -144,9 +162,7 @@ workloadWorkerCount="1"
 workloadAlwaysOn="true"
 workloadRuntimeStack="dotnet"
 workloadRuntimeVersion="3.1"
-workloadVnetIntegration="true"
 workloadRouteAllTrafficThroughVnet="1"
-workloadPrivateEndpoint="true"
 workloadPrivateDnsZoneName="privatelink.azurewebsites.net"
 
 workloadPlanNameLocation1="asp-""$businessUnit""-""$environment""-""$applicationId""-""$location1""-workload"
@@ -163,35 +179,21 @@ workloadPrivateEndpointNameLocation2="$businessUnit""-""$environment""-app-pe-""
 # ==================================================
 
 # ==================================================
-# Public IPs
-publicIpType="Dynamic"
-publicIpSku="Basic"
-
-publicIpNameLocation1="$businessUnit""-""$environment""-""$applicationId""-""$location1""-pip"
-publicIpNameLocation2="$businessUnit""-""$environment""-""$applicationId""-""$location2""-pip"
-# ==================================================
-
-# ==================================================
-# Network Interfaces
-privateIpAllocationMethod="Dynamic"
-ipConfigName="ipConfig1"
-
-networkInterfaceNameLocation1="$businessUnit""-""$environment""-""$applicationId""-""$location1""-nic"
-networkInterfaceNameLocation2="$businessUnit""-""$environment""-""$applicationId""-""$location2""-nic"
-# ==================================================
-
-# ==================================================
 # VM
-virtualMachineSize="Standard_D4s_v3"
 enableAcceleratedNetworking="true" # This is not supported for all VM Sizes - check your VM Size!
-usePublicIps="true" #Set to false if you don't want public IPs on VMs - you'll need a bastion/jumpbox to access VMs without public IPs
+provisionVmAgent="true"
+enableBootDiagnostics="true"
+useVmCustomImage="true"
+
+virtualMachineSize="Standard_D4s_v3"
+virtualMachineUsePublicIp="true" #Set to false if you don't want public IPs on VMs - you'll need a bastion/jumpbox to access VMs without public IPs
 
 availabilityZoneLocation1="1"
 availabilityZoneLocation2="1"
 
-# If deploying VMs from custom images, set here and also pick the correct VM template below (vm.windows.custom-image or vm.windows)
-virtualMachineImageResourceIdLocation1="/subscriptions/""$subscriptionId""/resourceGroups/PROVIDE"
-virtualMachineImageResourceIdLocation2="/subscriptions/""$subscriptionId""/resourceGroups/PROVIDE"
+# If deploying VMs from custom images, set here
+virtualMachineImageResourceIdLocation1="/subscriptions/""$subscriptionId""/resourceGroups/shared/providers/Microsoft.Compute/images/wi-dev-image-eastus2"
+virtualMachineImageResourceIdLocation2="/subscriptions/""$subscriptionId""/resourceGroups/shared/providers/Microsoft.Compute/images/wi-dev-image-centralus"
 
 virtualMachinePublisher="MicrosoftWindowsServer"
 virtualMachineOffer="WindowsServer"
@@ -199,7 +201,6 @@ virtualMachineLicenseType="Windows_Server"
 virtualMachineSku="2019-datacenter-smalldisk-g2"
 
 virtualMachineVersion="latest"
-provisionVmAgent="true"
 osDiskStorageType="Premium_LRS"
 osDiskSizeInGB=127
 dataDiskStorageType="Premium_LRS"
@@ -207,17 +208,37 @@ dataDiskCount=0
 dataDiskSizeInGB=32
 vmAutoShutdownTime="1800"
 enableAutoShutdownNotification="Disabled"
-autoShutdownNotificationWebhookURL=""
+autoShutdownNotificationWebhookURL="" # Provide if set enableAutoShutdownNotification="Enabled"
 autoShutdownNotificationMinutesBefore=15
 
-virtualMachineNameLocation1="l1""$businessUnit""$environment""$applicationId"
-virtualMachineNameLocation2="l2""$businessUnit""$environment""$applicationId"
+# Windows VM names are limited to 16 characters
+virtualMachineNamePrefix="$businessUnit""$environment""$applicationId"
+virtualMachineNameSuffix="01"
+virtualMachineNameLocation1="$virtualMachineNamePrefix""l1""$virtualMachineNameSuffix"
+virtualMachineNameLocation2="$virtualMachineNamePrefix""l2""$virtualMachineNameSuffix"
 virtualMachineTimeZoneLocation1="Eastern Standard Time"
 virtualMachineTimeZoneLocation2="Central Standard Time"
 
-enableBootDiagnostics="true"
 bootDiagnosticsStorageAccountNameLocation1="$businessUnit""$environment""dl1"
 bootDiagnosticsStorageAccountNameLocation2="$businessUnit""$environment""dl2"
+# ==================================================
+
+# ==================================================
+# Public IPs
+publicIpType="Static" # Static or Dynamic - Standard SKU requires Static
+publicIpSku="Standard" # Basic or Standard
+
+virtualMachinePublicIpLocation1="$virtualMachineNameLocation1""-pip"
+virtualMachinePublicIpLocation2="$virtualMachineNameLocation2""-pip"
+# ==================================================
+
+# ==================================================
+# Network Interfaces
+privateIpAllocationMethod="Dynamic"
+ipConfigName="ipConfig1"
+
+networkInterfaceNameLocation1="$virtualMachineNameLocation1""-nic"
+networkInterfaceNameLocation2="$virtualMachineNameLocation2""-nic"
 # ==================================================
 
 # ==================================================
@@ -228,6 +249,8 @@ templatePrivateEndpoint="./arm/arm.net.private-endpoint.json"
 templateVnetPeering="./arm/arm.net.vnet-peering.json"
 templatePrivateDnsZone="./arm/arm.net.private-dns-zone.json"
 templatePrivateDnsZoneVnetLink="./arm/arm.net.private-dns-zone-vnet-link.json"
+
+templateFirewall="./arm/arm.net.firewall.json"
 
 templateStorageAccount="./arm/arm.storage.account.json"
 templateStorageAccountVnetRuleForFunction="./arm/arm.storage.account.vnet-rule.function.json"
@@ -245,15 +268,17 @@ templateWorkload="./arm/arm.function.json"
 templateWorkloadVnetIntegration="./arm/arm.function.vnet-integration.json"
 
 templatePublicIp="./arm/arm.net.public-ip.json"
+templatePublicIpWithAz="./arm/arm.net.public-ip-az.json"
 
-if $usePublicIps
+templateNetworkInterfaceWithPublicIp="./arm/arm.net.network-interface-public-ip.json"
+templateNetworkInterfaceWithoutPublicIp="./arm/arm.net.network-interface.json"
+
+if $useVmCustomImage
 then
-	templateNetworkInterface="./arm/arm.net.network-interface-public-ip.json"
+	templateVirtualMachine="./arm/arm.vm.windows.custom-image.json"
 else
-	templateNetworkInterface="./arm/arm.net.network-interface.json"
+	templateVirtualMachine="./arm/arm.vm.windows.json"
 fi
 
-templateVirtualMachine="./arm/arm.vm.windows.json"
-# templateVirtualMachine="./arm/arm.vm.windows.custom-image.json"
 templateVirtualMachineBootDiagnostics="./arm/arm.vm.boot-diagnostics.json"
 # ==================================================

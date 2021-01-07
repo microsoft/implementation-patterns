@@ -9,7 +9,7 @@ then
 	echo "Deploy Public IPs"
 
 	az deployment group create --subscription "$subscriptionId" -n "PIP-""$location1" --verbose \
-		-g "$rgNameVmLocation1" --template-file "$templatePublicIp" \
+		-g "$rgNameVmLocation1" --template-file "$templatePublicIpWithAz" \
 		--parameters \
 		applicationId="$applicationId" \
 		productId="$productId" \
@@ -21,13 +21,13 @@ then
 		timestamp="$timestamp" \
 		location="$location1" \
 		availabilityZone="$availabilityZoneLocation1" \
-		publicIpName="$publicIpNameLocation1" \
+		publicIpName="$virtualMachinePublicIpLocation1" \
 		publicIpType="$publicIpType" \
 		publicIpSku="$publicIpSku" \
 		domainNameLabel="$virtualMachineNameLocation1"
 
 	az deployment group create --subscription "$subscriptionId" -n "PIP-""$location2" --verbose \
-		-g "$rgNameVmLocation2" --template-file "$templatePublicIp" \
+		-g "$rgNameVmLocation2" --template-file "$templatePublicIpWithAz" \
 		--parameters \
 		applicationId="$applicationId" \
 		productId="$productId" \
@@ -39,7 +39,7 @@ then
 		timestamp="$timestamp" \
 		location="$location2" \
 		availabilityZone="$availabilityZoneLocation2" \
-		publicIpName="$publicIpNameLocation2" \
+		publicIpName="$virtualMachinePublicIpLocation2" \
 		publicIpType="$publicIpType" \
 		publicIpSku="$publicIpSku" \
 		domainNameLabel="$virtualMachineNameLocation2"
@@ -52,7 +52,7 @@ echo "Deploy Network Interfaces"
 if $usePublicIps
 then
 	az deployment group create --subscription "$subscriptionId" -n "NIC-""$location1" --verbose \
-		-g "$rgNameVmLocation1" --template-file "$templateNetworkInterface" \
+		-g "$rgNameVmLocation1" --template-file "$templateNetworkInterfaceWithPublicIp" \
 		--parameters \
 		applicationId="$applicationId" \
 		productId="$productId" \
@@ -70,11 +70,11 @@ then
 		enableAcceleratedNetworking="$enableAcceleratedNetworking" \
 		privateIpAllocationMethod="$privateIpAllocationMethod" \
 		publicIpResourceGroup="$rgNameVmLocation1" \
-		publicIpName="$publicIpNameLocation1" \
+		publicIpName="$virtualMachinePublicIpLocation1" \
 		ipConfigName="$ipConfigName"
 
 	az deployment group create --subscription "$subscriptionId" -n "NIC-""$location2" --verbose \
-		-g "$rgNameVmLocation2" --template-file "$templateNetworkInterface" \
+		-g "$rgNameVmLocation2" --template-file "$templateNetworkInterfaceWithPublicIp" \
 		--parameters \
 		applicationId="$applicationId" \
 		productId="$productId" \
@@ -92,11 +92,11 @@ then
 		enableAcceleratedNetworking="$enableAcceleratedNetworking" \
 		privateIpAllocationMethod="$privateIpAllocationMethod" \
 		publicIpResourceGroup="$rgNameVmLocation2" \
-		publicIpName="$publicIpNameLocation2" \
+		publicIpName="$virtualMachinePublicIpLocation2" \
 		ipConfigName="$ipConfigName"
 else
 	az deployment group create --subscription "$subscriptionId" -n "NIC-""$location1" --verbose \
-		-g "$rgNameVmLocation1" --template-file "$templateNetworkInterface" \
+		-g "$rgNameVmLocation1" --template-file "$templateNetworkInterfaceWithoutPublicIp" \
 		--parameters \
 		applicationId="$applicationId" \
 		productId="$productId" \
@@ -116,7 +116,7 @@ else
 		ipConfigName="$ipConfigName"
 
 	az deployment group create --subscription "$subscriptionId" -n "NIC-""$location2" --verbose \
-		-g "$rgNameVmLocation2" --template-file "$templateNetworkInterface" \
+		-g "$rgNameVmLocation2" --template-file "$templateNetworkInterfaceWithoutPublicIp" \
 		--parameters \
 		applicationId="$applicationId" \
 		productId="$productId" \

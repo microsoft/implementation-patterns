@@ -5,7 +5,10 @@
 . ./deploy.variables.sh
 # ==================================================
 
-./deploy.resource-groups.sh
+if $deployResourceGroups
+then
+	./deploy.resource-groups.sh
+fi
 
 if $deployNetwork
 then
