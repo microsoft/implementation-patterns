@@ -1,0 +1,53 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"roleAssignmentName": {
+			"type": "String",
+			"defaultValue": "[newGuid()]",
+			"metadata": {
+				"displayName": "Role Assignment Name",
+				"description": ""
+			}
+		},
+		"roleDefinitionId": {
+			"type": "String",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Role Definition ID",
+				"description": "See https://docs.microsoft.com/azure/role-based-access-control/built-in-roles"
+			}
+		},
+		"principalId": {
+			"type": "String",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Principal ID for the User-Assigned Identity",
+				"description": ""
+			}
+		},
+		"scopeId": {
+			"type": "String",
+			"defaultValue": "[resourceGroup().id]",
+			"metadata": {
+				"displayName": "Scope ID for the Role Assignment",
+				"description": "Defaults to the deployment Resource Group"
+			}
+		}
+	},
+	"variables": {
+		"apiVersionAuthRoleAssignment": "2020-04-01-preview"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Authorization/roleAssignments",
+			"name": "[parameters('roleAssignmentName')]",
+			"apiVersion": "[variables('apiVersionAuthRoleAssignment')]",
+			"properties": {
+				"roleDefinitionId": "[parameters('roleDefinitionId')]",
+				"principalId": "[parameters('principalId')]",
+				"scope": "[parameters('scopeId')]"
+			}
+		}
+	]
+}

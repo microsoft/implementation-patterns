@@ -49,92 +49,49 @@ fi
 
 echo "Deploy Network Interfaces"
 
-if $usePublicIps
-then
-	az deployment group create --subscription "$subscriptionId" -n "NIC-""$location1" --verbose \
-		-g "$rgNameVmLocation1" --template-file "$templateNetworkInterfaceWithPublicIp" \
-		--parameters \
-		applicationId="$applicationId" \
-		productId="$productId" \
-		productLine="$productLine" \
-		employeeId="$employeeId" \
-		businessUnit="$businessUnit" \
-		environment="$environment" \
-		organization="$organization" \
-		timestamp="$timestamp" \
-		location="$location1" \
-		networkInterfaceName="$networkInterfaceNameLocation1" \
-		vnetResourceGroup="$rgNameNetworkLocation1" \
-		vnetName="$vnetNameLocation1" \
-		subnetName="$subnetNameWorkload" \
-		enableAcceleratedNetworking="$enableAcceleratedNetworking" \
-		privateIpAllocationMethod="$privateIpAllocationMethod" \
-		publicIpResourceGroup="$rgNameVmLocation1" \
-		publicIpName="$virtualMachinePublicIpLocation1" \
-		ipConfigName="$ipConfigName"
+az deployment group create --subscription "$subscriptionId" -n "NIC-""$location1" --verbose \
+	-g "$rgNameVmLocation1" --template-file "$templateNetworkInterface" \
+	--parameters \
+	applicationId="$applicationId" \
+	productId="$productId" \
+	productLine="$productLine" \
+	employeeId="$employeeId" \
+	businessUnit="$businessUnit" \
+	environment="$environment" \
+	organization="$organization" \
+	timestamp="$timestamp" \
+	location="$location1" \
+	networkInterfaceName="$networkInterfaceNameLocation1" \
+	vnetResourceGroup="$rgNameNetworkLocation1" \
+	vnetName="$vnetNameLocation1" \
+	subnetName="$subnetNameWorkload" \
+	enableAcceleratedNetworking="$enableAcceleratedNetworking" \
+	privateIpAllocationMethod="$privateIpAllocationMethod" \
+	publicIpResourceGroup="$rgNameVmLocation1" \
+	publicIpName="$virtualMachinePublicIpLocation1" \
+	ipConfigName="$ipConfigName"
 
-	az deployment group create --subscription "$subscriptionId" -n "NIC-""$location2" --verbose \
-		-g "$rgNameVmLocation2" --template-file "$templateNetworkInterfaceWithPublicIp" \
-		--parameters \
-		applicationId="$applicationId" \
-		productId="$productId" \
-		productLine="$productLine" \
-		employeeId="$employeeId" \
-		businessUnit="$businessUnit" \
-		environment="$environment" \
-		organization="$organization" \
-		timestamp="$timestamp" \
-		location="$location2" \
-		networkInterfaceName="$networkInterfaceNameLocation2" \
-		vnetResourceGroup="$rgNameNetworkLocation2" \
-		vnetName="$vnetNameLocation2" \
-		subnetName="$subnetNameWorkload" \
-		enableAcceleratedNetworking="$enableAcceleratedNetworking" \
-		privateIpAllocationMethod="$privateIpAllocationMethod" \
-		publicIpResourceGroup="$rgNameVmLocation2" \
-		publicIpName="$virtualMachinePublicIpLocation2" \
-		ipConfigName="$ipConfigName"
-else
-	az deployment group create --subscription "$subscriptionId" -n "NIC-""$location1" --verbose \
-		-g "$rgNameVmLocation1" --template-file "$templateNetworkInterfaceWithoutPublicIp" \
-		--parameters \
-		applicationId="$applicationId" \
-		productId="$productId" \
-		productLine="$productLine" \
-		employeeId="$employeeId" \
-		businessUnit="$businessUnit" \
-		environment="$environment" \
-		organization="$organization" \
-		timestamp="$timestamp" \
-		location="$location1" \
-		networkInterfaceName="$networkInterfaceNameLocation1" \
-		vnetResourceGroup="$rgNameNetworkLocation1" \
-		vnetName="$vnetNameLocation1" \
-		subnetName="$subnetNameWorkload" \
-		enableAcceleratedNetworking="$enableAcceleratedNetworking" \
-		privateIpAllocationMethod="$privateIpAllocationMethod" \
-		ipConfigName="$ipConfigName"
-
-	az deployment group create --subscription "$subscriptionId" -n "NIC-""$location2" --verbose \
-		-g "$rgNameVmLocation2" --template-file "$templateNetworkInterfaceWithoutPublicIp" \
-		--parameters \
-		applicationId="$applicationId" \
-		productId="$productId" \
-		productLine="$productLine" \
-		employeeId="$employeeId" \
-		businessUnit="$businessUnit" \
-		environment="$environment" \
-		organization="$organization" \
-		timestamp="$timestamp" \
-		location="$location2" \
-		networkInterfaceName="$networkInterfaceNameLocation2" \
-		vnetResourceGroup="$rgNameNetworkLocation2" \
-		vnetName="$vnetNameLocation2" \
-		subnetName="$subnetNameWorkload" \
-		enableAcceleratedNetworking="$enableAcceleratedNetworking" \
-		privateIpAllocationMethod="$privateIpAllocationMethod" \
-		ipConfigName="$ipConfigName"
-fi
+az deployment group create --subscription "$subscriptionId" -n "NIC-""$location2" --verbose \
+	-g "$rgNameVmLocation2" --template-file "$templateNetworkInterface" \
+	--parameters \
+	applicationId="$applicationId" \
+	productId="$productId" \
+	productLine="$productLine" \
+	employeeId="$employeeId" \
+	businessUnit="$businessUnit" \
+	environment="$environment" \
+	organization="$organization" \
+	timestamp="$timestamp" \
+	location="$location2" \
+	networkInterfaceName="$networkInterfaceNameLocation2" \
+	vnetResourceGroup="$rgNameNetworkLocation2" \
+	vnetName="$vnetNameLocation2" \
+	subnetName="$subnetNameWorkload" \
+	enableAcceleratedNetworking="$enableAcceleratedNetworking" \
+	privateIpAllocationMethod="$privateIpAllocationMethod" \
+	publicIpResourceGroup="$rgNameVmLocation2" \
+	publicIpName="$virtualMachinePublicIpLocation2" \
+	ipConfigName="$ipConfigName"
 
 echo -e "\n"
 

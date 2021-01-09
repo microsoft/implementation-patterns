@@ -1,0 +1,335 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"applicationId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application ID in ServiceNow",
+				"required": true
+			}
+		},
+		"productId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PR in ServiceNow",
+				"required": true
+			}
+		},
+		"productLine": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PL in ServiceNow",
+				"required": true
+			}
+		},
+		"employeeId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Employee ID",
+				"required": true
+			}
+		},
+		"businessUnit": {
+			"type": "string",
+			"defaultValue": "wi",
+			"metadata": {
+				"comments": "Business Unit. Examples: 'wi', 'ecc', 'gs'",
+				"required": true
+			}
+		},
+		"environment": {
+			"type": "string",
+			"defaultValue": "dev",
+			"metadata": {
+				"comments": "Deployment Environment",
+				"required": false
+			}
+		},
+		"organization": {
+			"type": "string",
+			"defaultValue": "WIM",
+			"metadata": {
+				"comments": "Organization",
+				"required": false
+			}
+		},
+		"timestamp": {
+			"type": "string",
+			"defaultValue": "[utcNow('u')]"
+		},
+
+		"location": {
+			"type": "string",
+			"defaultValue": "[resourceGroup().location]"
+		},
+		"functionName": {
+			"type": "string",
+			"defaultValue": "[concat(parameters('applicationId'), '-', parameters('employeeId'), '-s-app')]",
+			"metadata": {
+				"required": true
+			}
+		},
+		"hostingPlanName": {
+			"type": "string",
+			"defaultValue": "[concat('ASP-', parameters('businessUnit'), parameters('environment'), parameters('applicationId'), parameters('location'), 'workload-', toLower(parameters('skuName')))]",
+			"metadata": {
+				"required": false
+			}
+		},
+		"serverFarmResourceGroup": {
+			"type": "string",
+			"defaultValue": "[concat(parameters('businessUnit'), '-', parameters('environment'), '-', parameters('applicationId'), '-', parameters('location'), '-workload')]"
+		},
+		"alwaysOn": {
+			"type": "bool",
+			"defaultValue": true
+		},
+		"storageAccountName": {
+			"type": "string",
+			"defaultValue": "[toLower(concat(parameters('environment'), parameters('applicationId'), 'storacct'))]",
+			"metadata": {
+				"comments": "Each resource group has a storage account, usually named dev<applicationId>storacct. Not required if sanely named.",
+				"required": false
+			}
+		},
+		"runtimeStack": {
+			"type": "string",
+			"defaultValue": "Node",
+			"allowedValues": [
+				"Node",
+				"Java",
+				"dotnet"
+			]
+		},
+		"runtimeStackVersion": {
+			"type": "string",
+			"defaultValue": "12"
+		},
+		"skuTier": {
+			"type": "string",
+			"defaultValue": "PremiumV2"
+		},
+		"skuName": {
+			"type": "string",
+			"defaultValue": "P1v2"
+		},
+		"workerSize": {
+			"type": "string",
+			"defaultValue": "3"
+		},
+		"workerSizeId": {
+			"type": "string",
+			"defaultValue": "3"
+		},
+		"numberOfWorkers": {
+			"type": "string",
+			"defaultValue": "1"
+		},
+		"appInsightsName": {
+			"type": "string",
+			"defaultValue": "[concat(parameters('functionName'), '-AppInsights')]",
+			"metadata": {
+				"comments": "The template will come up with a name for the app insights object. You probably want to omit this.",
+				"required": false
+			}
+		},
+		"addPrivateEndpoint": {
+			"type": "bool",
+			"defaultValue": false
+		},
+		"routeAllTrafficThroughVNet": {
+			"type": "string",
+			"defaultValue": "0",
+			"allowedValues": [
+				"0",
+				"1"
+			]
+		}
+	},
+	"variables": {
+		"ipSecurityRestrictions": [
+			{
+				"ipAddress": "75.68.47.183/32",
+				"action": "Allow",
+				"tag": "Default",
+				"priority": 50,
+				"name": "Patrick",
+				"description": "Patrick"
+			},
+			{
+				"ipAddress": "192.223.136.0/28",
+				"action": "Allow",
+				"tag": "Default",
+				"priority": 100,
+				"name": "rtp1",
+				"description": "Originates from RTP NC AZ1"
+			},
+			{
+				"ipAddress": "192.223.236.128/25",
+				"action": "Allow",
+				"tag": "Default",
+				"priority": 101,
+				"name": "rtp2",
+				"description": "Originates from RTP NC AZ2"
+			},
+			{
+				"ipAddress": "192.223.241.16/28",
+				"action": "Allow",
+				"tag": "Default",
+				"priority": 102,
+				"name": "oma1",
+				"description": "Originates from Omaha NE AZ1"
+			},
+			{
+				"ipAddress": "192.223.242.16/28",
+				"action": "Allow",
+				"tag": "Default",
+				"priority": 103,
+				"name": "oma2",
+				"description": "Originates from Omaha NE AZ2"
+			},
+			{
+				"ipAddress": "103.26.72.112/28",
+				"action": "Allow",
+				"tag": "Default",
+				"priority": 104,
+				"name": "ind1",
+				"description": "Originates from Bangalore India"
+			},
+			{
+				"ipAddress": "103.26.73.112/28",
+				"action": "Allow",
+				"tag": "Default",
+				"priority": 105,
+				"name": "ind2",
+				"description": "Originates from Chennai India"
+			},
+			{
+				"ipAddress": "Any",
+				"action": "Deny",
+				"priority": 2147483647,
+				"name": "Deny all",
+				"description": "Deny all access"
+			}
+		],
+		"resourceTags": {
+			"ApplicationId": "[toLower(parameters('applicationId'))]",
+			"ProductId": "[toLower(parameters('productId'))]",
+			"ProductLine": "[toLower(parameters('productLine'))]",
+			"CreatedBy": "[toLower(parameters('employeeId'))]",
+			"BusinessUnit": "[parameters('businessUnit')]",
+			"Environment": "[toLower(parameters('environment'))]",
+			"Organization": "[parameters('organization')]",
+			"Timestamp": "[parameters('timestamp')]"
+		},
+		"apiVersionWeb": "2020-06-01",
+		"apiVersionInsights": "2015-05-01",
+		"apiVersionStorage": "2019-06-01"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Web/sites",
+			"apiVersion": "[variables('apiVersionWeb')]",
+			"name": "[parameters('functionName')]",
+			"kind": "functionapp",
+			"location": "[parameters('location')]",
+			"dependsOn": [
+				"[concat('microsoft.insights/components/', parameters('appInsightsName'))]",
+				"[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
+			],
+			"tags": "[variables('resourceTags')]",
+			"properties": {
+				"name": "[parameters('functionName')]",
+				"siteConfig": {
+					"appSettings": [
+						{
+							"name": "FUNCTIONS_EXTENSION_VERSION",
+							"value": "~3"
+						},
+						{
+							"name": "FUNCTIONS_WORKER_RUNTIME",
+							"value": "[toLower(parameters('runtimeStack'))]"
+						},
+						{
+							"name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+							"value": "[reference(concat('microsoft.insights/components/', parameters('appInsightsName')), variables('apiVersionInsights')).InstrumentationKey]"
+						},
+						{
+							"name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+							"value": "[reference(concat('microsoft.insights/components/', parameters('appInsightsName')), variables('apiVersionInsights')).ConnectionString]"
+						},
+						{
+							"name": "AzureWebJobsStorage",
+							"value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId(subscription().subscriptionId, resourceGroup().name,'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), variables('apiVersionStorage')).keys[0].value,';EndpointSuffix=','core.windows.net')]"
+						},
+						{
+							"name": "WEBSITE_NODE_DEFAULT_VERSION",
+							"value": "[if(equals(parameters('runtimeStack'), 'Node'), concat('~', parameters('runtimeStackVersion')), json('null'))]"
+						},
+                        {
+                            "name": "WEBSITE_VNET_ROUTE_ALL",
+                            "value": "[parameters('routeAllTrafficThroughVNet')]"
+                        }
+					]
+				},
+				"serverFarmId": "[concat(subscription().id,'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+				"httpsOnly": true,
+				"clientAffinityEnabled": false
+			}
+		},
+		{
+			"type": "Microsoft.Web/sites/config",
+			"apiVersion": "[variables('apiVersionWeb')]",
+			"name": "[concat(parameters('functionName'), '/web')]",
+			"location": "[parameters('location')]",
+			"dependsOn": [
+				"[concat('microsoft.insights/components/', parameters('appInsightsName'))]",
+				"[resourceId('Microsoft.Web/sites', parameters('functionName'))]"
+			],
+			"properties": {
+				"use32BitWorkerProcess": false,
+				"alwaysOn": "[bool(parameters('alwaysOn'))]",
+				"ipSecurityRestrictions": "[if(bool(parameters('addPrivateEndpoint')), json('null'), variables('ipSecurityRestrictions'))]",
+				"scmIpSecurityRestrictionsUseMain": "[not(bool(parameters('addPrivateEndpoint')))]",
+				"http20Enabled": true,
+				"minTlsVersion": "1.2",
+				"ftpsState": "Disabled"
+			}
+		},
+		{
+			"type": "Microsoft.Web/serverfarms",
+			"apiVersion": "[variables('apiVersionWeb')]",
+			"name": "[parameters('hostingPlanName')]",
+			"location": "[parameters('location')]",
+			"kind": "",
+			"tags": "[variables('resourceTags')]",
+			"dependsOn": [],
+			"properties": {
+				"name": "[parameters('hostingPlanName')]",
+				"workerSize": "[parameters('workerSize')]",
+				"workerSizeId": "[parameters('workerSizeId')]",
+				"numberOfWorkers": "[parameters('numberOfWorkers')]"
+			},
+			"sku": {
+				"Tier": "[parameters('skuTier')]",
+				"Name": "[parameters('skuName')]"
+			}
+		},
+		{
+			"type": "Microsoft.Insights/components",
+			"apiVersion": "[variables('apiVersionInsights')]",
+			"name": "[parameters('appInsightsName')]",
+			"location": "[parameters('location')]",
+			"tags": "[variables('resourceTags')]",
+			"properties": {
+				"ApplicationId": "[parameters('functionName')]",
+				"Request_Source": "IbizaWebAppExtensionCreate"
+			}
+		}
+	]
+}

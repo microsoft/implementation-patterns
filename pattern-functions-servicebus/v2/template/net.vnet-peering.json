@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetPeeringName": {
+            "type": "string",
+            "metadata": {
+                "displayName": "",
+                "description": ""
+            }
+        },
+        "resourceGroupNameRemote": {
+            "type": "string",
+            "metadata": {
+                "displayName": "",
+                "description": ""
+            }
+        },
+        "vnetNameLocal": {
+            "type": "string",
+            "metadata": {
+                "displayName": "",
+                "description": ""
+            }
+        },
+        "vnetNameRemote": {
+            "type": "string",
+            "metadata": {
+                "displayName": "",
+                "description": ""
+            }
+        },
+        "vnetAddressSpaceRemote": {
+            "type": "string",
+            "metadata": {
+                "displayName": "",
+                "description": ""
+            }
+        }
+    },
+    "variables": {
+        "vnetIdRemote": "[resourceId(parameters('resourceGroupNameRemote'), 'Microsoft.Network/virtualNetworks', parameters('vnetNameRemote'))]",
+        "apiVersionVnetPeerings": "2020-07-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "name": "[concat(parameters('vnetNameLocal'), '/', parameters('vnetPeeringName'))]",
+            "apiVersion": "[variables('apiVersionVnetPeerings')]",
+            "properties": {
+                "remoteVirtualNetwork": {
+                    "id": "[variables('vnetIdRemote')]"
+                },
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": false,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteAddressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetAddressSpaceRemote')]"
+                    ]
+                }
+            }
+        }
+    ]
+}

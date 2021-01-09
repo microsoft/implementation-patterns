@@ -1,0 +1,189 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"applicationId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application ID in ServiceNow",
+				"required": false
+			}
+		},
+		"productId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PR in ServiceNow",
+				"required": false
+			}
+		},
+		"productLine": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PL in ServiceNow",
+				"required": false
+			}
+		},
+		"employeeId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Employee ID",
+				"required": false
+			}
+		},
+		"businessUnit": {
+			"type": "string",
+			"defaultValue": "wi",
+			"metadata": {
+				"comments": "Business Unit. Examples: 'wi', 'ecc', 'gs'",
+				"required": false
+			}
+		},
+		"environment": {
+			"type": "string",
+			"defaultValue": "dev",
+			"metadata": {
+				"comments": "Deployment Environment",
+				"required": false
+			}
+		},
+		"organization": {
+			"type": "string",
+			"defaultValue": "WIM",
+			"metadata": {
+				"comments": "Organization",
+				"required": false
+			}
+		},
+		"timestamp": {
+			"type": "string",
+			"defaultValue": "[utcNow('u')]"
+		},
+
+		"location": {
+			"type": "string",
+			"defaultValue": "[resourceGroup().location]",
+			"metadata": {
+				"description": "Azure region"
+			}
+		},
+		"vnetResourceGroup": {
+			"type": "String",
+			"metadata": {
+				"displayName": "Virtual Network Resource Group",
+				"description": ""
+			}
+		},
+		"vnetName": {
+			"type": "String",
+			"metadata": {
+				"displayName": "Virtual Network Name",
+				"description": ""
+			}
+		},
+		"firewallName": {
+			"type": "String",
+			"metadata": {
+				"displayName": "",
+				"description": ""
+			}
+		},
+		"firewallZones": {
+			"type": "array",
+			"defaultValue": ["1","2","3"]
+		},
+		"firewallSku": {
+			"type": "string",
+			"defaultValue": "AZFW_VNet",
+			"allowedValues": [
+				"AZFW_VNet",
+				"AZFW_Hub"
+			]
+		},
+		"firewallTier": {
+			"type": "string",
+			"defaultValue": "Standard",
+			"allowedValues": [
+				"Standard",
+				"Premium"
+			]
+		},
+		"firewallThreatIntelMode": {
+			"type": "string",
+			"defaultValue": "Alert",
+			"allowedValues": [
+				"Alert",
+				"Deny",
+				"Off"
+			]
+		},
+		"publicIpResourceGroup": {
+			"type": "String",
+			"metadata": {
+				"displayName": "Public IP Address Resource Group",
+				"description": ""
+			}
+		},
+		"publicIpName": {
+			"type": "String",
+			"metadata": {
+				"displayName": "Public IP Address Name",
+				"description": ""
+			}
+		}
+	},
+	"variables": {
+		"firewallSubnetName": "AzureFirewallSubnet",
+		"vnetId": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
+		"firewallSubnetId": "[concat(variables('vnetId'), '/subnets/', variables('firewallSubnetName'))]",
+		"publicIpAddressId": "[resourceId(parameters('publicIpResourceGroup'), 'Microsoft.Network/publicIpAddresses', parameters('publicIpName'))]",
+		"resourceTags": {
+			"ApplicationId": "[toLower(parameters('applicationId'))]",
+			"ProductId": "[toLower(parameters('productId'))]",
+			"ProductLine": "[toLower(parameters('productLine'))]",
+			"CreatedBy": "[toLower(parameters('employeeId'))]",
+			"BusinessUnit": "[parameters('businessUnit')]",
+			"Environment": "[toLower(parameters('environment'))]",
+			"Organization": "[parameters('organization')]",
+			"Timestamp": "[parameters('timestamp')]"
+		},
+		"apiVersionNetwork": "2020-07-01"
+	},
+	"resources": [
+        {
+            "type": "Microsoft.Network/azureFirewalls",
+            "apiVersion": "[variables('apiVersionNetwork')]",
+            "name": "[parameters('firewallName')]",
+            "location": "[parameters('location')]",
+			"tags": "[variables('resourceTags')]",
+            "zones": "[parameters('firewallZones')]",
+            "properties": {
+                "sku": {
+                    "name": "[parameters('firewallSku')]",
+                    "tier": "[parameters('firewallTier')]"
+                },
+                "threatIntelMode": "[parameters('firewallThreatIntelMode')]",
+                "additionalProperties": {},
+                "ipConfigurations": [
+                    {
+                        "name": "[concat(parameters('firewallName'), '-ipConfig')]",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id": "[variables('publicIpAddressId')]"
+                            },
+                            "subnet": {
+                                "id": "[variables('firewallSubnetId')]"
+                            }
+                        }
+                    }
+                ],
+                "networkRuleCollections": [],
+                "applicationRuleCollections": [],
+                "natRuleCollections": []
+            }
+        }
+	]
+}

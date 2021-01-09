@@ -1,0 +1,85 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespaceName": {
+            "type": "string"
+        },
+        "queueName": {
+            "type": "string"
+        },
+        "lockDuration": {
+            "type": "string",
+            "defaultValue": "PT30S",
+			"metadata": {
+				"displayName": "Lock Duration",
+				"description": "ISO 8601 timespan duration of a peek-lock; that is, the amount of time that the message is locked for other receivers. The maximum value for LockDuration is 5 minutes; the default value is 1 minute. See https://docs.microsoft.com/azure/templates/microsoft.servicebus/namespaces/queues."
+			}
+        },
+        "maxSizeInMegabytes": {
+            "type": "int",
+            "defaultValue": 1024,
+			"metadata": {
+				"displayName": "Max Size in Megabytes",
+				"description": "The maximum size of the queue in megabytes, which is the size of memory allocated for the queue. See https://docs.microsoft.com/azure/templates/microsoft.servicebus/namespaces/queues."
+			}
+        },
+        "requiresDuplicateDetection": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "requiresSession": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "defaultMessageTimeToLive": {
+            "type": "string",
+            "defaultValue": "P10D",
+			"metadata": {
+				"displayName": "Lock Duration",
+				"description": "ISO 8601 default message timespan to live value. This is the duration after which the message expires, starting from when the message is sent to Service Bus. This is the default value used when TimeToLive is not set on a message itself. See https://docs.microsoft.com/azure/templates/microsoft.servicebus/namespaces/queues."
+			}
+        },
+        "deadLetteringOnMessageExpiration": {
+            "type": "bool",
+            "defaultValue": true
+        },
+        "duplicateDetectionHistoryTimeWindow": {
+            "type": "string",
+            "defaultValue": "PT10M",
+			"metadata": {
+				"displayName": "Lock Duration",
+				"description": "ISO 8601 timeSpan structure that defines the duration of the duplicate detection history. The default value is 10 minutes. See https://docs.microsoft.com/azure/templates/microsoft.servicebus/namespaces/queues."
+			}
+        },
+        "maxDeliveryCount": {
+            "type": "int",
+            "defaultValue": 10
+        },
+        "enableBatchedOperations": {
+            "type": "bool",
+            "defaultValue": false
+        }
+    },
+    "variables": {
+        "apiVersionServiceBusQueues": "2017-04-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces/queues",
+            "apiVersion": "[variables('apiVersionServiceBusQueues')]",
+            "name": "[concat(parameters('namespaceName'), '/', parameters('queueName'))]",
+            "properties": {
+                "lockDuration": "[parameters('lockDuration')]",
+                "maxSizeInMegabytes": "[parameters('maxSizeInMegabytes')]",
+                "requiresDuplicateDetection": "[parameters('requiresDuplicateDetection')]",
+                "requiresSession": "[parameters('requiresSession')]",
+                "defaultMessageTimeToLive": "[parameters('defaultMessageTimeToLive')]",
+                "deadLetteringOnMessageExpiration": "[parameters('deadLetteringOnMessageExpiration')]",
+                "duplicateDetectionHistoryTimeWindow": "[parameters('duplicateDetectionHistoryTimeWindow')]",
+                "maxDeliveryCount": "[parameters('maxDeliveryCount')]",
+                "enableBatchedOperations": "[parameters('enableBatchedOperations')]"
+            }
+        }
+    ]
+}

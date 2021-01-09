@@ -7,7 +7,7 @@
 echo "Deploy NSGs"
 
 az deployment group create --subscription "$subscriptionId" -n "NSG-""$location1" --verbose \
-	-g "$rgNameNetworkLocation1" --template-file "$templateNsg" \
+	-g "$rgNameNetworkSpoke1Location1" --template-file "$templateNsg" \
 	--parameters \
 	applicationId="$applicationId" \
 	productId="$productId" \
@@ -22,7 +22,7 @@ az deployment group create --subscription "$subscriptionId" -n "NSG-""$location1
 	nsgRuleInbound100Src="$nsgRuleInbound100Src"
 
 az deployment group create --subscription "$subscriptionId" -n "NSG-""$location2" --verbose \
-	-g "$rgNameNetworkLocation2" --template-file "$templateNsg" \
+	-g "$rgNameNetworkSpoke1Location2" --template-file "$templateNsg" \
 	--parameters \
 	applicationId="$applicationId" \
 	productId="$productId" \
@@ -40,8 +40,36 @@ echo -e "\n"
 
 echo "Deploy VNets"
 
+# Region 1 Hub VNet
+az deployment group create --subscription "$subscriptionId" -n "VNet-Hub-""$location1" --verbose \
+	-g "$rgNameNetworkHubLocation1" --template-file "$templateVnet" \
+	--parameters \
+	applicationId="$applicationId" \
+	productId="$productId" \
+	productLine="$productLine" \
+	employeeId="$employeeId" \
+	businessUnit="$businessUnit" \
+	environment="$environment" \
+	organization="$organization" \
+	timestamp="$timestamp" \
+	location="$location1" \
+	vnetName="$vnetNameHubLocation1" \
+	vnetPrefix="$vnetPrefixHubLocation1" \
+	subnetPrefixFirewall="$subnetPrefixFirewallLocation1" \
+	subnetNameShared="$subnetNameShared" \
+	subnetPrefixShared="$subnetPrefixSharedLocation1" \
+	subnetNameWorkload="$subnetNameWorkload" \
+	subnetPrefixWorkload="$subnetPrefixWorkloadLocation1" \
+	subnetDelegationServiceNameWorkload="$subnetDelegationServiceNameWorkload" \
+	subnetNameWorkloadVNetIntegration="$subnetNameWorkloadVnetIntegration" \
+	subnetPrefixWorkloadVNetIntegration="$subnetPrefixWorkloadVnetIntegrationLocation1" \
+	nsgNameShared="$nsgNameLocation1" \
+	nsgNameWorkload="$nsgNameLocation1" \
+	nsgNameWorkloadVNetIntegration="$nsgNameLocation1"
+
+# Region 1 Spoke VNet 1
 az deployment group create --subscription "$subscriptionId" -n "VNet-""$location1" --verbose \
-	-g "$rgNameNetworkLocation1" --template-file "$templateNetwork" \
+	-g "$rgNameNetworkLocation1" --template-file "$templateVnet" \
 	--parameters \
 	applicationId="$applicationId" \
 	productId="$productId" \
@@ -66,8 +94,36 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-""$location
 	nsgNameWorkload="$nsgNameLocation1" \
 	nsgNameWorkloadVNetIntegration="$nsgNameLocation1"
 
+# Region 2 Hub VNet
 az deployment group create --subscription "$subscriptionId" -n "VNet-""$location2" --verbose \
-	-g "$rgNameNetworkLocation2" --template-file "$templateNetwork" \
+	-g "$rgNameNetworkLocation2" --template-file "$templateVnet" \
+	--parameters \
+	applicationId="$applicationId" \
+	productId="$productId" \
+	productLine="$productLine" \
+	employeeId="$employeeId" \
+	businessUnit="$businessUnit" \
+	environment="$environment" \
+	organization="$organization" \
+	timestamp="$timestamp" \
+	location="$location2" \
+	vnetName="$vnetNameLocation2" \
+	vnetPrefix="$vnetPrefixLocation2" \
+	subnetPrefixFirewall="$subnetPrefixFirewallLocation2" \
+	subnetNameShared="$subnetNameShared" \
+	subnetPrefixShared="$subnetPrefixSharedLocation2" \
+	subnetNameWorkload="$subnetNameWorkload" \
+	subnetPrefixWorkload="$subnetPrefixWorkloadLocation2" \
+	subnetDelegationServiceNameWorkload="$subnetDelegationServiceNameWorkload" \
+	subnetNameWorkloadVNetIntegration="$subnetNameWorkloadVnetIntegration" \
+	subnetPrefixWorkloadVNetIntegration="$subnetPrefixWorkloadVnetIntegrationLocation2" \
+	nsgNameShared="$nsgNameLocation2" \
+	nsgNameWorkload="$nsgNameLocation2" \
+	nsgNameWorkloadVNetIntegration="$nsgNameLocation2"
+
+# Region 2 Spoke VNet 1
+az deployment group create --subscription "$subscriptionId" -n "VNet-""$location2" --verbose \
+	-g "$rgNameNetworkLocation2" --template-file "$templateVnet" \
 	--parameters \
 	applicationId="$applicationId" \
 	productId="$productId" \
