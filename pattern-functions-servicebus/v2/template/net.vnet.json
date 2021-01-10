@@ -78,14 +78,6 @@
 			"type": "string",
 			"defaultValue": ""
 		},
-		"subnetPrefixFirewall": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "Subnet prefix for the Azure Firewall Subnet",
-				"description": "Subnet prefix for the Azure Firewall Subnet. If not specified, the Azure Firewall Subnet will not be deployed in this VNet."
-			}
-		},
 		"enableDdosProtection": {
 			"type": "bool",
 			"defaultValue": false
@@ -96,7 +88,6 @@
 		}
 	},
 	"variables": {
-		"subnetNameFirewall": "AzureFirewallSubnet",
 		"resourceTags": {
 			"ApplicationId": "[toLower(parameters('applicationId'))]",
 			"ProductId": "[toLower(parameters('productId'))]",
@@ -127,20 +118,6 @@
 				},
 				"enableDdosProtection": "[parameters('enableDdosProtection')]",
 				"enableVmProtection": "[parameters('enableVmProtection')]"
-			}
-		},
-		{
-			"condition": "[not(empty(parameters('subnetPrefixFirewall')))]",
-			"type": "Microsoft.Network/virtualNetworks/subnets",
-			"apiVersion": "[variables('apiVersionVnet')]",
-			"name": "[concat(parameters('vnetName'), '/', variables('subnetNameFirewall'))]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
-            ],
-			"properties": {
-				"addressPrefix": "[parameters('subnetPrefixFirewall')]",
-				"privateEndpointNetworkPolicies": "Enabled",
-				"privateLinkServiceNetworkPolicies": "Enabled"
 			}
 		}
 	]

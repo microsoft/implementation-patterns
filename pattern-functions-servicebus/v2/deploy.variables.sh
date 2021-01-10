@@ -15,7 +15,7 @@ nsgRuleInbound100Src="75.68.47.183" # Inbound allow for debugging - likely remov
 # These are Windows VMs to run Azure Service Bus Explorer, Azure Storage Explorer, and Browser tests
 # Use Windows-acceptable username and password values
 adminUsername="pelazem"
-adminPassword="W00hoo@@2020"
+adminPassword="PROVIDE"
 # ==================================================
 # ==================================================
 
@@ -74,16 +74,19 @@ nsgNameLocation2="$businessUnit""-""$environment""-""$productLine""-""$location2
 # Networking
 
 # Hub
+vnetHubEnableDdos="true"
+vnetHubEnableVmProtection="false"
 deployFirewall="true"
 
 vnetNameHubLocation1="$businessUnit""-""$environment""-""$productLine""-""$location1""-vnet-hub"
 vnetNameHubLocation2="$businessUnit""-""$environment""-""$productLine""-""$location2""-vnet-hub"
 
-vnetPrefixHubLocation1="10.11.0.0/16"
-vnetPrefixHubLocation2="10.31.0.0/16"
+vnetPrefixHubLocation1="10.1.0.0/16"
+vnetPrefixHubLocation2="10.101.0.0/16"
 
-subnetPrefixFirewallLocation1="10.11.1.0/24"
-subnetPrefixFirewallLocation2="10.31.1.0/24"
+subnetNameFirewall="AzureFirewallSubnet"
+subnetPrefixFirewallLocation1="10.1.1.0/24"
+subnetPrefixFirewallLocation2="10.101.1.0/24"
 
 firewallSku="AZFW_VNet"
 firewallTier="Standard"
@@ -92,24 +95,34 @@ firewallNameLocation1="$businessUnit""-""$environment""-""$location1""-fw"
 firewallNameLocation2="$businessUnit""-""$environment""-""$location2""-fw"
 firewallPublicIpLocation1="$firewallNameLocation1""-pip"
 firewallPublicIpLocation2="$firewallNameLocation2""-pip"
+# Firewall Public IPs
+firewallPublicIpType="Static" # Static or Dynamic - Standard SKU requires Static
+firewallPublicIpSku="Standard" # Basic or Standard
 
 # Spoke
+vnetSpoke1EnableDdos="true"
+vnetSpoke1EnableVmProtection="true"
+
 subnetNameShared="$businessUnit""-""$environment""-shared-sbt"
 subnetNameWorkload="$businessUnit""-""$environment""-""$productId""-sbt"
 subnetDelegationServiceNameWorkload="Microsoft.Web/serverFarms"
 subnetNameWorkloadVnetIntegration="$businessUnit""-""$environment""-""$productId""-vnet-int-sbt"
 
+subnetServiceEndpointsShared="Microsoft.EventHub, Microsoft.KeyVault, Microsoft.ServiceBus, Microsoft.Storage"
+subnetServiceEndpointsWorkload="Microsoft.AzureCosmosDB, Microsoft.CognitiveServices, Microsoft.ContainerRegistry, Microsoft.EventHub, Microsoft.KeyVault, Microsoft.ServiceBus, Microsoft.Sql, Microsoft.Storage, Microsoft.Web"
+subnetDelegationServiceWorkload="Microsoft.Web/serverFarms"
+
 vnetNameSpoke1Location1="$businessUnit""-""$environment""-""$productLine""-""$location1""-vnet-spoke"
-vnetPrefixSpoke1Location1="10.12.0.0/16"
-subnetPrefixSharedLocation1="10.12.1.0/24"
-subnetPrefixWorkloadLocation1="10.12.10.0/24"
-subnetPrefixWorkloadVnetIntegrationLocation1="10.12.11.0/28"
+vnetPrefixSpoke1Location1="10.11.0.0/16"
+subnetPrefixSharedLocation1="10.11.1.0/24"
+subnetPrefixWorkloadLocation1="10.11.10.0/24"
+subnetPrefixWorkloadVnetIntegrationLocation1="10.11.11.0/28"
 
 vnetNameSpoke1Location2="$businessUnit""-""$environment""-""$productLine""-""$location2""-vnet-spoke"
-vnetPrefixSpoke1Location2="10.32.0.0/16"
-subnetPrefixSharedLocation2="10.32.1.0/24"
-subnetPrefixWorkloadLocation2="10.32.10.0/24"
-subnetPrefixWorkloadVnetIntegrationLocation2="10.32.11.0/28"
+vnetPrefixSpoke1Location2="10.111.0.0/16"
+subnetPrefixSharedLocation2="10.111.1.0/24"
+subnetPrefixWorkloadLocation2="10.111.10.0/24"
+subnetPrefixWorkloadVnetIntegrationLocation2="10.111.11.0/28"
 
 subnetIdWorkloadLocation1="/subscriptions/""$subscriptionId""/resourceGroups/""$rgNameNetworkSpoke1Location1""/providers/Microsoft.Network/virtualNetworks/""$vnetNameLocation1""/subnets/""$subnetNameWorkload"
 subnetIdWorkloadLocation2="/subscriptions/""$subscriptionId""/resourceGroups/""$rgNameNetworkSpoke1Location2""/providers/Microsoft.Network/virtualNetworks/""$vnetNameLocation2""/subnets/""$subnetNameWorkload"
@@ -239,8 +252,8 @@ bootDiagnosticsStorageAccountNameLocation2="$businessUnit""$environment""dl2"
 
 # ==================================================
 # VM Public IPs
-publicIpType="Static" # Static or Dynamic - Standard SKU requires Static
-publicIpSku="Standard" # Basic or Standard
+virtualMachinePublicIpType="Static" # Static or Dynamic - Standard SKU requires Static
+virtualMachinePublicIpSku="Standard" # Basic or Standard
 
 virtualMachinePublicIpLocation1="$virtualMachineNameLocation1""-pip"
 virtualMachinePublicIpLocation2="$virtualMachineNameLocation2""-pip"
@@ -259,6 +272,7 @@ networkInterfaceNameLocation2="$virtualMachineNameLocation2""-nic"
 # Templates
 templateNsg="./template/net.nsg.json"
 templateVnet="./template/net.vnet.json"
+templateSubnet="./template/net.vnet.subnet.json"
 templatePrivateEndpoint="./template/net.private-endpoint.json"
 templateVnetPeering="./template/net.vnet-peering.json"
 templatePrivateDnsZone="./template/net.private-dns-zone.json"

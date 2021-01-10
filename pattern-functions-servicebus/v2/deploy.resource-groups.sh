@@ -11,8 +11,11 @@ then
 	# Deploy the RG for global network resources to location1 - could be another region too
 	az group create --subscription "$subscriptionId" -n "$rgNameNetworkGlobal" -l "$location1" --verbose
 
-	az group create --subscription "$subscriptionId" -n "$rgNameNetworkLocation1" -l "$location1" --verbose
-	az group create --subscription "$subscriptionId" -n "$rgNameNetworkLocation2" -l "$location2" --verbose
+	az group create --subscription "$subscriptionId" -n "$rgNameNetworkHubLocation1" -l "$location1" --verbose
+	az group create --subscription "$subscriptionId" -n "$rgNameNetworkHubLocation2" -l "$location2" --verbose
+
+	az group create --subscription "$subscriptionId" -n "$rgNameNetworkSpoke1Location1" -l "$location1" --verbose
+	az group create --subscription "$subscriptionId" -n "$rgNameNetworkSpoke1Location2" -l "$location2" --verbose
 fi
 
 if $deployServiceBus

@@ -22,8 +22,8 @@ then
 		location="$location1" \
 		availabilityZone="$availabilityZoneLocation1" \
 		publicIpName="$virtualMachinePublicIpLocation1" \
-		publicIpType="$publicIpType" \
-		publicIpSku="$publicIpSku" \
+		publicIpType="$virtualMachinePublicIpType" \
+		publicIpSku="$virtualMachinePublicIpSku" \
 		domainNameLabel="$virtualMachineNameLocation1"
 
 	az deployment group create --subscription "$subscriptionId" -n "PIP-""$location2" --verbose \
@@ -40,8 +40,8 @@ then
 		location="$location2" \
 		availabilityZone="$availabilityZoneLocation2" \
 		publicIpName="$virtualMachinePublicIpLocation2" \
-		publicIpType="$publicIpType" \
-		publicIpSku="$publicIpSku" \
+		publicIpType="$virtualMachinePublicIpType" \
+		publicIpSku="$virtualMachinePublicIpSku" \
 		domainNameLabel="$virtualMachineNameLocation2"
 
 	echo -e "\n"
