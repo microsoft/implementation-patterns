@@ -71,6 +71,14 @@
 				"description": "See https://azure.microsoft.com/regions/."
 			}
 		},
+		"availabilityZone": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Azure availability zone (AZ)",
+				"description": "Optional; if not provided, a non-zonal PIP will be deployed. The Azure AZ within which to deploy. See https://azure.microsoft.com/regions/ for which regions support AZs."
+			}
+		},
 		"publicIpName": {
 			"type": "String",
 			"metadata": {
@@ -139,7 +147,15 @@
 			},
 			"sku": {
 				"name": "[parameters('publicIpSku')]"
-			}
+			},
+			"zones": "[
+				if
+				(
+					empty(trim(parameters('availabilityZone'))),
+					json('[]'),
+					array(parameters('availabilityZone'))
+				)
+			]"
 		}
 	]
 }

@@ -59,8 +59,7 @@ echo -e "\n"
 # If we wanted to allow cross-region Storage Account access (peered VNets) we would need to add two more az deployment calls here
 if $workloadVnetIntegration
 then
-	echo "Deploy Storage Account VNet Rules for Workload"
-
+	echo "Deploy Region 1 Storage Account VNet Rules for Workload"
 	az deployment group create --subscription "$subscriptionId" -n "WL-SA-VNR-""$location1" --verbose \
 		-g "$rgNameWorkloadLocation1" --template-file "$templateStorageAccountVnetRuleForFunction" \
 		--parameters \
@@ -69,12 +68,13 @@ then
 		skuName="Standard_LRS" \
 		skuTier="Standard" \
 		kind="StorageV2" \
-		virtualNetworkResourceGroup="$rgNameNetworkLocation1" \
-		virtualNetworkName="$vnetNameLocation1" \
+		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location1" \
+		virtualNetworkName="$vnetNameSpoke1Location1" \
 		subnetNameWorkload="$subnetNameWorkload" \
 		subnetNameWorkloadVNetIntegration="$subnetNameWorkloadVnetIntegration" \
 		action="Allow"
 
+	echo "Deploy Region 2 Storage Account VNet Rules for Workload"
 	az deployment group create --subscription "$subscriptionId" -n "WL-SA-VNR-""$location2" --verbose \
 		-g "$rgNameWorkloadLocation2" --template-file "$templateStorageAccountVnetRuleForFunction" \
 		--parameters \
@@ -83,8 +83,8 @@ then
 		skuName="Standard_LRS" \
 		skuTier="Standard" \
 		kind="StorageV2" \
-		virtualNetworkResourceGroup="$rgNameNetworkLocation2" \
-		virtualNetworkName="$vnetNameLocation2" \
+		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location2" \
+		virtualNetworkName="$vnetNameSpoke1Location2" \
 		subnetNameWorkload="$subnetNameWorkload" \
 		subnetNameWorkloadVNetIntegration="$subnetNameWorkloadVnetIntegration" \
 		action="Allow"
@@ -96,7 +96,7 @@ if $storageAccountPrivateEndpoint
 then
 	echo "Deploy Private Endpoints for Storage Accounts"
 
-	# Location 1 Blob Private Endpoint
+	echo "Region 1 Blob Private Endpoint"
 	az deployment group create --subscription "$subscriptionId" -n "SAB-PE-""$location1" --verbose \
 		-g "$rgNameWorkloadLocation1" --template-file "$templatePrivateEndpoint" \
 		--parameters \
@@ -116,11 +116,11 @@ then
 		protectedWorkloadName="$storageAcctNameLocation1" \
 		protectedWorkloadSubResource="$storageBlobSubResource" \
 		privateEndpointName="$storageBlobPrivateEndpointNameLocation1" \
-		networkResourceGroup="$rgNameNetworkLocation1" \
-		vnetName="$vnetNameLocation1" \
+		networkResourceGroup="$rgNameNetworkSpoke1Location1" \
+		vnetName="$vnetNameSpoke1Location1" \
 		subnetName="$subnetNameWorkload"
 
-	# Location 1 File Private Endpoint
+	echo "Region 1 File Private Endpoint"
 	az deployment group create --subscription "$subscriptionId" -n "SAF-PE-""$location1" --verbose \
 		-g "$rgNameWorkloadLocation1" --template-file "$templatePrivateEndpoint" \
 		--parameters \
@@ -140,11 +140,11 @@ then
 		protectedWorkloadName="$storageAcctNameLocation1" \
 		protectedWorkloadSubResource="$storageFileSubResource" \
 		privateEndpointName="$storageFilePrivateEndpointNameLocation1" \
-		networkResourceGroup="$rgNameNetworkLocation1" \
-		vnetName="$vnetNameLocation1" \
+		networkResourceGroup="$rgNameNetworkSpoke1Location1" \
+		vnetName="$vnetNameSpoke1Location1" \
 		subnetName="$subnetNameWorkload"
 
-	# Location 2 Blob Private Endpoint
+	echo "Region 2 Blob Private Endpoint"
 	az deployment group create --subscription "$subscriptionId" -n "SAB-PE-""$location2" --verbose \
 		-g "$rgNameWorkloadLocation2" --template-file "$templatePrivateEndpoint" \
 		--parameters \
@@ -164,11 +164,11 @@ then
 		protectedWorkloadName="$storageAcctNameLocation2" \
 		protectedWorkloadSubResource="$storageBlobSubResource" \
 		privateEndpointName="$storageBlobPrivateEndpointNameLocation2" \
-		networkResourceGroup="$rgNameNetworkLocation2" \
-		vnetName="$vnetNameLocation2" \
+		networkResourceGroup="$rgNameNetworkSpoke1Location2" \
+		vnetName="$vnetNameSpoke1Location2" \
 		subnetName="$subnetNameWorkload"
 
-	# Location 2 File Private Endpoint
+	echo "Region 2 File Private Endpoint"
 	az deployment group create --subscription "$subscriptionId" -n "SAF-PE-""$location2" --verbose \
 		-g "$rgNameWorkloadLocation2" --template-file "$templatePrivateEndpoint" \
 		--parameters \
@@ -188,15 +188,14 @@ then
 		protectedWorkloadName="$storageAcctNameLocation2" \
 		protectedWorkloadSubResource="$storageFileSubResource" \
 		privateEndpointName="$storageFilePrivateEndpointNameLocation2" \
-		networkResourceGroup="$rgNameNetworkLocation2" \
-		vnetName="$vnetNameLocation2" \
+		networkResourceGroup="$rgNameNetworkSpoke1Location2" \
+		vnetName="$vnetNameSpoke1Location2" \
 		subnetName="$subnetNameWorkload"
 
 	echo -e "\n"
 fi
 
-echo "Deploy Workloads"
-
+echo "Deploy Region 1 Workload"
 az deployment group create --subscription "$subscriptionId" -n "WL-""$location1" --verbose \
 	-g "$rgNameWorkloadLocation1" --template-file "$templateWorkload" \
 	--parameters \
@@ -225,6 +224,7 @@ az deployment group create --subscription "$subscriptionId" -n "WL-""$location1"
 	addPrivateEndpoint="$workloadPrivateEndpoint" \
 	routeAllTrafficThroughVNet="$workloadRouteAllTrafficThroughVnet"
 
+echo "Deploy Region 2 Workload"
 az deployment group create --subscription "$subscriptionId" -n "WL-""$location2" --verbose \
 	-g "$rgNameWorkloadLocation2" --template-file "$templateWorkload" \
 	--parameters \
@@ -257,8 +257,7 @@ echo -e "\n"
 
 if $workloadPrivateEndpoint
 then
-	echo "Deploy Private Endpoints for Workloads"
-
+	echo "Deploy Region 1 Private Endpoint for Workloads"
 	az deployment group create --subscription "$subscriptionId" -n "WL-PE-""$location1" --verbose \
 		-g "$rgNameWorkloadLocation1" --template-file "$templatePrivateEndpoint" \
 		--parameters \
@@ -278,10 +277,11 @@ then
 		protectedWorkloadName="$workloadAppNameLocation1" \
 		protectedWorkloadSubResource="$workloadSubResource" \
 		privateEndpointName="$workloadPrivateEndpointNameLocation1" \
-		networkResourceGroup="$rgNameNetworkLocation1" \
-		vnetName="$vnetNameLocation1" \
+		networkResourceGroup="$rgNameNetworkSpoke1Location1" \
+		vnetName="$vnetNameSpoke1Location1" \
 		subnetName="$subnetNameWorkload"
 
+	echo "Deploy Region 2 Private Endpoint for Workloads"
 	az deployment group create --subscription "$subscriptionId" -n "WL-PE-""$location2" --verbose \
 		-g "$rgNameWorkloadLocation2" --template-file "$templatePrivateEndpoint" \
 		--parameters \
@@ -301,8 +301,8 @@ then
 		protectedWorkloadName="$workloadAppNameLocation2" \
 		protectedWorkloadSubResource="$workloadSubResource" \
 		privateEndpointName="$workloadPrivateEndpointNameLocation2" \
-		networkResourceGroup="$rgNameNetworkLocation2" \
-		vnetName="$vnetNameLocation2" \
+		networkResourceGroup="$rgNameNetworkSpoke1Location2" \
+		vnetName="$vnetNameSpoke1Location2" \
 		subnetName="$subnetNameWorkload"
 
 	echo -e "\n"
@@ -310,8 +310,7 @@ fi
 
 if $workloadVnetIntegration
 then
-	echo "VNet Integration for Workloads"
-
+	echo "Region 1 VNet Integration for Workload"
 	az deployment group create --subscription "$subscriptionId" -n "WL-VN-""$location1" --verbose \
 		-g "$rgNameWorkloadLocation1" --template-file "$templateWorkloadVnetIntegration" \
 		--parameters \
@@ -325,10 +324,11 @@ then
 		timestamp="$timestamp" \
 		location="$location1" \
 		functionName="$workloadAppNameLocation1" \
-		virtualNetworkResourceGroup="$rgNameNetworkLocation1" \
-		virtualNetworkName="$vnetNameLocation1" \
+		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location1" \
+		virtualNetworkName="$vnetNameSpoke1Location1" \
 		subnetNameForVNetIntegration="$subnetNameWorkloadVnetIntegration"
 
+	echo "Region 2 VNet Integration for Workload"
 	az deployment group create --subscription "$subscriptionId" -n "WL-VN-""$location2" --verbose \
 		-g "$rgNameWorkloadLocation2" --template-file "$templateWorkloadVnetIntegration" \
 		--parameters \
@@ -342,8 +342,8 @@ then
 		timestamp="$timestamp" \
 		location="$location2" \
 		functionName="$workloadAppNameLocation2" \
-		virtualNetworkResourceGroup="$rgNameNetworkLocation2" \
-		virtualNetworkName="$vnetNameLocation2" \
+		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location2" \
+		virtualNetworkName="$vnetNameSpoke1Location2" \
 		subnetNameForVNetIntegration="$subnetNameWorkloadVnetIntegration"
 
 	echo -e "\n"

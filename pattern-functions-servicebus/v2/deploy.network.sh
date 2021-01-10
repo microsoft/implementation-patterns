@@ -38,10 +38,7 @@ az deployment group create --subscription "$subscriptionId" -n "NSG-""$location2
 
 echo -e "\n"
 
-echo "Deploy VNets and Subnets"
-
 echo "Region 1 Hub VNet"
-
 az deployment group create --subscription "$subscriptionId" -n "VNet-Hub-""$location1" --verbose \
 	-g "$rgNameNetworkHubLocation1" --template-file "$templateVnet" \
 	--parameters \
@@ -62,7 +59,6 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Hub-""$loca
 if $deployFirewall
 then
 	echo "Region 1 Hub VNet Firewall Subnet"
-
 	az deployment group create --subscription "$subscriptionId" -n "Subnet-Hub-Firewall-""$location1" --verbose \
 		-g "$rgNameNetworkHubLocation1" --template-file "$templateSubnet" \
 		--parameters \
@@ -72,7 +68,6 @@ then
 fi
 
 echo "Region 2 Hub VNet"
-
 az deployment group create --subscription "$subscriptionId" -n "VNet-Hub-""$location2" --verbose \
 	-g "$rgNameNetworkHubLocation2" --template-file "$templateVnet" \
 	--parameters \
@@ -93,7 +88,6 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Hub-""$loca
 if $deployFirewall
 then
 	echo "Region 2 Hub VNet Firewall Subnet"
-
 	az deployment group create --subscription "$subscriptionId" -n "Subnet-Hub-Firewall-""$location2" --verbose \
 		-g "$rgNameNetworkHubLocation2" --template-file "$templateSubnet" \
 		--parameters \
@@ -131,7 +125,9 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location1" \
 	nsgName="$nsgNameLocation1" \
 	serviceEndpoints="$subnetServiceEndpointsShared" \
-	delegationService=""
+	delegationService="" \
+	privateEndpointNetworkPolicies="Disabled" \
+	privateLinkServiceNetworkPolicies="Disabled"
 
 echo "Region 1 Spoke 1 VNet Workload Subnet"
 az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subnet-Workload-""$location1" --verbose \
@@ -143,10 +139,12 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location1" \
 	nsgName="$nsgNameLocation1" \
 	serviceEndpoints="$subnetServiceEndpointsWorkload" \
-	delegationService="$subnetDelegationServiceWorkload"
+	delegationService="$subnetDelegationServiceWorkload" \
+	privateEndpointNetworkPolicies="Disabled" \
+	privateLinkServiceNetworkPolicies="Disabled"
 
 echo "Region 1 Spoke 1 VNet Workload VNet Integration Subnet"
-az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subnet-Workload-""$location1" --verbose \
+az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subnet-Workload-Integration""$location1" --verbose \
 	-g "$rgNameNetworkSpoke1Location1" --template-file "$templateSubnet" \
 	--parameters \
 	vnetName="$vnetNameSpoke1Location1" \
@@ -155,7 +153,23 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location1" \
 	nsgName="$nsgNameLocation1" \
 	serviceEndpoints="$subnetServiceEndpointsWorkload" \
-	delegationService=""
+	delegationService="" \
+	privateEndpointNetworkPolicies="Disabled" \
+	privateLinkServiceNetworkPolicies="Disabled"
+
+echo "Region 1 Spoke 1 VNet Test Subnet"
+az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subnet-Test-""$location1" --verbose \
+	-g "$rgNameNetworkSpoke1Location1" --template-file "$templateSubnet" \
+	--parameters \
+	vnetName="$vnetNameSpoke1Location1" \
+	subnetName="$subnetNameTest" \
+	subnetPrefix="$subnetPrefixTestLocation1" \
+	nsgResourceGroup="$rgNameNetworkSpoke1Location1" \
+	nsgName="$nsgNameLocation1" \
+	serviceEndpoints="$subnetServiceEndpointsTest" \
+	delegationService="" \
+	privateEndpointNetworkPolicies="Disabled" \
+	privateLinkServiceNetworkPolicies="Disabled"
 
 
 echo "Region 2 Spoke 1 VNet"
@@ -186,7 +200,9 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location2" \
 	nsgName="$nsgNameLocation2" \
 	serviceEndpoints="$subnetServiceEndpointsShared" \
-	delegationService=""
+	delegationService="" \
+	privateEndpointNetworkPolicies="Disabled" \
+	privateLinkServiceNetworkPolicies="Disabled"
 
 echo "Region 2 Spoke 1 VNet Workload Subnet"
 az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subnet-Workload-""$location2" --verbose \
@@ -198,7 +214,9 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location2" \
 	nsgName="$nsgNameLocation2" \
 	serviceEndpoints="$subnetServiceEndpointsWorkload" \
-	delegationService="$subnetDelegationServiceWorkload"
+	delegationService="$subnetDelegationServiceWorkload" \
+	privateEndpointNetworkPolicies="Disabled" \
+	privateLinkServiceNetworkPolicies="Disabled"
 
 echo "Region 2 Spoke 1 VNet Workload VNet Integration Subnet"
 az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subnet-Workload-""$location2" --verbose \
@@ -210,7 +228,23 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location2" \
 	nsgName="$nsgNameLocation2" \
 	serviceEndpoints="$subnetServiceEndpointsWorkload" \
-	delegationService=""
+	delegationService="" \
+	privateEndpointNetworkPolicies="Disabled" \
+	privateLinkServiceNetworkPolicies="Disabled"
+
+echo "Region 2 Spoke 1 VNet Test Subnet"
+az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subnet-Test-""$location2" --verbose \
+	-g "$rgNameNetworkSpoke1Location2" --template-file "$templateSubnet" \
+	--parameters \
+	vnetName="$vnetNameSpoke1Location2" \
+	subnetName="$subnetNameTest" \
+	subnetPrefix="$subnetPrefixTestLocation2" \
+	nsgResourceGroup="$rgNameNetworkSpoke1Location2" \
+	nsgName="$nsgNameLocation2" \
+	serviceEndpoints="$subnetServiceEndpointsTest" \
+	delegationService="" \
+	privateEndpointNetworkPolicies="Disabled" \
+	privateLinkServiceNetworkPolicies="Disabled"
 
 echo -e "\n"
 

@@ -5,8 +5,8 @@
 . ./deploy.variables.sh
 # ==================================================
 
-az group delete --subscription "$subscriptionId" -n "$rgNameVmLocation1" --yes --verbose
-az group delete --subscription "$subscriptionId" -n "$rgNameVmLocation2" --yes --verbose
+az group delete --subscription "$subscriptionId" -n "$rgNameTestLocation1" --yes --verbose
+az group delete --subscription "$subscriptionId" -n "$rgNameTestLocation2" --yes --verbose
 
 az group delete --subscription "$subscriptionId" -n "$rgNameWorkloadLocation1" --yes --verbose
 az group delete --subscription "$subscriptionId" -n "$rgNameWorkloadLocation2" --yes --verbose

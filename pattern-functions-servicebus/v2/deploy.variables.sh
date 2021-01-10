@@ -22,9 +22,9 @@ adminPassword="PROVIDE"
 # ==================================================
 # Deployment - set to false to not deploy that set of resources; see deploy.main. for use.
 deployResourceGroups="true"
-deployNetwork="true"
+deployNetwork="false"
 deployServiceBus="false"
-deployWorkloads="false"
+deployWorkloads="true"
 deployVms="false"
 # ==================================================
 
@@ -59,9 +59,9 @@ rgNameSharedLocation2="$businessUnit""-""$environment""-""$productLine""-""$loca
 rgNameWorkloadLocation1="$businessUnit""-""$environment""-""$applicationId""-""$location1""-workload"
 rgNameWorkloadLocation2="$businessUnit""-""$environment""-""$applicationId""-""$location2""-workload"
 
-# Test Assets - VMs
-rgNameVmLocation1="$businessUnit""-""$environment""-""$applicationId""-""$location1""-vm"
-rgNameVmLocation2="$businessUnit""-""$environment""-""$applicationId""-""$location2""-vm"
+# Test Assets
+rgNameTestLocation1="$businessUnit""-""$environment""-""$applicationId""-""$location1""-test"
+rgNameTestLocation2="$businessUnit""-""$environment""-""$applicationId""-""$location2""-test"
 # ==================================================
 
 # ==================================================
@@ -107,22 +107,26 @@ subnetNameShared="$businessUnit""-""$environment""-shared-sbt"
 subnetNameWorkload="$businessUnit""-""$environment""-""$productId""-sbt"
 subnetDelegationServiceNameWorkload="Microsoft.Web/serverFarms"
 subnetNameWorkloadVnetIntegration="$businessUnit""-""$environment""-""$productId""-vnet-int-sbt"
+subnetNameTest="$businessUnit""-""$environment""-test-sbt"
 
 subnetServiceEndpointsShared="Microsoft.EventHub, Microsoft.KeyVault, Microsoft.ServiceBus, Microsoft.Storage"
 subnetServiceEndpointsWorkload="Microsoft.AzureCosmosDB, Microsoft.CognitiveServices, Microsoft.ContainerRegistry, Microsoft.EventHub, Microsoft.KeyVault, Microsoft.ServiceBus, Microsoft.Sql, Microsoft.Storage, Microsoft.Web"
 subnetDelegationServiceWorkload="Microsoft.Web/serverFarms"
+subnetServiceEndpointsTest="Microsoft.AzureCosmosDB, Microsoft.CognitiveServices, Microsoft.ContainerRegistry, Microsoft.EventHub, Microsoft.KeyVault, Microsoft.ServiceBus, Microsoft.Sql, Microsoft.Storage, Microsoft.Web"
 
 vnetNameSpoke1Location1="$businessUnit""-""$environment""-""$productLine""-""$location1""-vnet-spoke"
 vnetPrefixSpoke1Location1="10.11.0.0/16"
 subnetPrefixSharedLocation1="10.11.1.0/24"
 subnetPrefixWorkloadLocation1="10.11.10.0/24"
 subnetPrefixWorkloadVnetIntegrationLocation1="10.11.11.0/28"
+subnetPrefixTestLocation1="10.11.254.0/24"
 
 vnetNameSpoke1Location2="$businessUnit""-""$environment""-""$productLine""-""$location2""-vnet-spoke"
 vnetPrefixSpoke1Location2="10.111.0.0/16"
 subnetPrefixSharedLocation2="10.111.1.0/24"
 subnetPrefixWorkloadLocation2="10.111.10.0/24"
 subnetPrefixWorkloadVnetIntegrationLocation2="10.111.11.0/28"
+subnetPrefixTestLocation2="10.111.254.0/24"
 
 subnetIdWorkloadLocation1="/subscriptions/""$subscriptionId""/resourceGroups/""$rgNameNetworkSpoke1Location1""/providers/Microsoft.Network/virtualNetworks/""$vnetNameLocation1""/subnets/""$subnetNameWorkload"
 subnetIdWorkloadLocation2="/subscriptions/""$subscriptionId""/resourceGroups/""$rgNameNetworkSpoke1Location2""/providers/Microsoft.Network/virtualNetworks/""$vnetNameLocation2""/subnets/""$subnetNameWorkload"
@@ -210,7 +214,6 @@ workloadPrivateEndpointNameLocation2="$businessUnit""-""$environment""-app-pe-""
 enableAcceleratedNetworking="true" # This is not supported for all VM Sizes - check your VM Size!
 provisionVmAgent="true"
 enableBootDiagnostics="true"
-useVmCustomImage="true"
 
 virtualMachineSize="Standard_D4s_v3"
 virtualMachineUsePublicIp="true" #Set to false if you don't want public IPs on VMs - you'll need a bastion/jumpbox to access VMs without public IPs
@@ -221,7 +224,7 @@ availabilityZoneLocation2="1"
 # If deploying VMs from custom images, set here
 virtualMachineImageResourceIdLocation1="/subscriptions/""$subscriptionId""/resourceGroups/shared/providers/Microsoft.Compute/images/wi-dev-image-eastus2"
 virtualMachineImageResourceIdLocation2="/subscriptions/""$subscriptionId""/resourceGroups/shared/providers/Microsoft.Compute/images/wi-dev-image-centralus"
-
+# Otherwise set these. The ARM template for VMs will use custom image resource ID over these, if the custom image is specified.
 virtualMachinePublisher="MicrosoftWindowsServer"
 virtualMachineOffer="WindowsServer"
 virtualMachineLicenseType="Windows_Server"
@@ -264,8 +267,8 @@ virtualMachinePublicIpLocation2="$virtualMachineNameLocation2""-pip"
 privateIpAllocationMethod="Dynamic"
 ipConfigName="ipConfig1"
 
-networkInterfaceNameLocation1="$virtualMachineNameLocation1""-nic"
-networkInterfaceNameLocation2="$virtualMachineNameLocation2""-nic"
+virtualMachineNetworkInterfaceNameLocation1="$virtualMachineNameLocation1""-nic"
+virtualMachineNetworkInterfaceNameLocation2="$virtualMachineNameLocation2""-nic"
 # ==================================================
 
 # ==================================================
@@ -296,7 +299,6 @@ templateWorkload="./template/function.json"
 templateWorkloadVnetIntegration="./template/function.vnet-integration.json"
 
 templatePublicIp="./template/net.public-ip.json"
-templatePublicIpWithAz="./template/net.public-ip-az.json"
 templateNetworkInterface="./template/net.network-interface.json"
 
 templateVirtualMachine="./template/vm.windows.json"
