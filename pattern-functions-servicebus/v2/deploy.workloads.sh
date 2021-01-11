@@ -310,36 +310,20 @@ fi
 
 if $workloadVnetIntegration
 then
-	echo "Region 1 VNet Integration for Workload"
-	az deployment group create --subscription "$subscriptionId" -n "WL-VN-""$location1" --verbose \
-		-g "$rgNameWorkloadLocation1" --template-file "$templateWorkloadVnetIntegration" \
+	echo "Region 1 VNet Connection for Workload"
+	az deployment group create --subscription "$subscriptionId" -n "WL-VNC-""$location1" --verbose \
+		-g "$rgNameWorkloadLocation1" --template-file "$templateWorkloadVnetConnection" \
 		--parameters \
-		applicationId="$applicationId" \
-		productId="$productId" \
-		productLine="$productLine" \
-		employeeId="$employeeId" \
-		businessUnit="$businessUnit" \
-		environment="$environment" \
-		organization="$organization" \
-		timestamp="$timestamp" \
 		location="$location1" \
 		functionName="$workloadAppNameLocation1" \
 		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location1" \
 		virtualNetworkName="$vnetNameSpoke1Location1" \
 		subnetNameForVNetIntegration="$subnetNameWorkloadVnetIntegration"
 
-	echo "Region 2 VNet Integration for Workload"
-	az deployment group create --subscription "$subscriptionId" -n "WL-VN-""$location2" --verbose \
-		-g "$rgNameWorkloadLocation2" --template-file "$templateWorkloadVnetIntegration" \
+	echo "Region 2 VNet Connection for Workload"
+	az deployment group create --subscription "$subscriptionId" -n "WL-VNC-""$location2" --verbose \
+		-g "$rgNameWorkloadLocation2" --template-file "$templateWorkloadVnetConnection" \
 		--parameters \
-		applicationId="$applicationId" \
-		productId="$productId" \
-		productLine="$productLine" \
-		employeeId="$employeeId" \
-		businessUnit="$businessUnit" \
-		environment="$environment" \
-		organization="$organization" \
-		timestamp="$timestamp" \
 		location="$location2" \
 		functionName="$workloadAppNameLocation2" \
 		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location2" \

@@ -32,8 +32,8 @@ fi
 
 if $deployVms
 then
-	az group create --subscription "$subscriptionId" -n "$rgNameVmLocation1" -l "$location1" --verbose
-	az group create --subscription "$subscriptionId" -n "$rgNameVmLocation2" -l "$location2" --verbose
+	az group create --subscription "$subscriptionId" -n "$rgNameTestLocation1" -l "$location1" --verbose
+	az group create --subscription "$subscriptionId" -n "$rgNameTestLocation2" -l "$location2" --verbose
 fi
 
 echo -e "\n"

@@ -6,15 +6,15 @@
 # ALL OTHER BLOCKS/VARIABLES CAN BE LEFT AT DEFAULTS (BUT REVIEW/CHANGE AS NEEDED ANYWAY)
 
 # Deployment
-subscriptionId="e61e4c75-268b-4c94-ad48-237aa3231481"
+subscriptionId="PROVIDE"
 location1="eastus2"
 location2="centralus"
 # Network
-nsgRuleInbound100Src="75.68.47.183" # Inbound allow for debugging - likely remove in production
+nsgRuleInbound100Src="PROVIDE" # Inbound allow for debugging - likely remove in production
 # VM
 # These are Windows VMs to run Azure Service Bus Explorer, Azure Storage Explorer, and Browser tests
 # Use Windows-acceptable username and password values
-adminUsername="pelazem"
+adminUsername="PROVIDE"
 adminPassword="PROVIDE"
 # ==================================================
 # ==================================================
@@ -24,8 +24,8 @@ adminPassword="PROVIDE"
 deployResourceGroups="true"
 deployNetwork="false"
 deployServiceBus="false"
-deployWorkloads="true"
-deployVms="false"
+deployWorkloads="false"
+deployVms="true"
 # ==================================================
 
 # ==================================================
@@ -296,7 +296,7 @@ templateAsbTopic="./template/asb.topic.json"
 templateAsbSubscription="./template/asb.subscription.json"
 
 templateWorkload="./template/function.json"
-templateWorkloadVnetIntegration="./template/function.vnet-integration.json"
+templateWorkloadVnetConnection="./template/function.vnet-connection.json"
 
 templatePublicIp="./template/net.public-ip.json"
 templateNetworkInterface="./template/net.network-interface.json"

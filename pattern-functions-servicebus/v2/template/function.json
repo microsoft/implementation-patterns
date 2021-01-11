@@ -227,8 +227,8 @@
 			"Organization": "[parameters('organization')]",
 			"Timestamp": "[parameters('timestamp')]"
 		},
-		"apiVersionWeb": "2020-06-01",
-		"apiVersionInsights": "2015-05-01",
+		"apiVersionWeb": "2020-09-01",
+		"apiVersionInsights": "2020-02-02-preview",
 		"apiVersionStorage": "2019-06-01"
 	},
 	"resources": [

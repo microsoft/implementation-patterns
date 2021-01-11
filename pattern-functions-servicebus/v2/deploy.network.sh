@@ -125,7 +125,6 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location1" \
 	nsgName="$nsgNameLocation1" \
 	serviceEndpoints="$subnetServiceEndpointsShared" \
-	delegationService="" \
 	privateEndpointNetworkPolicies="Disabled" \
 	privateLinkServiceNetworkPolicies="Disabled"
 
@@ -139,7 +138,6 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location1" \
 	nsgName="$nsgNameLocation1" \
 	serviceEndpoints="$subnetServiceEndpointsWorkload" \
-	delegationService="$subnetDelegationServiceWorkload" \
 	privateEndpointNetworkPolicies="Disabled" \
 	privateLinkServiceNetworkPolicies="Disabled"
 
@@ -153,7 +151,7 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location1" \
 	nsgName="$nsgNameLocation1" \
 	serviceEndpoints="$subnetServiceEndpointsWorkload" \
-	delegationService="" \
+	delegationService="$subnetDelegationServiceWorkload" \
 	privateEndpointNetworkPolicies="Disabled" \
 	privateLinkServiceNetworkPolicies="Disabled"
 
@@ -167,7 +165,6 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location1" \
 	nsgName="$nsgNameLocation1" \
 	serviceEndpoints="$subnetServiceEndpointsTest" \
-	delegationService="" \
 	privateEndpointNetworkPolicies="Disabled" \
 	privateLinkServiceNetworkPolicies="Disabled"
 
@@ -200,7 +197,6 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location2" \
 	nsgName="$nsgNameLocation2" \
 	serviceEndpoints="$subnetServiceEndpointsShared" \
-	delegationService="" \
 	privateEndpointNetworkPolicies="Disabled" \
 	privateLinkServiceNetworkPolicies="Disabled"
 
@@ -214,7 +210,6 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location2" \
 	nsgName="$nsgNameLocation2" \
 	serviceEndpoints="$subnetServiceEndpointsWorkload" \
-	delegationService="$subnetDelegationServiceWorkload" \
 	privateEndpointNetworkPolicies="Disabled" \
 	privateLinkServiceNetworkPolicies="Disabled"
 
@@ -228,7 +223,7 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location2" \
 	nsgName="$nsgNameLocation2" \
 	serviceEndpoints="$subnetServiceEndpointsWorkload" \
-	delegationService="" \
+	delegationService="$subnetDelegationServiceWorkload" \
 	privateEndpointNetworkPolicies="Disabled" \
 	privateLinkServiceNetworkPolicies="Disabled"
 
@@ -242,7 +237,6 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-Spoke1-Subn
 	nsgResourceGroup="$rgNameNetworkSpoke1Location2" \
 	nsgName="$nsgNameLocation2" \
 	serviceEndpoints="$subnetServiceEndpointsTest" \
-	delegationService="" \
 	privateEndpointNetworkPolicies="Disabled" \
 	privateLinkServiceNetworkPolicies="Disabled"
 
