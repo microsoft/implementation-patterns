@@ -151,6 +151,14 @@
                 "Microsoft.Storage",
                 "Microsoft.Keyvault"
             ]
+        },
+        "virtualNetworkName": {
+            "type": "String",
+            "defaultValue": ""
+        },
+        "virtualNetworkAccessRules": {
+            "type": "array",
+            "defaultValue": []
         }
     },
     "variables": {
@@ -182,7 +190,15 @@
                 "accessTier": "[parameters('accessTier')]",
                 "networkAcls": {
                     "bypass": "[parameters('bypass')]",
-                    "virtualNetworkRules": [],
+                    "copy": [
+                        {
+                            "name": "virtualNetworkRules",
+                            "count": "[length(parameters('vnetRules'))]",
+                            "input": {
+
+                            }
+                        }
+                    ],
                     "ipRules": [],
                     "defaultAction": "[parameters('defaultAction')]"
                 },

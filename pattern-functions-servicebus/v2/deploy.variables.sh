@@ -6,16 +6,16 @@
 # ALL OTHER BLOCKS/VARIABLES CAN BE LEFT AT DEFAULTS (BUT REVIEW/CHANGE AS NEEDED ANYWAY)
 
 # Deployment
-subscriptionId="PROVIDE"
+subscriptionId="e61e4c75-268b-4c94-ad48-237aa3231481"
 location1="eastus2"
 location2="centralus"
 # Network
-nsgRuleInbound100Src="PROVIDE" # Inbound allow for debugging - likely remove in production
+nsgRuleInbound100Src="75.68.47.183" # Inbound allow for debugging - likely remove in production
 # VM
 # These are Windows VMs to run Azure Service Bus Explorer, Azure Storage Explorer, and Browser tests
 # Use Windows-acceptable username and password values
-adminUsername="PROVIDE"
-adminPassword="PROVIDE"
+adminUsername="pelazem"
+adminPassword="W00hoo@@2020"
 # ==================================================
 # ==================================================
 
@@ -160,7 +160,7 @@ asbPrivateEndpointNameLocation2="$businessUnit""-""$environment""-asb-pe-""$loca
 # ==================================================
 
 # ==================================================
-# Storage
+# Workload - Storage
 storageAccountPrivateEndpoint="true"
 
 storageAccountResourceType="Microsoft.Storage/storageAccounts"
@@ -169,11 +169,11 @@ storageFileSubResource="file"
 storageBlobPrivateDnsZoneName="privatelink.blob.core.windows.net"
 storageFilePrivateDnsZoneName="privatelink.file.core.windows.net"
 
-storageAcctNameLocation1="$businessUnit""$environment""sa""$location1"
+storageAcctNameLocation1="$businessUnit""$environment""$applicationId""l1"
 storageBlobPrivateEndpointNameLocation1="$businessUnit""-""$environment""-sb-pe-""$location1"
 storageFilePrivateEndpointNameLocation1="$businessUnit""-""$environment""-sf-pe-""$location1"
 
-storageAcctNameLocation2="$businessUnit""$environment""sa""$location2"
+storageAcctNameLocation2="$businessUnit""$environment""$applicationId""l2"
 storageBlobPrivateEndpointNameLocation2="$businessUnit""-""$environment""-sb-pe-""$location2"
 storageFilePrivateEndpointNameLocation2="$businessUnit""-""$environment""-sf-pe-""$location2"
 # ==================================================
@@ -196,17 +196,17 @@ workloadRuntimeVersion="3.1"
 workloadRouteAllTrafficThroughVnet="1"
 workloadPrivateDnsZoneName="privatelink.azurewebsites.net"
 
-workloadPlanNameLocation1="asp-""$businessUnit""-""$environment""-""$applicationId""-""$location1""-workload"
+workloadPlanNameLocation1="$businessUnit""-""$environment""-""$applicationId""-""$location1""-asp"
 workloadAppNameLocation1="$applicationId""-""$employeeId""-""$location1""-app"
 workloadVnetIntegrationNameLocation1="$workloadAppNameLocation1""/VirtualNetwork"
 workloadAppInsightsNameLocation1="$workloadAppNameLocation1""-insights"
-workloadPrivateEndpointNameLocation1="$businessUnit""-""$environment""-app-pe-""$location1"
+workloadPrivateEndpointNameLocation1="$businessUnit""-""$environment""-""$location1""-app-pe"
 
-workloadPlanNameLocation2="asp-""$businessUnit""-""$environment""-""$applicationId""-""$location2""-workload"
+workloadPlanNameLocation2="$businessUnit""-""$environment""-""$applicationId""-""$location2""-asp"
 workloadAppNameLocation2="$applicationId""-""$employeeId""-""$location2""-app"
 workloadVnetIntegrationNameLocation2="$workloadAppNameLocation2""/VirtualNetwork"
 workloadAppInsightsNameLocation2="$workloadAppNameLocation2""-insights"
-workloadPrivateEndpointNameLocation2="$businessUnit""-""$environment""-app-pe-""$location2"
+workloadPrivateEndpointNameLocation2="$businessUnit""-""$environment""-""$location2""-app-pe"
 # ==================================================
 
 # ==================================================
@@ -231,9 +231,9 @@ virtualMachineLicenseType="Windows_Server"
 virtualMachineSku="2019-datacenter-smalldisk-g2"
 
 virtualMachineVersion="latest"
-osDiskStorageType="Premium_LRS"
-osDiskSizeInGB=127
-dataDiskStorageType="Premium_LRS"
+osDiskStorageType="Premium_LRS" # Accepted values: Premium_LRS, StandardSSD_LRS, Standard_LRS, UltraSSD_LRS
+osDiskSizeInGB=32
+dataDiskStorageType="Premium_LRS" # Accepted values: Premium_LRS, StandardSSD_LRS, Standard_LRS, UltraSSD_LRS
 dataDiskCount=0
 dataDiskSizeInGB=32
 vmAutoShutdownTime="1800"
@@ -249,8 +249,8 @@ virtualMachineNameLocation2="$virtualMachineNamePrefix""l2""$virtualMachineNameS
 virtualMachineTimeZoneLocation1="Eastern Standard Time"
 virtualMachineTimeZoneLocation2="Central Standard Time"
 
-bootDiagnosticsStorageAccountNameLocation1="$businessUnit""$environment""dl1"
-bootDiagnosticsStorageAccountNameLocation2="$businessUnit""$environment""dl2"
+bootDiagnosticsStorageAccountNameLocation1="$virtualMachineNamePrefix""dl1"
+bootDiagnosticsStorageAccountNameLocation2="$virtualMachineNamePrefix""dl2"
 # ==================================================
 
 # ==================================================

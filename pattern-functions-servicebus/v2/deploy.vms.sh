@@ -215,7 +215,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM-""$location1"
 	enableAutoShutdownNotification="$enableAutoShutdownNotification" \
 	autoShutdownNotificationWebhookURL="$autoShutdownNotificationWebhookURL" \
 	autoShutdownNotificationMinutesBefore="$autoShutdownNotificationMinutesBefore" \
-	resourceGroupNameNetwork="$rgNameTestLocation1" \
+	resourceGroupNameNetworkInterface="$rgNameTestLocation1" \
 	networkInterfaceName="$virtualMachineNetworkInterfaceNameLocation1"
 
 echo "Deploy Location 2 VM"
@@ -253,7 +253,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM-""$location2"
 	enableAutoShutdownNotification="$enableAutoShutdownNotification" \
 	autoShutdownNotificationWebhookURL="$autoShutdownNotificationWebhookURL" \
 	autoShutdownNotificationMinutesBefore="$autoShutdownNotificationMinutesBefore" \
-	resourceGroupNameNetwork="$rgNameTestLocation2" \
+	resourceGroupNameNetworkInterface="$rgNameTestLocation2" \
 	networkInterfaceName="$virtualMachineNetworkInterfaceNameLocation2"
 
 echo -e "\n"

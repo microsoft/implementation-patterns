@@ -72,6 +72,7 @@
 		},
 		"availabilityZone": {
 			"type": "string",
+			"defaultValue": "",
 			"metadata": {
 				"displayName": "Azure availability zone (AZ)",
 				"description": "The Azure AZ within which to deploy. Examples: 'eastus2', 'centralus', etc. See https://azure.microsoft.com/regions/ for which regions support AZs."
@@ -148,6 +149,14 @@
 			"metadata": {
 				"displayName": "VM administrator SSH public key",
 				"description": "VM administrator SSH public key in form 'ssh-rsa {key}'"
+			}
+		},
+		"virtualMachineTimeZone": {
+			"type": "string",
+			"defaultValue": "Eastern Standard Time",
+			"metadata": {
+				"displayName": "VM timezone",
+				"description": "Possible values can be TimeZoneInfo.Id (https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id) value from time zones returned by TimeZoneInfo.GetSystemTimeZones. See https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones"
 			}
 		},
 		"disablePasswordAuthentication": {
@@ -243,7 +252,7 @@
 				"description": ""
 			}
 		},
-		"resourceGroupNameNetwork": {
+		"resourceGroupNameNetworkInterface": {
 			"type": "string",
 			"metadata": {
 				"displayName": "Resource Group for network interface",
@@ -261,7 +270,7 @@
 	"variables": {
 		"osDiskName": "[concat(parameters('virtualMachineName'), '-os')]",
 		"dataDiskNamePrefix": "[concat(parameters('virtualMachineName'), '-data-')]",
-		"networkInterfaceId": "[resourceId(parameters('resourceGroupNameNetwork'), 'Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
+		"networkInterfaceId": "[resourceId(parameters('resourceGroupNameNetworkInterface'), 'Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
 		"imageReference": "[
 			if
 			(
@@ -299,9 +308,14 @@
 			"apiVersion": "[variables('apiVersionCompute')]",
 			"location": "[parameters('location')]",
 			"tags": "[variables('resourceTags')]",
-			"zones": [
-				"[parameters('availabilityZone')]"
-			],
+			"zones": "[
+				if
+				(
+					empty(trim(parameters('availabilityZone'))),
+					json('[]'),
+					array(parameters('availabilityZone'))
+				)
+			]",
 			"properties": {
 				"osProfile": {
 					"computerName": "[parameters('virtualMachineName')]",
@@ -372,6 +386,7 @@
 				"dailyRecurrence": {
 					"time": "[parameters('vmAutoShutdownTime')]"
 				},
+				"timeZoneId": "[parameters('virtualMachineTimeZone')]",
 				"notificationSettings": {
 					"status": "[parameters('enableAutoShutdownNotification')]",
 					"timeInMinutes": "[parameters('autoShutdownNotificationMinutesBefore')]",
