@@ -62,7 +62,6 @@
 			"type": "string",
 			"defaultValue": "[utcNow('u')]"
 		},
-
         "location": {
             "defaultValue": "[resourceGroup().location]",
             "type": "String"
@@ -125,7 +124,11 @@
             "allowedValues": [
                 "Allow",
                 "Deny"
-            ]
+            ],
+            "metadata": {
+                "displayName": "Default access action",
+                "description": "If set to Allow, the 'Allow access from' setting will be 'All networks'. If set to 'Deny', the 'Allow access from' setting will be 'Selected networks', designated in the VNet/subnets to allow."
+            }
         },
         "bypass": {
             "type": "String",
@@ -152,16 +155,43 @@
                 "Microsoft.Keyvault"
             ]
         },
+        "virtualNetworkResourceGroup": {
+            "type": "String",
+            "defaultValue": ""
+        },
         "virtualNetworkName": {
             "type": "String",
             "defaultValue": ""
         },
-        "virtualNetworkAccessRules": {
-            "type": "array",
-            "defaultValue": []
+        "subnetNamesToAllow": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "displayName": "Subnet names to allow",
+                "description": "Optional. If a VNet RG and Name provided, this is a comma-delimited list of subnet names in that VNet for which allow rules will be created. Example: 'subnet1,subnet2,subnet3'."
+            }
         }
     },
     "variables": {
+        "vnetId":
+        "[
+            if
+            (
+                or(empty(trim(parameters('virtualNetworkResourceGroup'))), empty(trim(parameters('virtualNetworkName'))), empty(trim(parameters('subnetNamesToAllow')))),
+                '',
+                resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))
+            )
+        ]",
+		"subnetNamesToAllow":
+        "[
+            if
+            (
+                or(empty(variables('vnetId')), empty(parameters('subnetNamesToAllow'))),
+                json('[]'),
+                split(parameters('subnetNamesToAllow'), ',')
+            )
+        ]",
+        "subnetAccessAction": "Allow",
 		"resourceTags": {
 			"ApplicationId": "[toLower(parameters('applicationId'))]",
 			"ProductId": "[toLower(parameters('productId'))]",
@@ -172,7 +202,7 @@
 			"Organization": "[parameters('organization')]",
 			"Timestamp": "[parameters('timestamp')]"
 		},
-        "apiVersionStorage": "2019-06-01"
+        "apiVersionStorage": "2020-08-01-preview"
     },
     "resources": [
         {
@@ -193,9 +223,10 @@
                     "copy": [
                         {
                             "name": "virtualNetworkRules",
-                            "count": "[length(parameters('vnetRules'))]",
+                            "count": "[length(variables('subnetNamesToAllow'))]",
                             "input": {
-
+                                "id": "[concat(variables('vnetId'), '/subnets/', trim(variables('subnetNamesToAllow')[copyIndex('virtualNetworkRules')]))]",
+                                "action": "[variables('subnetAccessAction')]"
                             }
                         }
                     ],

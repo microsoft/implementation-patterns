@@ -62,7 +62,6 @@
 			"type": "string",
 			"defaultValue": "[utcNow('u')]"
 		},
-
 		"location": {
 			"type": "string",
 			"defaultValue": "[resourceGroup().location]",

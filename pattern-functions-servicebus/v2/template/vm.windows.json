@@ -62,7 +62,6 @@
 			"type": "string",
 			"defaultValue": "[utcNow('u')]"
 		},
-
 		"location": {
 			"type": "string",
 			"metadata": {
@@ -230,7 +229,7 @@
 			"defaultValue": 1,
 			"metadata": {
 				"displayName": "Number of data disks",
-				"description": "Number of data disks to attach to the VM. At this writing, ARM template language requires an integer 1-800; less then or equal to 0 (zero) is not allowed."
+				"description": "Number of data disks to attach to the VM."
 			}
 		},
 		"dataDiskSizeInGB": {

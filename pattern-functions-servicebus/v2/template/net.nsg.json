@@ -62,7 +62,6 @@
 			"type": "string",
 			"defaultValue": "[utcNow('u')]"
 		},
-
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -76,10 +75,15 @@
         },
 		"nsgRuleInbound100Src": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "",
+            "metadata": {
+                "displayName": "Source for dev/test inbound rule",
+                "description": "Optional. If provided, a priority 100 rule will be created to allow inbound access from this source. Useful for dev/test/debug etc. but likely not appropriate to provide in production."
+            }
         }
 	},
     "variables": {
+        "rule100Name": "DevTestInbound",
 		"resourceTags": {
 			"ApplicationId": "[toLower(parameters('applicationId'))]",
 			"ProductId": "[toLower(parameters('productId'))]",
@@ -100,129 +104,36 @@
             "location": "[parameters('location')]",
 			"tags": "[variables('resourceTags')]",
             "properties": {
-                "securityRules": [
-                    {
-                        "name": "DevTestInbound",
-                        "properties": {
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "*",
-                            "sourceAddressPrefix": "[parameters('nsgRuleInbound100Src')]",
-                            "destinationAddressPrefix": "*",
-                            "access": "Allow",
-                            "priority": 100,
-                            "direction": "Inbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "AllowStorage",
-                        "properties": {
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "443",
-                            "sourceAddressPrefix": "VirtualNetwork",
-                            "destinationAddressPrefix": "Storage",
-                            "access": "Allow",
-                            "priority": 499,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "AllowMonitor",
-                        "properties": {
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "443",
-                            "sourceAddressPrefix": "VirtualNetwork",
-                            "destinationAddressPrefix": "AzureMonitor",
-                            "access": "Allow",
-                            "priority": 498,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "AllowAppService",
-                        "properties": {
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "443",
-                            "sourceAddressPrefix": "VirtualNetwork",
-                            "destinationAddressPrefix": "AppService",
-                            "access": "Allow",
-                            "priority": 497,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "AllowCosmosDB",
-                        "properties": {
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "443",
-                            "sourceAddressPrefix": "VirtualNetwork",
-                            "destinationAddressPrefix": "AzureCosmosDB",
-                            "access": "Allow",
-                            "priority": 496,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "AllowServiceBus",
-                        "properties": {
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "VirtualNetwork",
-                            "destinationAddressPrefix": "ServiceBus",
-                            "access": "Allow",
-                            "priority": 495,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [
-                                "443",
-                                "5671-5672"
-                            ],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    },
-                    {
-                        "name": "AllowEventHub",
-                        "properties": {
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "destinationPortRange": "443",
-                            "sourceAddressPrefix": "VirtualNetwork",
-                            "destinationAddressPrefix": "EventHub",
-                            "access": "Allow",
-                            "priority": 494,
-                            "direction": "Outbound",
-                            "sourcePortRanges": [],
-                            "destinationPortRanges": [],
-                            "sourceAddressPrefixes": [],
-                            "destinationAddressPrefixes": []
-                        }
-                    }
-				]
+                "securityRules":
+                "[
+                    if
+                    (
+                        empty(trim(parameters('nsgRuleInbound100Src'))),
+                        json('[]'),
+                        array
+                        (
+                            createObject
+                            (
+                                'name', variables('rule100Name'),
+                                'properties', createObject
+                                (
+                                    'protocol', '*',
+                                    'sourcePortRange', '*',
+                                    'destinationPortRange', '*',
+                                    'sourceAddressPrefix', parameters('nsgRuleInbound100Src'),
+                                    'destinationAddressPrefix', '*',
+                                    'access', 'Allow',
+                                    'priority', 100,
+                                    'direction', 'Inbound',
+                                    'sourcePortRanges', json('[]'),
+                                    'destinationPortRanges', json('[]'),
+                                    'sourceAddressPrefixes', json('[]'),
+                                    'destinationAddressPrefixes', json('[]')
+                                )
+                            )
+                        )
+                    )
+                ]"
             }
         }
 	]

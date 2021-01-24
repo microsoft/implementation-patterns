@@ -62,44 +62,29 @@
 			"type": "string",
 			"defaultValue": "[utcNow('u')]"
 		},
-
 		"location": {
 			"type": "string",
 			"defaultValue": "[resourceGroup().location]"
 		},
 		"functionName": {
-			"type": "string",
-			"defaultValue": "[concat(parameters('applicationId'), '-', parameters('employeeId'), '-s-app')]",
-			"metadata": {
-				"required": true
-			}
+			"type": "string"
 		},
 		"hostingPlanName": {
-			"type": "string",
-			"defaultValue": "[concat('ASP-', parameters('businessUnit'), parameters('environment'), parameters('applicationId'), parameters('location'), 'workload-', toLower(parameters('skuName')))]",
-			"metadata": {
-				"required": false
-			}
+			"type": "string"
 		},
 		"serverFarmResourceGroup": {
-			"type": "string",
-			"defaultValue": "[concat(parameters('businessUnit'), '-', parameters('environment'), '-', parameters('applicationId'), '-', parameters('location'), '-workload')]"
+			"type": "string"
 		},
 		"alwaysOn": {
 			"type": "bool",
 			"defaultValue": true
 		},
 		"storageAccountName": {
-			"type": "string",
-			"defaultValue": "[toLower(concat(parameters('environment'), parameters('applicationId'), 'storacct'))]",
-			"metadata": {
-				"comments": "Each resource group has a storage account, usually named dev<applicationId>storacct. Not required if sanely named.",
-				"required": false
-			}
+			"type": "string"
 		},
 		"runtimeStack": {
 			"type": "string",
-			"defaultValue": "Node",
+			"defaultValue": "dotnet",
 			"allowedValues": [
 				"Node",
 				"Java",
@@ -131,12 +116,7 @@
 			"defaultValue": "1"
 		},
 		"appInsightsName": {
-			"type": "string",
-			"defaultValue": "[concat(parameters('functionName'), '-AppInsights')]",
-			"metadata": {
-				"comments": "The template will come up with a name for the app insights object. You probably want to omit this.",
-				"required": false
-			}
+			"type": "string"
 		},
 		"addPrivateEndpoint": {
 			"type": "bool",
@@ -152,71 +132,6 @@
 		}
 	},
 	"variables": {
-		"ipSecurityRestrictions": [
-			{
-				"ipAddress": "75.68.47.183/32",
-				"action": "Allow",
-				"tag": "Default",
-				"priority": 50,
-				"name": "Patrick",
-				"description": "Patrick"
-			},
-			{
-				"ipAddress": "192.223.136.0/28",
-				"action": "Allow",
-				"tag": "Default",
-				"priority": 100,
-				"name": "rtp1",
-				"description": "Originates from RTP NC AZ1"
-			},
-			{
-				"ipAddress": "192.223.236.128/25",
-				"action": "Allow",
-				"tag": "Default",
-				"priority": 101,
-				"name": "rtp2",
-				"description": "Originates from RTP NC AZ2"
-			},
-			{
-				"ipAddress": "192.223.241.16/28",
-				"action": "Allow",
-				"tag": "Default",
-				"priority": 102,
-				"name": "oma1",
-				"description": "Originates from Omaha NE AZ1"
-			},
-			{
-				"ipAddress": "192.223.242.16/28",
-				"action": "Allow",
-				"tag": "Default",
-				"priority": 103,
-				"name": "oma2",
-				"description": "Originates from Omaha NE AZ2"
-			},
-			{
-				"ipAddress": "103.26.72.112/28",
-				"action": "Allow",
-				"tag": "Default",
-				"priority": 104,
-				"name": "ind1",
-				"description": "Originates from Bangalore India"
-			},
-			{
-				"ipAddress": "103.26.73.112/28",
-				"action": "Allow",
-				"tag": "Default",
-				"priority": 105,
-				"name": "ind2",
-				"description": "Originates from Chennai India"
-			},
-			{
-				"ipAddress": "Any",
-				"action": "Deny",
-				"priority": 2147483647,
-				"name": "Deny all",
-				"description": "Deny all access"
-			}
-		],
 		"resourceTags": {
 			"ApplicationId": "[toLower(parameters('applicationId'))]",
 			"ProductId": "[toLower(parameters('productId'))]",
@@ -294,7 +209,6 @@
 			"properties": {
 				"use32BitWorkerProcess": false,
 				"alwaysOn": "[bool(parameters('alwaysOn'))]",
-				"ipSecurityRestrictions": "[if(bool(parameters('addPrivateEndpoint')), json('null'), variables('ipSecurityRestrictions'))]",
 				"scmIpSecurityRestrictionsUseMain": "[not(bool(parameters('addPrivateEndpoint')))]",
 				"http20Enabled": true,
 				"minTlsVersion": "1.2",

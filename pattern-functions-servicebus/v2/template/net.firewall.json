@@ -62,7 +62,6 @@
 			"type": "string",
 			"defaultValue": "[utcNow('u')]"
 		},
-
 		"location": {
 			"type": "string",
 			"defaultValue": "[resourceGroup().location]",
@@ -91,9 +90,9 @@
 				"description": ""
 			}
 		},
-		"firewallZones": {
-			"type": "array",
-			"defaultValue": ["1","2","3"]
+		"firewallAvailabilityZones": {
+			"type": "string",
+			"defaultValue": ""
 		},
 		"firewallSku": {
 			"type": "string",
@@ -127,11 +126,11 @@
 				"description": ""
 			}
 		},
-		"publicIpName": {
+		"publicIpAddressNames": {
 			"type": "String",
 			"metadata": {
-				"displayName": "Public IP Address Name",
-				"description": ""
+				"displayName": "Public IP Address Names",
+				"description": "Comma-delimited string with Public IP Address Name(s) to use with Azure FW"
 			}
 		}
 	},
@@ -139,7 +138,15 @@
 		"firewallSubnetName": "AzureFirewallSubnet",
 		"vnetId": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
 		"firewallSubnetId": "[concat(variables('vnetId'), '/subnets/', variables('firewallSubnetName'))]",
-		"publicIpAddressId": "[resourceId(parameters('publicIpResourceGroup'), 'Microsoft.Network/publicIpAddresses', parameters('publicIpName'))]",
+		"firewallAvailabilityZones": "[
+			if
+			(
+				empty(trim(parameters('firewallAvailabilityZones'))),
+				json('[]'),
+				split(parameters('firewallAvailabilityZones'), ',')
+			)
+		]",
+		"publicIpAddressNames": "[split(parameters('publicIpAddressNames'), ',')]",
 		"resourceTags": {
 			"ApplicationId": "[toLower(parameters('applicationId'))]",
 			"ProductId": "[toLower(parameters('productId'))]",
@@ -153,37 +160,42 @@
 		"apiVersionNetwork": "2020-07-01"
 	},
 	"resources": [
-        {
-            "type": "Microsoft.Network/azureFirewalls",
-            "apiVersion": "[variables('apiVersionNetwork')]",
-            "name": "[parameters('firewallName')]",
-            "location": "[parameters('location')]",
+		{
+			"type": "Microsoft.Network/azureFirewalls",
+			"apiVersion": "[variables('apiVersionNetwork')]",
+			"name": "[parameters('firewallName')]",
+			"location": "[parameters('location')]",
 			"tags": "[variables('resourceTags')]",
-            "zones": "[parameters('firewallZones')]",
-            "properties": {
-                "sku": {
-                    "name": "[parameters('firewallSku')]",
-                    "tier": "[parameters('firewallTier')]"
-                },
-                "threatIntelMode": "[parameters('firewallThreatIntelMode')]",
-                "additionalProperties": {},
-                "ipConfigurations": [
-                    {
-                        "name": "[concat(parameters('firewallName'), '-ipConfig')]",
-                        "properties": {
-                            "publicIPAddress": {
-                                "id": "[variables('publicIpAddressId')]"
-                            },
-                            "subnet": {
-                                "id": "[variables('firewallSubnetId')]"
-                            }
-                        }
-                    }
-                ],
-                "networkRuleCollections": [],
-                "applicationRuleCollections": [],
-                "natRuleCollections": []
-            }
-        }
+			"zones": "[variables('firewallAvailabilityZones')]",
+			"properties": {
+				"sku": {
+					"name": "[parameters('firewallSku')]",
+					"tier": "[parameters('firewallTier')]"
+				},
+				"threatIntelMode": "[parameters('firewallThreatIntelMode')]",
+				"additionalProperties": {},
+				"copy": [
+					{
+						"name": "ipConfigurations",
+						"count": "[if (empty(variables('publicIpAddressNames')), 0, length(variables('publicIpAddressNames')))]",
+						"input": {
+							"name": "[concat('IpConfig-', copyIndex('ipConfigurations'))]",
+							"properties":
+								"[
+									if
+									(
+										equals(copyIndex('ipConfigurations'), 0),
+										createObject('publicIpAddress', createObject('id', resourceId(parameters('publicIpResourceGroup'), 'Microsoft.Network/publicIpAddresses', trim(variables('publicIpAddressNames')[copyIndex('ipConfigurations')]))), 'subnet', createObject('id', variables('firewallSubnetId'))),
+										createObject('publicIpAddress', createObject('id', resourceId(parameters('publicIpResourceGroup'), 'Microsoft.Network/publicIpAddresses', trim(variables('publicIpAddressNames')[copyIndex('ipConfigurations')]))))
+									)
+								]"
+							}
+					}
+				],
+				"networkRuleCollections": [],
+				"applicationRuleCollections": [],
+				"natRuleCollections": []
+			}
+		}
 	]
 }

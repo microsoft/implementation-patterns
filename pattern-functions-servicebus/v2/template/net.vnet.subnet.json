@@ -85,7 +85,7 @@
 				"networkSecurityGroup": "[
 					if
 					(
-						or( empty(trim(parameters('nsgResourceGroup'))), empty(trim(parameters('nsgName'))) ),
+						or(empty(trim(parameters('nsgResourceGroup'))), empty(trim(parameters('nsgName')))),
 						json('null'),
 						createObject('id', resourceId(parameters('nsgResourceGroup'), 'Microsoft.Network/networkSecurityGroups', parameters('nsgName')))
 					)
@@ -93,7 +93,14 @@
 				"copy": [
 					{
 						"name": "serviceEndpoints",
-						"count": "[if (empty(trim(parameters('serviceEndpoints'))), 0, length(variables('serviceEndpointNames')))]",
+						"count": "[
+							if
+							(
+								or(empty(trim(parameters('serviceEndpoints'))), empty(variables('serviceEndpointNames'))),
+								0,
+								length(variables('serviceEndpointNames'))
+							)
+						]",
 						"input": {
 							"service": "[trim(variables('serviceEndpointNames')[copyIndex('serviceEndpoints')])]"
 						}

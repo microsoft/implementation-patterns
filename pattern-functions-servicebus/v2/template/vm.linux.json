@@ -62,7 +62,6 @@
 			"type": "string",
 			"defaultValue": "[utcNow('u')]"
 		},
-
 		"location": {
 			"type": "string",
 			"metadata": {
@@ -163,6 +162,10 @@
 			"type": "bool",
 			"defaultValue": true
 		},
+		"osDiskName": {
+			"type": "string",
+			"defaultValue": "[concat(parameters('virtualMachineName'), '-os')]"
+		},
 		"osDiskStorageType": {
 			"type": "string",
 			"allowedValues": [
@@ -185,6 +188,10 @@
 				"description": ""
 			}
 		},
+		"dataDiskNameInfix": {
+			"type": "string",
+			"defaultValue": "[concat(parameters('virtualMachineName'), '-data-')]"
+		},
 		"dataDiskStorageType": {
 			"type": "string",
 			"allowedValues": [
@@ -202,7 +209,7 @@
 			"defaultValue": 1,
 			"metadata": {
 				"displayName": "Number of data disks",
-				"description": "Number of data disks to attach to the VM. At this writing, ARM template language requires an integer 1-800; less then or equal to 0 (zero) is not allowed."
+				"description": "Number of data disks to attach to the VM."
 			}
 		},
 		"dataDiskSizeInGB": {
@@ -268,8 +275,6 @@
 		}
 	},
 	"variables": {
-		"osDiskName": "[concat(parameters('virtualMachineName'), '-os')]",
-		"dataDiskNamePrefix": "[concat(parameters('virtualMachineName'), '-data-')]",
 		"networkInterfaceId": "[resourceId(parameters('resourceGroupNameNetworkInterface'), 'Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
 		"imageReference": "[
 			if
@@ -340,7 +345,7 @@
 					"imageReference": "[variables('imageReference')]",
 					"osDisk": {
 						"createOption": "FromImage",
-						"name": "[variables('osDiskName')]",
+						"name": "[parameters('osDiskName')]",
 						"diskSizeGB": "[parameters('osDiskSizeInGB')]",
 						"managedDisk": {
 							"storageAccountType": "[parameters('osDiskStorageType')]"
@@ -353,7 +358,7 @@
 							"input": {
 								"lun": "[copyIndex('dataDisks')]",
 								"createOption": "Empty",
-								"name": "[concat(variables('dataDiskNamePrefix'), copyIndex('dataDisks', 1))]",
+								"name": "[concat(parameters('dataDiskNameInfix'), copyIndex('dataDisks', 1))]",
 								"diskSizeGB": "[parameters('dataDiskSizeInGB')]",
 								"managedDisk": {
 									"storageAccountType": "[parameters('dataDiskStorageType')]"
