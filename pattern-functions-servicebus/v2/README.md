@@ -29,7 +29,11 @@ To work with and deploy this pattern, you will need the following.
 
 ## Architecture
 
-This pattern has some similarities to [v1](../v1). Please review the README there for foundational understanding.
+This pattern has similarities to [v1](../v1). Please review the README there for foundational understanding.
+
+![Architecture](assets/architecture.png)
+
+(assets/architecture.png)
 
 ### Motivation and Goals
 
@@ -41,44 +45,35 @@ Azure Private DNS is used so that resources _within_ the network environment res
 
 Other resources _outside_ the network environment (such as workloads on premise or outside of the VNets in this pattern) will still resolve deployed components by their public FQDNs - i.e. split-horizon DNS. Actual connectivity will be secured as described above.
 
-Azure Service Bus (ASB) Namespaces are deployed to each Azure region. Unlike v1 of this pattern, ASB geo-DR is NOT used in this pattern, as it does not enable message replication. Instead, the ASB Namespaces are left independent, though deployed with similar configuration and initial messaging entities, to enable externally controlled active/active or active/passive messaging patterns.
+Azure Service Bus (ASB) Namespaces are deployed to each Azure region. Unlike v1 of this pattern, ASB geo-DR is not used in this pattern, since it enables entity but not message replication. Instead, the ASB Namespaces are left independent, though deployed with similar configuration and initial messaging entities, to enable externally controlled active/active or active/passive messaging patterns.
 
 ### Azure Regions and Resource Groups
 
 This pattern splits components into distinct, purpose-oriented Resource Groups (RGs). This supports modular deployments, where network, shared, and workload components may not be deployed at the same time, or may re-use previously deployed components, or may be completed by different people with different levels of Azure permissions.
 
-One RG for global network resources is deployed (regardless of how many Azure Regions are deployed to). Additionally, Resource Groups are deployed into _each_ Azure Region for the following components: Network, Shared (such as Azure Service Bus), Workload (such as Azure Functions), and Testing (such as VMs to work with resources that have network access restrictions).
-
-![Azure Regions and Resource Groups](assets/Architecture-RegionsRGs.png)
+One RG for global network resources is deployed (regardless of how many Azure Regions are deployed to). Additionally, Resource Groups are deployed into _each_ Azure Region for the following components: Network, Shared (such as Azure Service Bus), Workload (such as Azure Functions), Workload VNet integration (for Azure Functions), and Testing (such as VMs to work with resources that have network access restrictions).
 
 ### Network
 
-For simplicity, this pattern focuses on deployment of the actual workload and shared resources. One Azure Virtual Network (VNet) is deployed in each Azure Region. The regional VNets are peered to each other.
+This pattern deploys a hub-and-spoke network in each Azure region. One hub VNet with an Azure Firewall is deployed into each Azure region. One spoke VNet is deployed into each Azure region. VNet peerings are created between spoke and hub VNets within region, and between hub VNets across Azure regions.
 
-A full, per-region hub-and-spoke architecture is not deployed in this pattern, as v1 explores that and adding hub VNets to this pattern is an additive exercise.
+Hub VNets contain Azure Firewall subnets. Spoke VNets contain subnets for the following purposes:
 
-Each VNet contains Subnets for the following purposes: shared resources such as Azure Service Bus Namespaces; workload resources and Private Endpoint Network Interfaces; and Azure Function VNet integration.
+- Shared: shared resources such as Azure Service Bus Namespaces
+- Workload: workload resources and Private Endpoint Network Interfaces
+- Workload VNet Integration: for Azure Functions workloads, a dedicated subnet so the workload can access Azure resources in the VNet
+- Test: for Virtual Machines and other dev/test workloads
 
-This pattern supports designating a distinct Network Security Group (NSG) for each Subnet. For simplicity, the same NSG is used for each Subnet but this is easily adjusted in [deploy.network.sh](./deploy.network.sh).
+This pattern supports designating a distinct Network Security Group (NSG) for each subnet. For simplicity, the same NSG is used for each subnet but this is easily adjusted in [deploy.network.sh](./deploy.network.sh).
 
-Additionally, Subnets are configured as follows:
+Additionally, subnets are configured as follows:
 
 - Service Endpoints are configured to allow connectivity from resources _in_ the subnet _to_ the Service Endpoint's resource type outside the subnet
 - Private Links are configured to allow connectivity _to_ Private Endpoints deployed for protected resources
 - Network Interfaces are deployed to provide connectivity for Private Endpoints
-- Service Delegation is configured for the Workload Integration subnet, to allow the delegated-to service to deploy other components as needed.
+- Service Delegation is configured for the Workload VNet Integration subnet, to allow the delegated-to service to deploy other components as needed.
 
-The VNets are Peered, so that resources in one VNet can resolve resources in the other VNet and can connect to resources in the other VNet, as allowed by network access restrictions.
-
-Each VNet is also linked to a set of Private DNS Zones, which are globally-deployed resources. This permits resolution of resources protected by Private Endpoints by their internal FQDNs and private IP addresses. Recall that these DNS Zones will only be used by resources in the VNet, since this pattern includes VNet-DNS Zone link deployment, whereas DNS clients outside of these VNets will use public Azure DNS resolution (split-horizon DNS).
-
-This diagram shows the logical network design with Azure services used in each VNet/subnet, as well as globally:
-
-![Azure Network Services](assets/Architecture-Network-Services.png)
-
-This diagram shows connection flow between Azure services within each VNet, between the peered VNets, and also shows workloads outside the VNets failing to connect to services within each VNet, as intended.
-
-![Azure Network Flow](assets/Architecture-Network-Flow.png)
+Each spoke VNet is also linked to a set of Private DNS Zones, which are globally-deployed resources. This permits resolution of resources protected by Private Endpoints by their internal FQDNs and private IP addresses. Recall that these DNS Zones will only be used by resources in the VNet, since this pattern includes VNet-DNS Zone link deployment, whereas DNS clients outside of these VNets will use public Azure DNS resolution (split-horizon DNS).
 
 [top ->](#TOC)
 
@@ -92,7 +87,7 @@ First, edit [deploy.variables.sh](./deploy.variables.sh). This shell script defi
 . ./deploy.variables.sh
 ```
 
-Minimally, edit the first section of deploy.variables.sh, and provide real values for those variables (such as `subscriptionId`) currently stubbed out with a value of `"PROVIDE"`. If you make no other changes, you can deploy all resources now by running [deploy.main.sh](./deploy.main.sh).
+Minimally, edit the first section of deploy.variables.sh, and provide real values for those variables currently stubbed out with a value of `"PROVIDE"`. If you make no other changes, you can deploy all resources now by running [deploy.main.sh](./deploy.main.sh).
 
 In deploy.main.sh, note the use of boolean variables set in deploy.variables.sh to conditionally run each component of the deployment. For example, network resources are only deployed if the variable in question is set to true:
 
@@ -131,26 +126,12 @@ For repeated deployments, it may be useful to install and configure required sof
 
 To deploy VMs for testing from custom images, modify `deploy.variables.sh` as follows.
 
-Find the following section and supplement the image resource IDs with your specific information:
+Find the following section. Uncomment the two lines that set the `virtualMachineImageResourceIdLocation1` and `virtualMachineImageResourceIdLocation2` variables. Then replace the `{RESOURCE-GROUP-NAME}` and `{IMAGE-NAME}` placeholders with your values.
 
 ```bash
-# If deploying VMs from custom images, set here and also pick the correct VM template below (vm.windows.custom-image or vm.windows)
-virtualMachineImageResourceIdLocation1="/subscriptions/""$subscriptionId""/resourceGroups/PROVIDE"
-virtualMachineImageResourceIdLocation2="/subscriptions/""$subscriptionId""/resourceGroups/PROVIDE"
-```
-
-Then find the following section:
-
-```bash
-templateVirtualMachine="./arm/arm.vm.windows.json"
-# templateVirtualMachine="./arm/arm.vm.windows.custom-image.json"
-```
-
-Note that both lines set the same variable. The default is to use the bare Windows VM template provided; if you have custom images, comment the first line and uncomment the second line, as follows:
-
-```bash
-# templateVirtualMachine="./arm/arm.vm.windows.json"
-templateVirtualMachine="./arm/arm.vm.windows.custom-image.json"
+# If deploying VMs from custom images, set here
+#virtualMachineImageResourceIdLocation1="/subscriptions/""$subscriptionId""/resourceGroups/{RESOURCE-GROUP-NAME}/providers/Microsoft.Compute/images/{IMAGE-NAME}"
+#virtualMachineImageResourceIdLocation2="/subscriptions/""$subscriptionId""/resourceGroups/{RESOURCE-GROUP-NAME}/providers/Microsoft.Compute/images/{IMAGE-NAME}"
 ```
 
 References
@@ -218,7 +199,7 @@ This pattern uses the following deployment technologies and assets:
 - [Azure Resource Manager (ARM) Templates](https://docs.microsoft.com/azure/templates/). 
 - [Azure Command Line Interface (CLI)](https://docs.microsoft.com/cli/azure/reference-index) commands. Azure Resource Groups are created directly using CLI command [`az group create`](https://docs.microsoft.com/cli/azure/group#az_group_create). All other Azure resources are created by deploying from ARM templates using CLI command [`az deployment group create`](https://docs.microsoft.com/cli/azure/deployment/group#az_deployment_group_create).
 
-The [ARM templates in this deployment](./arm) are highly componentized to permit flexible re-use in different combinations, with a deployment script or other automation controller artifact controlling configuration and order of deployment. That is, each ARM template covers the fewest Azure resources possible, with the design goal being one resource type in one ARM template file.
+The [ARM templates in this deployment](./template/) are componentized to permit flexible re-use in different combinations, with a deployment script or other automation controller artifact controlling configuration and order of deployment. That is, each ARM template covers the fewest Azure resources possible, with the design goal being one resource type in one ARM template file.
 
 Alternative approaches could include:
 
@@ -227,17 +208,4 @@ Alternative approaches could include:
 - Nested ARM templates: these "templates of templates" use a parent/child approach to compose deployments from modular child templates. This approach was not used as the parent templates are still highly specific, and programmatic flexibility was desired.
 - Conditional deployment: [ARM conditional deployment](https://docs.microsoft.com/azure/azure-resource-manager/templates/conditional-resource-deployment) permits for some deployment customization, but customization at levels "above" and within individual resources was desired, whereas the ARM condition element does not cascade to child resources and is limited to deploy/not deploy, and cannot be used to conditionally control individual resource configuration properties.
 
-The scripted approach used in this pattern does result in potentially longer deployment times than a composite/nested ARM template approach, as strict procedural scripting prevents the ARM deployment controller from decomposing and parallelizing a composite template. This trade-off was accepted for greater programmatic flexibility.
-
-#### Preparation for Production
-
-##### NSG Access Rules
-
-The deployment includes a network access rule on the NSG to allow for inbound (into the VNets/subnets) access for testing purposes. You may decide to remove this for production purposes.
-
-To do so, edit [`arm.net.nsg.json`](./arm/arm.net.nsg.json) and remove the `DevTestInbound` rule with priority 100. You may also need to edit this file to remove (or add) other network access rules required in your environment.
-
-##### VNet / Subnet Configuration
-
-The VNet configuration in [`arm.net.vnet.json`](arm/arm.net.vnet.json) deploys the three subnets described above (Shared, Workload, Workload VNet Integration) and configures a set of Service Endpoints on each subnet. You may need to edit this file to correspond to your subnet and Service Endpoint requirements.
-
+The scripted approach used in this pattern does result in potentially longer deployment times than a composite/nested ARM template approach, as strict procedural scripting prevents the ARM deployment controller from decomposing and parallelizing a composite template. This trade-off was made for greater programmatic flexibility.

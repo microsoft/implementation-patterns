@@ -224,8 +224,8 @@ availabilityZoneLocation1="1"
 availabilityZoneLocation2="1"
 
 # If deploying VMs from custom images, set here
-#virtualMachineImageResourceIdLocation1="/subscriptions/""$subscriptionId""/resourceGroups/shared/providers/Microsoft.Compute/images/wi-dev-image-eastus2"
-#virtualMachineImageResourceIdLocation2="/subscriptions/""$subscriptionId""/resourceGroups/shared/providers/Microsoft.Compute/images/wi-dev-image-centralus"
+#virtualMachineImageResourceIdLocation1="/subscriptions/""$subscriptionId""/resourceGroups/{RESOURCE-GROUP-NAME}/providers/Microsoft.Compute/images/{IMAGE-NAME}"
+#virtualMachineImageResourceIdLocation2="/subscriptions/""$subscriptionId""/resourceGroups/{RESOURCE-GROUP-NAME}/providers/Microsoft.Compute/images/{IMAGE-NAME}"
 # Otherwise set these. The ARM template for VMs will use custom image resource ID over these, if the custom image is specified.
 virtualMachinePublisher="MicrosoftWindowsServer"
 virtualMachineOffer="WindowsServer"
