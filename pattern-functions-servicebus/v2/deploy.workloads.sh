@@ -310,7 +310,7 @@ fi
 
 if $workloadVnetIntegration
 then
-	echo "Region 1 VNet Connection for Workload"
+	echo "Region 1 VNet Integration for Workload"
 	az deployment group create --subscription "$subscriptionId" -n "WL-VNC-""$location1" --verbose \
 		-g "$rgNameWorkloadLocation1" --template-file "$templateWorkloadVnetConnection" \
 		--parameters \
@@ -320,7 +320,7 @@ then
 		virtualNetworkName="$vnetNameSpoke1Location1" \
 		subnetNameForVNetIntegration="$subnetNameWorkloadVnetIntegration"
 
-	echo "Region 2 VNet Connection for Workload"
+	echo "Region 2 VNet Integration for Workload"
 	az deployment group create --subscription "$subscriptionId" -n "WL-VNC-""$location2" --verbose \
 		-g "$rgNameWorkloadLocation2" --template-file "$templateWorkloadVnetConnection" \
 		--parameters \

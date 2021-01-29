@@ -120,7 +120,10 @@ then
 		defaultAction="Deny" \
 		bypass="AzureServices, Logging, Metrics" \
 		allowBlobPublicAccess=false \
-		minimumTlsVersion="TLS1_2"
+		minimumTlsVersion="TLS1_2" \
+		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location1" \
+		virtualNetworkName="$vnetNameSpoke1Location1" \
+		subnetNamesToAllow="$subnetNameTest"
 
 	echo "Deploy Location 2 Diagnostics Storage Account"
 	az deployment group create --subscription "$subscriptionId" -n "VM-DIAG-SA-""$location2" --verbose \
@@ -145,37 +148,10 @@ then
 		defaultAction="Deny" \
 		bypass="AzureServices, Logging, Metrics" \
 		allowBlobPublicAccess=false \
-		minimumTlsVersion="TLS1_2"
-
-	echo -e "\n"
-
-	echo "Deploy Location 1 Diagnostics Storage Account VNet Rules"
-	az deployment group create --subscription "$subscriptionId" -n "VM-SA-VNR-""$location1" --verbose \
-		-g "$rgNameTestLocation1" --template-file "$templateStorageAccountVnetRuleForVmBootDiagnostics" \
-		--parameters \
-		location="$location1" \
-		storageAccountName="$bootDiagnosticsStorageAccountNameLocation1" \
-		skuName="Standard_LRS" \
-		skuTier="Standard" \
-		kind="StorageV2" \
-		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location1" \
-		virtualNetworkName="$vnetNameSpoke1Location1" \
-		subnetName="$subnetNameTest" \
-		action="Allow"
-
-	echo "Deploy Location 2 Diagnostics Storage Account VNet Rules"
-	az deployment group create --subscription "$subscriptionId" -n "VM-SA-VNR-""$location2" --verbose \
-		-g "$rgNameTestLocation2" --template-file "$templateStorageAccountVnetRuleForVmBootDiagnostics" \
-		--parameters \
-		location="$location2" \
-		storageAccountName="$bootDiagnosticsStorageAccountNameLocation2" \
-		skuName="Standard_LRS" \
-		skuTier="Standard" \
-		kind="StorageV2" \
+		minimumTlsVersion="TLS1_2" \
 		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location2" \
 		virtualNetworkName="$vnetNameSpoke1Location2" \
-		subnetName="$subnetNameTest" \
-		action="Allow"
+		subnetNamesToAllow="$subnetNameTest"
 
 	echo -e "\n"
 fi

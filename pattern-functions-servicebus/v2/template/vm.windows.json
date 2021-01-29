@@ -77,6 +77,14 @@
 				"description": "The Azure AZ within which to deploy. Examples: 'eastus2', 'centralus', etc. See https://azure.microsoft.com/regions/ for which regions support AZs."
 			}
 		},
+		"userAssignedManagedIdentityResourceId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "User-Assigned Managed Identity Resource ID",
+				"description": "Optional. Can be retrieved for an existing UAMI using az identity show -o tsv --query 'id'."
+			}
+		},
 		"virtualMachineName": {
 			"type": "string",
 			"metadata": {
@@ -190,6 +198,10 @@
 				"description": "Possible values can be TimeZoneInfo.Id (https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id) value from time zones returned by TimeZoneInfo.GetSystemTimeZones. See https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones"
 			}
 		},
+		"osDiskName": {
+			"type": "string",
+			"defaultValue": "[concat(parameters('virtualMachineName'), '-os')]"
+		},
 		"osDiskStorageType": {
 			"type": "string",
 			"allowedValues": [
@@ -295,7 +307,22 @@
 		}
 	},
 	"variables": {
-		"osDiskName": "[concat(parameters('virtualMachineName'), '-os')]",
+		"identityType": "[
+			if
+			(
+				empty(trim(parameters('userAssignedManagedIdentityResourceId'))),
+				'None',
+				'UserAssigned'
+			)
+		]",
+		"userAssignedIdentities": "[
+			if
+			(
+				empty(trim(parameters('userAssignedManagedIdentityResourceId'))),
+				json('null'),
+				createObject(parameters('userAssignedManagedIdentityResourceId'), json('{}'))
+			)
+		]",
 		"dataDiskNamePrefix": "[concat(parameters('virtualMachineName'), '-data-')]",
 		"networkInterfaceId": "[resourceId(parameters('resourceGroupNameNetworkInterface'), 'Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
 		"imageReference": "[
@@ -335,6 +362,10 @@
 			"apiVersion": "[variables('apiVersionCompute')]",
 			"location": "[parameters('location')]",
 			"tags": "[variables('resourceTags')]",
+			"identity": {
+				"type": "[variables('identityType')]",
+				"userAssignedIdentities": "[variables('userAssignedIdentities')]"
+			},
 			"zones": "[
 				if
 				(
@@ -362,7 +393,7 @@
 					"osDisk": {
 						"createOption": "FromImage",
 						"diskSizeGB": "[parameters('osDiskSizeInGB')]",
-						"name": "[variables('osDiskName')]",
+						"name": "[parameters('osDiskName')]",
 						"managedDisk": {
 							"storageAccountType": "[parameters('osDiskStorageType')]"
 						}

@@ -77,6 +77,14 @@
 				"description": "The Azure AZ within which to deploy. Examples: 'eastus2', 'centralus', etc. See https://azure.microsoft.com/regions/ for which regions support AZs."
 			}
 		},
+		"userAssignedManagedIdentityResourceId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "User-Assigned Managed Identity Resource ID",
+				"description": "Optional. Can be retrieved for an existing UAMI using az identity show -o tsv --query 'id'."
+			}
+		},
 		"virtualMachineName": {
 			"type": "string",
 			"metadata": {
@@ -275,6 +283,31 @@
 		}
 	},
 	"variables": {
+		"identityType": "[
+			if
+			(
+				empty(trim(parameters('userAssignedManagedIdentityResourceId'))),
+				'None',
+				'UserAssigned'
+			)
+		]",
+		"userAssignedIdentities": "[
+			if
+			(
+				empty(trim(parameters('userAssignedManagedIdentityResourceId'))),
+				json('null'),
+				createObject(parameters('userAssignedManagedIdentityResourceId'), json('{}'))
+			)
+		]",
+		"zones":
+		"[
+			if
+			(
+				empty(trim(parameters('availabilityZone'))),
+				json('[]'),
+				array(parameters('availabilityZone'))
+			)
+		]",
 		"networkInterfaceId": "[resourceId(parameters('resourceGroupNameNetworkInterface'), 'Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
 		"imageReference": "[
 			if
@@ -313,14 +346,11 @@
 			"apiVersion": "[variables('apiVersionCompute')]",
 			"location": "[parameters('location')]",
 			"tags": "[variables('resourceTags')]",
-			"zones": "[
-				if
-				(
-					empty(trim(parameters('availabilityZone'))),
-					json('[]'),
-					array(parameters('availabilityZone'))
-				)
-			]",
+			"identity": {
+				"type": "[variables('identityType')]",
+				"userAssignedIdentities": "[variables('userAssignedIdentities')]"
+			},
+			"zones": "[variables('zones')]",
 			"properties": {
 				"osProfile": {
 					"computerName": "[parameters('virtualMachineName')]",

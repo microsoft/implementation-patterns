@@ -360,11 +360,12 @@ then
 		vnetResourceGroup="$rgNameNetworkHubLocation1" \
 		vnetName="$vnetNameHubLocation1" \
 		firewallName="$firewallNameLocation1" \
+		firewallAvailabilityZones="$firewallAvailabilityZones" \
 		firewallSku="$firewallSku" \
 		firewallTier="$firewallTier" \
 		firewallThreatIntelMode="$firewallThreatIntelMode" \
 		publicIpResourceGroup="$rgNameNetworkHubLocation1" \
-		publicIpName="$firewallPublicIpLocation1"
+		publicIpAddressNames="$firewallPublicIpLocation1"
 
 	echo "Deploy Location 2 Azure Firewall"
 	az deployment group create --subscription "$subscriptionId" -n "FW-""$location2" --verbose \
@@ -382,11 +383,12 @@ then
 		vnetResourceGroup="$rgNameNetworkHubLocation2" \
 		vnetName="$vnetNameHubLocation2" \
 		firewallName="$firewallNameLocation2" \
+		firewallAvailabilityZones="$firewallAvailabilityZones" \
 		firewallSku="$firewallSku" \
 		firewallTier="$firewallTier" \
 		firewallThreatIntelMode="$firewallThreatIntelMode" \
 		publicIpResourceGroup="$rgNameNetworkHubLocation2" \
-		publicIpName="$firewallPublicIpLocation2"
+		publicIpAddressNames="$firewallPublicIpLocation2"
 fi
 
 echo -e "\n"

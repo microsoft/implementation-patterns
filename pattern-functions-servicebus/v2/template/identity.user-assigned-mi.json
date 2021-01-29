@@ -41,7 +41,7 @@
         }
     ],
 	"outputs": {
-		"principal_id": {
+		"principalId": {
             "type": "string",
             "value": "[reference(variables('identityReference'), variables('apiVersionUserAssignedIdentity')).principalId]"
         }

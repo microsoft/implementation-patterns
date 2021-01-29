@@ -6,25 +6,26 @@
 # ALL OTHER BLOCKS/VARIABLES CAN BE LEFT AT DEFAULTS (BUT REVIEW/CHANGE AS NEEDED ANYWAY)
 
 # Deployment
-subscriptionId="e61e4c75-268b-4c94-ad48-237aa3231481"
+# subscriptionId="PROVIDE"
+subscriptionId="$(az account show -o tsv --query 'id')"
 location1="eastus2"
 location2="centralus"
 # Network
-nsgRuleInbound100Src="75.68.47.183" # Inbound allow for debugging - likely remove in production
+nsgRuleInbound100Src="PROVIDE" # Inbound allow for debugging - likely remove in production
 # VM
 # These are Windows VMs to run Azure Service Bus Explorer, Azure Storage Explorer, and Browser tests
 # Use Windows-acceptable username and password values
-adminUsername="pelazem"
-adminPassword="W00hoo@@2020"
+adminUsername="PROVIDE"
+adminPassword="PROVIDE"
 # ==================================================
 # ==================================================
 
 # ==================================================
 # Deployment - set to false to not deploy that set of resources; see deploy.main. for use.
 deployResourceGroups="true"
-deployNetwork="false"
-deployServiceBus="false"
-deployWorkloads="false"
+deployNetwork="true"
+deployServiceBus="true"
+deployWorkloads="true"
 deployVms="true"
 # ==================================================
 
@@ -91,6 +92,7 @@ subnetPrefixFirewallLocation2="10.101.1.0/24"
 firewallSku="AZFW_VNet"
 firewallTier="Standard"
 firewallThreatIntelMode="Alert"
+firewallAvailabilityZones="1,2,3"
 firewallNameLocation1="$businessUnit""-""$environment""-""$location1""-fw"
 firewallNameLocation2="$businessUnit""-""$environment""-""$location2""-fw"
 firewallPublicIpLocation1="$firewallNameLocation1""-pip"
@@ -222,8 +224,8 @@ availabilityZoneLocation1="1"
 availabilityZoneLocation2="1"
 
 # If deploying VMs from custom images, set here
-virtualMachineImageResourceIdLocation1="/subscriptions/""$subscriptionId""/resourceGroups/shared/providers/Microsoft.Compute/images/wi-dev-image-eastus2"
-virtualMachineImageResourceIdLocation2="/subscriptions/""$subscriptionId""/resourceGroups/shared/providers/Microsoft.Compute/images/wi-dev-image-centralus"
+#virtualMachineImageResourceIdLocation1="/subscriptions/""$subscriptionId""/resourceGroups/shared/providers/Microsoft.Compute/images/wi-dev-image-eastus2"
+#virtualMachineImageResourceIdLocation2="/subscriptions/""$subscriptionId""/resourceGroups/shared/providers/Microsoft.Compute/images/wi-dev-image-centralus"
 # Otherwise set these. The ARM template for VMs will use custom image resource ID over these, if the custom image is specified.
 virtualMachinePublisher="MicrosoftWindowsServer"
 virtualMachineOffer="WindowsServer"
