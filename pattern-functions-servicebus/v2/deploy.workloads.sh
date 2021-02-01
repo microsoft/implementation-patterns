@@ -28,7 +28,10 @@ az deployment group create --subscription "$subscriptionId" -n "WL-SA-""$locatio
 	defaultAction="Deny" \
 	bypass="AzureServices, Logging, Metrics" \
 	allowBlobPublicAccess=false \
-	minimumTlsVersion="TLS1_2"
+	minimumTlsVersion="TLS1_2" \
+	virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location1" \
+	virtualNetworkName="$vnetNameSpoke1Location1" \
+	subnetNamesToAllow="$subnetNameWorkload"",""$subnetNameWorkloadVnetIntegration"
 
 az deployment group create --subscription "$subscriptionId" -n "WL-SA-""$location2" --verbose \
 	-g "$rgNameWorkloadLocation2" --template-file "$templateStorageAccount" \
@@ -52,45 +55,13 @@ az deployment group create --subscription "$subscriptionId" -n "WL-SA-""$locatio
 	defaultAction="Deny" \
 	bypass="AzureServices, Logging, Metrics" \
 	allowBlobPublicAccess=false \
-	minimumTlsVersion="TLS1_2"
+	minimumTlsVersion="TLS1_2" \
+	virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location2" \
+	virtualNetworkName="$vnetNameSpoke1Location2" \
+	subnetNamesToAllow="$subnetNameWorkload"",""$subnetNameWorkloadVnetIntegration"
 
 echo -e "\n"
 
-# If we wanted to allow cross-region Storage Account access (peered VNets) we would need to add two more az deployment calls here
-if $workloadVnetIntegration
-then
-	echo "Deploy Region 1 Storage Account VNet Rules for Workload"
-	az deployment group create --subscription "$subscriptionId" -n "WL-SA-VNR-""$location1" --verbose \
-		-g "$rgNameWorkloadLocation1" --template-file "$templateStorageAccountVnetRuleForFunction" \
-		--parameters \
-		location="$location1" \
-		storageAccountName="$storageAcctNameLocation1" \
-		skuName="Standard_LRS" \
-		skuTier="Standard" \
-		kind="StorageV2" \
-		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location1" \
-		virtualNetworkName="$vnetNameSpoke1Location1" \
-		subnetNameWorkload="$subnetNameWorkload" \
-		subnetNameWorkloadVNetIntegration="$subnetNameWorkloadVnetIntegration" \
-		action="Allow"
-
-	echo "Deploy Region 2 Storage Account VNet Rules for Workload"
-	az deployment group create --subscription "$subscriptionId" -n "WL-SA-VNR-""$location2" --verbose \
-		-g "$rgNameWorkloadLocation2" --template-file "$templateStorageAccountVnetRuleForFunction" \
-		--parameters \
-		location="$location2" \
-		storageAccountName="$storageAcctNameLocation2" \
-		skuName="Standard_LRS" \
-		skuTier="Standard" \
-		kind="StorageV2" \
-		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location2" \
-		virtualNetworkName="$vnetNameSpoke1Location2" \
-		subnetNameWorkload="$subnetNameWorkload" \
-		subnetNameWorkloadVNetIntegration="$subnetNameWorkloadVnetIntegration" \
-		action="Allow"
-
-	echo -e "\n"
-fi
 
 if $storageAccountPrivateEndpoint
 then

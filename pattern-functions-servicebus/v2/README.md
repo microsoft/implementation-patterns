@@ -191,6 +191,7 @@ Trigger Function in Region 1 without VNet Integration when Message Sent to ASB T
 Trigger Function in Region 2 without VNet Integration when Message Sent to ASB Queue in Region 2 | Azure Service Bus Explorer on VM in Region 2 to send messages and monitor counts. Browser on VM in Region 2 to monitor Function Log. | Function that is not VNet-integrated is NOT triggered when message sent to ASB Queue. | Yes | Region 2 Service Bus Namespace VNet access rules only allow Queue or Topic access from clients in VNet, and deny access to all others. Functions that are not VNet-integrated will be denied access.
 Trigger Function in Region 2 without VNet Integration when Message Sent to ASB Topic in Region 2 | Azure Service Bus Explorer on VM in Region 2 to send messages and monitor counts. Browser on VM in Region 2 to monitor Function Log. | Function that is not VNet-integrated is NOT triggered when message sent to ASB Topic. | Yes | Region 2 Service Bus Namespace VNet access rules only allow Queue or Topic access from clients in VNet, and deny access to all others. Functions that are not VNet-integrated will be denied access.
 
+
 ## Deployment Assets
 
 This pattern uses the following deployment technologies and assets:

@@ -286,8 +286,6 @@ templatePrivateDnsZoneVnetLink="./template/net.private-dns-zone-vnet-link.json"
 templateFirewall="./template/net.firewall.json"
 
 templateStorageAccount="./template/storage.account.json"
-templateStorageAccountVnetRuleForFunction="./template/storage.account.vnet-rule.function.json"
-templateStorageAccountVnetRuleForVmBootDiagnostics="./template/storage.account.vnet-rule.vm-boot-diagnostics.json"
 
 templateAsb="./template/asb.namespace.json"
 templateAsbSasPolicy="./template/asb.saspolicy.json"
