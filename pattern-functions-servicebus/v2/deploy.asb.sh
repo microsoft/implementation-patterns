@@ -107,34 +107,6 @@ then
 		resourceGroupNameNetwork="$rgNameNetworkSpoke1Location1"
 
 
-	echo "Allow access to ASB Namespace in Region 1 from Workload Subnet in VNet in Region 2"
-	az deployment group create --subscription "$subscriptionId" -n "ASB-VNet-Rule-Allow-""$subnetNameWorkload""-""$location2" --verbose \
-		-g "$rgNameSharedLocation1" --template-file "$templateAsbVnetRule" \
-		--parameters \
-		namespaceName="$asbNamespaceNameLocation1" \
-		vnetName="$vnetNameSpoke1Location2" \
-		subnetName="$subnetNameWorkload" \
-		resourceGroupNameNetwork="$rgNameNetworkSpoke1Location2"
-
-	echo "Allow access to ASB Namespace in Region 1 from Workload Integration Subnet in VNet in Region 2"
-	az deployment group create --subscription "$subscriptionId" -n "ASB-VNet-Rule-Allow-""$subnetNameWorkloadVnetIntegration""-""$location2" --verbose \
-		-g "$rgNameSharedLocation1" --template-file "$templateAsbVnetRule" \
-		--parameters \
-		namespaceName="$asbNamespaceNameLocation1" \
-		vnetName="$vnetNameSpoke1Location2" \
-		subnetName="$subnetNameWorkloadVnetIntegration" \
-		resourceGroupNameNetwork="$rgNameNetworkSpoke1Location2"
-
-	echo "Allow access to ASB Namespace in Region 1 from Test Subnet in VNet in Region 2"
-	az deployment group create --subscription "$subscriptionId" -n "ASB-VNet-Rule-Allow-""$subnetNameTest""-""$location1" --verbose \
-		-g "$rgNameSharedLocation1" --template-file "$templateAsbVnetRule" \
-		--parameters \
-		namespaceName="$asbNamespaceNameLocation1" \
-		vnetName="$vnetNameSpoke1Location2" \
-		subnetName="$subnetNameTest" \
-		resourceGroupNameNetwork="$rgNameNetworkSpoke1Location2"
-
-
 	echo "Allow access to ASB Namespace in Region 2 from Workload Subnet in VNet in Region 2"
 	az deployment group create --subscription "$subscriptionId" -n "ASB-VNet-Rule-Allow-""$subnetNameWorkload""-""$location2" --verbose \
 		-g "$rgNameSharedLocation2" --template-file "$templateAsbVnetRule" \
@@ -161,34 +133,6 @@ then
 		vnetName="$vnetNameSpoke1Location2" \
 		subnetName="$subnetNameTest" \
 		resourceGroupNameNetwork="$rgNameNetworkSpoke1Location2"
-
-
-	echo "Allow access to ASB Namespace in Region 2 from Workload Subnet in VNet in Region 1"
-	az deployment group create --subscription "$subscriptionId" -n "ASB-VNet-Rule-Allow-""$subnetNameWorkload""-""$location1" --verbose \
-		-g "$rgNameSharedLocation2" --template-file "$templateAsbVnetRule" \
-		--parameters \
-		namespaceName="$asbNamespaceNameLocation2" \
-		vnetName="$vnetNameSpoke1Location1" \
-		subnetName="$subnetNameWorkload" \
-		resourceGroupNameNetwork="$rgNameNetworkSpoke1Location1"
-
-	echo "Allow access to ASB Namespace in Region 2 from Workload Integration Subnet in VNet in Region 1"
-	az deployment group create --subscription "$subscriptionId" -n "ASB-VNet-Rule-Allow-""$subnetNameWorkloadVnetIntegration""-""$location1" --verbose \
-		-g "$rgNameSharedLocation2" --template-file "$templateAsbVnetRule" \
-		--parameters \
-		namespaceName="$asbNamespaceNameLocation2" \
-		vnetName="$vnetNameSpoke1Location1" \
-		subnetName="$subnetNameWorkloadVnetIntegration" \
-		resourceGroupNameNetwork="$rgNameNetworkSpoke1Location1"
-
-	echo "Allow access to ASB Namespace in Region 2 from Test Subnet in VNet in Region 1"
-	az deployment group create --subscription "$subscriptionId" -n "ASB-VNet-Rule-Allow-""$subnetNameTest""-""$location1" --verbose \
-		-g "$rgNameSharedLocation2" --template-file "$templateAsbVnetRule" \
-		--parameters \
-		namespaceName="$asbNamespaceNameLocation2" \
-		vnetName="$vnetNameSpoke1Location1" \
-		subnetName="$subnetNameTest" \
-		resourceGroupNameNetwork="$rgNameNetworkSpoke1Location1"
 
 	echo -e "\n"
 fi
