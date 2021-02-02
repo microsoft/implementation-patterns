@@ -1,0 +1,115 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"vnetName": {
+			"type": "string",
+			"defaultValue": ""
+		},
+		"subnetName": {
+			"type": "string",
+			"defaultValue": ""
+		},
+		"subnetPrefix": {
+			"type": "string",
+			"defaultValue": ""
+		},
+		"nsgResourceGroup": {
+			"type": "string",
+			"defaultValue": ""
+		},
+		"nsgName": {
+			"type": "string",
+			"defaultValue": ""
+		},
+		"serviceEndpoints": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Comma-delimited list of Service Endpoints to configure",
+				"description": "Optional. Example: Microsoft.AzureCosmosDB, Microsoft.EventHub, Microsoft.ServiceBus, Microsoft.Storage, Microsoft.Web. See https://docs.microsoft.com/azure/virtual-network/virtual-network-service-endpoints-overview"
+			}
+		},
+		"delegationService": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Service to delegate this subnet to",
+				"description": "Optional. Example: Microsoft.Web/serverFarms"
+			}
+		},
+		"privateEndpointNetworkPolicies": {
+			"type": "string",
+			"defaultValue": "Enabled",
+			"allowedValues": [
+				"Enabled",
+				"Disabled"
+			],
+			"metadata": {
+				"displayName": "Private Endpoint Network Policies State",
+				"description": "Enable or Disable apply network policies on private end point in the subnet."
+			}
+		},
+		"privateLinkServiceNetworkPolicies": {
+			"type": "string",
+			"defaultValue": "Enabled",
+			"allowedValues": [
+				"Enabled",
+				"Disabled"
+			],
+			"metadata": {
+				"displayName": "Private Link Serivce Network Policies State",
+				"description": "Enable or Disable apply network policies on private link service in the subnet."
+			}
+		}
+	},
+	"variables": {
+		"serviceEndpointNames": "[split(parameters('serviceEndpoints'), ',')]",
+		"delegation": "[
+			if
+			(
+				empty(trim(parameters('delegationService'))),
+				json('[]'),
+				array(createObject('name', replace(parameters('delegationService'), '/', '.'), 'properties', createObject('serviceName', parameters('delegationService'))))
+			)
+		]",
+		"apiVersionVnet": "2020-07-01"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Network/virtualNetworks/subnets",
+			"apiVersion": "[variables('apiVersionVnet')]",
+			"name": "[concat(parameters('vnetName'), '/', parameters('subnetName'))]",
+			"properties": {
+				"addressPrefix": "[parameters('subnetPrefix')]",
+				"networkSecurityGroup": "[
+					if
+					(
+						or(empty(trim(parameters('nsgResourceGroup'))), empty(trim(parameters('nsgName')))),
+						json('null'),
+						createObject('id', resourceId(parameters('nsgResourceGroup'), 'Microsoft.Network/networkSecurityGroups', parameters('nsgName')))
+					)
+				]",
+				"copy": [
+					{
+						"name": "serviceEndpoints",
+						"count": "[
+							if
+							(
+								or(empty(trim(parameters('serviceEndpoints'))), empty(variables('serviceEndpointNames'))),
+								0,
+								length(variables('serviceEndpointNames'))
+							)
+						]",
+						"input": {
+							"service": "[trim(variables('serviceEndpointNames')[copyIndex('serviceEndpoints')])]"
+						}
+					}
+				],
+				"delegations": "[variables('delegation')]",
+				"privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPolicies')]",
+				"privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPolicies')]"
+			}
+		}
+	]
+}

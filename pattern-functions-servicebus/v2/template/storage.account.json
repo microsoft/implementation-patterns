@@ -1,0 +1,256 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"applicationId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application ID in ServiceNow",
+				"required": true
+			}
+		},
+		"productId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PR in ServiceNow",
+				"required": true
+			}
+		},
+		"productLine": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PL in ServiceNow",
+				"required": true
+			}
+		},
+		"employeeId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Employee ID",
+				"required": true
+			}
+		},
+		"businessUnit": {
+			"type": "string",
+			"defaultValue": "wi",
+			"metadata": {
+				"comments": "Business Unit. Examples: 'wi', 'ecc', 'gs'",
+				"required": true
+			}
+		},
+		"environment": {
+			"type": "string",
+			"defaultValue": "dev",
+			"metadata": {
+				"comments": "Deployment Environment",
+				"required": false
+			}
+		},
+		"organization": {
+			"type": "string",
+			"defaultValue": "WIM",
+			"metadata": {
+				"comments": "Organization",
+				"required": false
+			}
+		},
+		"timestamp": {
+			"type": "string",
+			"defaultValue": "[utcNow('u')]"
+		},
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String"
+        },
+        "storageAccountName": {
+            "type": "String"
+        },
+        "skuName": {
+            "type": "String",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Standard_ZRS",
+                "Premium_LRS",
+                "Premium_ZRS",
+                "Standard_GZRS",
+                "Standard_RAGZRS"
+            ]
+        },
+        "skuTier": {
+            "type": "String",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Premium"
+            ]
+        },
+        "kind": {
+            "type": "String",
+            "defaultValue": "StorageV2",
+            "allowedValues": [
+                "Storage",
+                "StorageV2",
+                "BlobStorage",
+                "FileStorage",
+                "BlockBlobStorage"
+            ]
+        },
+        "accessTier": {
+            "type": "String",
+            "defaultValue": "Hot",
+            "allowedValues": [
+                "Hot",
+                "Cool"
+            ]
+        },
+        "httpsOnly": {
+            "type": "bool",
+            "defaultValue": true
+        },
+        "hierarchicalEnabled": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "defaultAction": {
+            "type": "String",
+            "defaultValue": "Deny",
+            "allowedValues": [
+                "Allow",
+                "Deny"
+            ],
+            "metadata": {
+                "displayName": "Default access action",
+                "description": "If set to Allow, the 'Allow access from' setting will be 'All networks'. If set to 'Deny', the 'Allow access from' setting will be 'Selected networks', designated in the VNet/subnets to allow."
+            }
+        },
+        "bypass": {
+            "type": "String",
+            "defaultValue": "AzureServices, Logging, Metrics"
+        },
+        "allowBlobPublicAccess": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "minimumTlsVersion": {
+            "type": "String",
+            "defaultValue": "TLS1_2",
+            "allowedValues": [
+                "TLS1_0",
+                "TLS1_1",
+                "TLS1_2"
+            ]
+        },
+        "keySource": {
+            "type": "String",
+            "defaultValue": "Microsoft.Storage",
+            "allowedValues": [
+                "Microsoft.Storage",
+                "Microsoft.Keyvault"
+            ]
+        },
+        "virtualNetworkResourceGroup": {
+            "type": "String",
+            "defaultValue": ""
+        },
+        "virtualNetworkName": {
+            "type": "String",
+            "defaultValue": ""
+        },
+        "subnetNamesToAllow": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "displayName": "Subnet names to allow",
+                "description": "Optional. If a VNet RG and Name provided, this is a comma-delimited list of subnet names in that VNet for which allow rules will be created. Example: 'subnet1,subnet2,subnet3'."
+            }
+        }
+    },
+    "variables": {
+        "vnetId":
+        "[
+            if
+            (
+                or(empty(trim(parameters('virtualNetworkResourceGroup'))), empty(trim(parameters('virtualNetworkName'))), empty(trim(parameters('subnetNamesToAllow')))),
+                '',
+                resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))
+            )
+        ]",
+		"subnetNamesToAllow":
+        "[
+            if
+            (
+                or(empty(variables('vnetId')), empty(parameters('subnetNamesToAllow'))),
+                json('[]'),
+                split(parameters('subnetNamesToAllow'), ',')
+            )
+        ]",
+        "subnetAccessAction": "Allow",
+		"resourceTags": {
+			"ApplicationId": "[toLower(parameters('applicationId'))]",
+			"ProductId": "[toLower(parameters('productId'))]",
+			"ProductLine": "[toLower(parameters('productLine'))]",
+			"CreatedBy": "[toLower(parameters('employeeId'))]",
+			"BusinessUnit": "[parameters('businessUnit')]",
+			"Environment": "[toLower(parameters('environment'))]",
+			"Organization": "[parameters('organization')]",
+			"Timestamp": "[parameters('timestamp')]"
+		},
+        "apiVersionStorage": "2020-08-01-preview"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "[variables('apiVersionStorage')]",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "tags": "[variables('resourceTags')]",
+            "sku": {
+                "name": "[parameters('skuName')]",
+                "tier": "[parameters('skuTier')]"
+            },
+            "kind": "[parameters('kind')]",
+            "properties": {
+                "accessTier": "[parameters('accessTier')]",
+                "networkAcls": {
+                    "bypass": "[parameters('bypass')]",
+                    "copy": [
+                        {
+                            "name": "virtualNetworkRules",
+                            "count": "[length(variables('subnetNamesToAllow'))]",
+                            "input": {
+                                "id": "[concat(variables('vnetId'), '/subnets/', trim(variables('subnetNamesToAllow')[copyIndex('virtualNetworkRules')]))]",
+                                "action": "[variables('subnetAccessAction')]"
+                            }
+                        }
+                    ],
+                    "ipRules": [],
+                    "defaultAction": "[parameters('defaultAction')]"
+                },
+                "supportsHttpsTrafficOnly": "[parameters('httpsOnly')]",
+                "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
+                "minimumTlsVersion": "[parameters('minimumTlsVersion')]",
+                "isHnsEnabled": "[parameters('hierarchicalEnabled')]",
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "[parameters('keySource')]"
+                }
+            }
+        }
+    ]
+}

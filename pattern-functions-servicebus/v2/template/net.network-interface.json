@@ -1,0 +1,190 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"applicationId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application ID in ServiceNow",
+				"required": true
+			}
+		},
+		"productId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PR in ServiceNow",
+				"required": true
+			}
+		},
+		"productLine": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PL in ServiceNow",
+				"required": true
+			}
+		},
+		"employeeId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Employee ID",
+				"required": true
+			}
+		},
+		"businessUnit": {
+			"type": "string",
+			"defaultValue": "wi",
+			"metadata": {
+				"comments": "Business Unit. Examples: 'wi', 'ecc', 'gs'",
+				"required": true
+			}
+		},
+		"environment": {
+			"type": "string",
+			"defaultValue": "dev",
+			"metadata": {
+				"comments": "Deployment Environment",
+				"required": false
+			}
+		},
+		"organization": {
+			"type": "string",
+			"defaultValue": "WIM",
+			"metadata": {
+				"comments": "Organization",
+				"required": false
+			}
+		},
+		"timestamp": {
+			"type": "string",
+			"defaultValue": "[utcNow('u')]"
+		},
+		"location": {
+			"type": "String",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Azure region",
+				"description": "See https://azure.microsoft.com/regions/."
+			}
+		},
+		"networkInterfaceName": {
+			"type": "String",
+			"metadata": {
+				"displayName": "Network Interface Name",
+				"description": ""
+			}
+		},
+		"vnetResourceGroup": {
+			"type": "String",
+			"metadata": {
+				"displayName": "Virtual Network Resource Group",
+				"description": ""
+			}
+		},
+		"vnetName": {
+			"type": "String",
+			"metadata": {
+				"displayName": "Virtual Network Name",
+				"description": ""
+			}
+		},
+		"subnetName": {
+			"type": "String",
+			"metadata": {
+				"displayName": "Subnet Name",
+				"description": ""
+			}
+		},
+		"enableAcceleratedNetworking": {
+			"type": "bool",
+			"defaultValue": false,
+			"metadata": {
+				"displayName": "Enable accelerated networking",
+				"description": "Check whether your VM SKU supports accelerated networking before setting this to true."
+			}
+		},
+		"privateIpAllocationMethod": {
+			"type": "String",
+			"defaultValue": "Dynamic",
+			"allowedValues": [
+				"Dynamic",
+				"Static"
+			],
+			"metadata": {
+				"displayName": "Private IP Allocation Method",
+				"description": ""
+			}
+		},
+		"publicIpResourceGroup": {
+			"type": "String",
+			"metadata": {
+				"displayName": "Public IP Address Resource Group",
+				"description": "If not specified, this NIC will be deployed without a public IP"
+			}
+		},
+		"publicIpName": {
+			"type": "String",
+			"metadata": {
+				"displayName": "Public IP Address Name",
+				"description": "If not specified, this NIC will be deployed without a public IP"
+			}
+		},
+		"ipConfigName": {
+			"type": "String",
+			"defaultValue": "ipConfig1",
+			"metadata": {
+				"displayName": "IP Configuration Name",
+				"description": ""
+			}
+		}
+	},
+	"variables": {
+		"vnetId": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
+		"subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+		"resourceTags": {
+			"ApplicationId": "[toLower(parameters('applicationId'))]",
+			"ProductId": "[toLower(parameters('productId'))]",
+			"ProductLine": "[toLower(parameters('productLine'))]",
+			"CreatedBy": "[toLower(parameters('employeeId'))]",
+			"BusinessUnit": "[parameters('businessUnit')]",
+			"Environment": "[toLower(parameters('environment'))]",
+			"Organization": "[parameters('organization')]",
+			"Timestamp": "[parameters('timestamp')]"
+		},
+		"apiVersionNetwork": "2020-07-01"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Network/networkInterfaces",
+			"apiVersion": "[variables('apiVersionNetwork')]",
+			"name": "[parameters('networkInterfaceName')]",
+			"location": "[parameters('location')]",
+			"tags": "[variables('resourceTags')]",
+			"properties": {
+				"ipConfigurations": [
+					{
+						"name": "[parameters('ipConfigName')]",
+						"properties": {
+							"subnet": {
+								"id": "[variables('subnetId')]"
+							},
+							"privateIPAllocationMethod": "[parameters('privateIpAllocationMethod')]",
+							"publicIpAddress": "[
+								if
+								(
+									or( empty(parameters('publicIpResourceGroup')), empty(parameters('publicIpName')) ),
+									json('null'),
+									createObject('id', resourceId(parameters('publicIpResourceGroup'), 'Microsoft.Network/publicIpAddresses', parameters('publicIpName')))
+								)
+							]"
+						}
+					}
+				],
+				"enableAcceleratedNetworking": "[parameters('enableAcceleratedNetworking')]"
+			}
+		}
+	]
+}

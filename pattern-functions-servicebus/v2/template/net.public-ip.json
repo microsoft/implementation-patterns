@@ -1,0 +1,160 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"applicationId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application ID in ServiceNow",
+				"required": true
+			}
+		},
+		"productId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PR in ServiceNow",
+				"required": true
+			}
+		},
+		"productLine": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PL in ServiceNow",
+				"required": true
+			}
+		},
+		"employeeId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Employee ID",
+				"required": true
+			}
+		},
+		"businessUnit": {
+			"type": "string",
+			"defaultValue": "wi",
+			"metadata": {
+				"comments": "Business Unit. Examples: 'wi', 'ecc', 'gs'",
+				"required": true
+			}
+		},
+		"environment": {
+			"type": "string",
+			"defaultValue": "dev",
+			"metadata": {
+				"comments": "Deployment Environment",
+				"required": false
+			}
+		},
+		"organization": {
+			"type": "string",
+			"defaultValue": "WIM",
+			"metadata": {
+				"comments": "Organization",
+				"required": false
+			}
+		},
+		"timestamp": {
+			"type": "string",
+			"defaultValue": "[utcNow('u')]"
+		},
+		"location": {
+			"type": "String",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Azure region",
+				"description": "See https://azure.microsoft.com/regions/."
+			}
+		},
+		"availabilityZone": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Azure availability zone (AZ)",
+				"description": "Optional; if not provided, a non-zonal PIP will be deployed. The Azure AZ within which to deploy. See https://azure.microsoft.com/regions/ for which regions support AZs."
+			}
+		},
+		"publicIpName": {
+			"type": "String",
+			"metadata": {
+				"displayName": "Public IP Address Name",
+				"description": "Public IP Address Name"
+			}
+		},
+		"publicIpType": {
+			"type": "string",
+			"defaultValue": "Dynamic",
+			"allowedValues": [
+				"Dynamic",
+				"Static"
+			],
+			"metadata": {
+				"displayName": "Public IP address type",
+				"description": "The public IP address type: Static or Dynamic."
+			}
+		},
+		"publicIpSku": {
+			"type": "string",
+			"defaultValue": "Basic",
+			"allowedValues": [
+				"Basic",
+				"Standard"
+			],
+			"metadata": {
+				"displayName": "Public IP address SKU",
+				"description": "See https://docs.microsoft.com/azure/virtual-network/virtual-network-ip-addresses-overview-arm"
+			}
+		},
+		"domainNameLabel": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Public IP address Domain Name Label",
+				"description": "The domain name label. The concatenation of the domain name label and the regionalized DNS zone make up the fully qualified domain name associated with the public IP address. If a domain name label is specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system."
+			}
+		}
+	},
+	"variables": {
+		"resourceTags": {
+			"ApplicationId": "[toLower(parameters('applicationId'))]",
+			"ProductId": "[toLower(parameters('productId'))]",
+			"ProductLine": "[toLower(parameters('productLine'))]",
+			"CreatedBy": "[toLower(parameters('employeeId'))]",
+			"BusinessUnit": "[parameters('businessUnit')]",
+			"Environment": "[toLower(parameters('environment'))]",
+			"Organization": "[parameters('organization')]",
+			"Timestamp": "[parameters('timestamp')]"
+		},
+		"apiVersionNetwork": "2020-07-01"
+	},
+	"resources": [
+		{
+			"name": "[parameters('publicIpName')]",
+			"type": "Microsoft.Network/publicIpAddresses",
+			"apiVersion": "[variables('apiVersionNetwork')]",
+			"location": "[parameters('location')]",
+			"tags": "[variables('resourceTags')]",
+			"properties": {
+				"publicIpAllocationMethod": "[parameters('publicIpType')]",
+				"dnsSettings": {
+					"domainNameLabel": "[toLower(parameters('domainNameLabel'))]"
+				}
+			},
+			"sku": {
+				"name": "[parameters('publicIpSku')]"
+			},
+			"zones": "[
+				if
+				(
+					empty(trim(parameters('availabilityZone'))),
+					json('[]'),
+					array(parameters('availabilityZone'))
+				)
+			]"
+		}
+	]
+}

@@ -1,0 +1,34 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespaceName": {
+            "type": "string"
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "resourceGroupNameNetwork": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "apiVersionServiceBusVnetRules": "2018-01-01-preview",
+        "ruleName": "[concat(parameters('namespaceName'), '/', parameters('vnetName'), '-', parameters('subnetName'))]",
+        "vnetId": "[resourceId(parameters('resourceGroupNameNetwork'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces/VirtualNetworkRules",
+            "apiVersion": "[variables('apiVersionServiceBusVnetRules')]",
+            "name": "[variables('ruleName')]",
+            "properties": {
+                "virtualNetworkSubnetId": "[variables('subnetId')]"
+            }
+        }
+    ]
+}

@@ -1,0 +1,127 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"applicationId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application ID in ServiceNow",
+				"required": true
+			}
+		},
+		"productId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PR in ServiceNow",
+				"required": true
+			}
+		},
+		"productLine": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PL in ServiceNow",
+				"required": true
+			}
+		},
+		"employeeId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Employee ID",
+				"required": true
+			}
+		},
+		"businessUnit": {
+			"type": "string",
+			"defaultValue": "wi",
+			"metadata": {
+				"comments": "Business Unit. Examples: 'wi', 'ecc', 'gs'",
+				"required": true
+			}
+		},
+		"environment": {
+			"type": "string",
+			"defaultValue": "dev",
+			"metadata": {
+				"comments": "Deployment Environment",
+				"required": false
+			}
+		},
+		"organization": {
+			"type": "string",
+			"defaultValue": "WIM",
+			"metadata": {
+				"comments": "Organization",
+				"required": false
+			}
+		},
+		"timestamp": {
+			"type": "string",
+			"defaultValue": "[utcNow('u')]"
+		},
+		"location": {
+			"type": "string",
+			"defaultValue": "[resourceGroup().location]"
+		},
+		"namespaceName": {
+			"type": "string",
+			"defaultValue": ""
+		},
+		"zoneRedundant": {
+			"type": "bool",
+			"defaultValue": false
+		},
+		"messagingUnits": {
+			"type": "int",
+			"defaultValue": 1
+		}
+	},
+	"variables": {
+		"resourceTags": {
+			"ApplicationId": "[toLower(parameters('applicationId'))]",
+			"ProductId": "[toLower(parameters('productId'))]",
+			"ProductLine": "[toLower(parameters('productLine'))]",
+			"CreatedBy": "[toLower(parameters('employeeId'))]",
+			"BusinessUnit": "[parameters('businessUnit')]",
+			"Environment": "[toLower(parameters('environment'))]",
+			"Organization": "[parameters('organization')]",
+			"Timestamp": "[parameters('timestamp')]"
+		},
+		"apiVersionServiceBus": "2018-01-01-preview"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.ServiceBus/namespaces",
+			"apiVersion": "[variables('apiVersionServiceBus')]",
+			"name": "[parameters('namespaceName')]",
+			"location": "[parameters('location')]",
+			"tags": "[variables('resourceTags')]",
+			"sku": {
+				"name": "Premium",
+				"tier": "Premium",
+				"capacity": "[parameters('messagingUnits')]"
+			},
+			"properties": {
+				"zoneRedundant": "[bool(parameters('zoneRedundant'))]"
+			}
+		},
+		{
+			"type": "Microsoft.ServiceBus/namespaces/networkRuleSets",
+			"apiVersion": "[variables('apiVersionServiceBus')]",
+			"name": "[concat(parameters('namespaceName'), '/default')]",
+			"dependsOn": [
+				"[concat('Microsoft.ServiceBus/namespaces/', parameters('namespaceName'))]"
+			],
+			"location": "[parameters('location')]",
+			"properties": {
+				"defaultAction": "Deny",
+				"virtualNetworkRules": [],
+				"ipRules": []
+			}
+		}
+
+	]
+}

@@ -4,12 +4,11 @@
 # Variables
 . ./deploy.variables.sh
 # ==================================================
-if $usePublicIps
+if $virtualMachineUsePublicIp
 then
-	echo "Deploy Public IPs"
-
-	az deployment group create --subscription "$subscriptionId" -n "PIP-""$location1" --verbose \
-		-g "$rgNameVmLocation1" --template-file "$templatePublicIpWithAz" \
+	echo "Deploy Location 1 VM Public IP"
+	az deployment group create --subscription "$subscriptionId" -n "VM-PIP-""$location1" --verbose \
+		-g "$rgNameTestLocation1" --template-file "$templatePublicIp" \
 		--parameters \
 		applicationId="$applicationId" \
 		productId="$productId" \
@@ -22,12 +21,13 @@ then
 		location="$location1" \
 		availabilityZone="$availabilityZoneLocation1" \
 		publicIpName="$virtualMachinePublicIpLocation1" \
-		publicIpType="$publicIpType" \
-		publicIpSku="$publicIpSku" \
+		publicIpType="$virtualMachinePublicIpType" \
+		publicIpSku="$virtualMachinePublicIpSku" \
 		domainNameLabel="$virtualMachineNameLocation1"
 
-	az deployment group create --subscription "$subscriptionId" -n "PIP-""$location2" --verbose \
-		-g "$rgNameVmLocation2" --template-file "$templatePublicIpWithAz" \
+	echo "Deploy Location 2 VM Public IP"
+	az deployment group create --subscription "$subscriptionId" -n "VM-PIP-""$location2" --verbose \
+		-g "$rgNameTestLocation2" --template-file "$templatePublicIp" \
 		--parameters \
 		applicationId="$applicationId" \
 		productId="$productId" \
@@ -40,110 +40,66 @@ then
 		location="$location2" \
 		availabilityZone="$availabilityZoneLocation2" \
 		publicIpName="$virtualMachinePublicIpLocation2" \
-		publicIpType="$publicIpType" \
-		publicIpSku="$publicIpSku" \
+		publicIpType="$virtualMachinePublicIpType" \
+		publicIpSku="$virtualMachinePublicIpSku" \
 		domainNameLabel="$virtualMachineNameLocation2"
 
 	echo -e "\n"
 fi
 
-echo "Deploy Network Interfaces"
+echo "Deploy Location 1 VM Network Interface"
+az deployment group create --subscription "$subscriptionId" -n "VM-NIC-""$location1" --verbose \
+	-g "$rgNameTestLocation1" --template-file "$templateNetworkInterface" \
+	--parameters \
+	applicationId="$applicationId" \
+	productId="$productId" \
+	productLine="$productLine" \
+	employeeId="$employeeId" \
+	businessUnit="$businessUnit" \
+	environment="$environment" \
+	organization="$organization" \
+	timestamp="$timestamp" \
+	location="$location1" \
+	networkInterfaceName="$virtualMachineNetworkInterfaceNameLocation1" \
+	vnetResourceGroup="$rgNameNetworkSpoke1Location1" \
+	vnetName="$vnetNameSpoke1Location1" \
+	subnetName="$subnetNameTest" \
+	enableAcceleratedNetworking="$enableAcceleratedNetworking" \
+	privateIpAllocationMethod="$privateIpAllocationMethod" \
+	publicIpResourceGroup="$rgNameTestLocation1" \
+	publicIpName="$virtualMachinePublicIpLocation1" \
+	ipConfigName="$ipConfigName"
 
-if $usePublicIps
-then
-	az deployment group create --subscription "$subscriptionId" -n "NIC-""$location1" --verbose \
-		-g "$rgNameVmLocation1" --template-file "$templateNetworkInterfaceWithPublicIp" \
-		--parameters \
-		applicationId="$applicationId" \
-		productId="$productId" \
-		productLine="$productLine" \
-		employeeId="$employeeId" \
-		businessUnit="$businessUnit" \
-		environment="$environment" \
-		organization="$organization" \
-		timestamp="$timestamp" \
-		location="$location1" \
-		networkInterfaceName="$networkInterfaceNameLocation1" \
-		vnetResourceGroup="$rgNameNetworkLocation1" \
-		vnetName="$vnetNameLocation1" \
-		subnetName="$subnetNameWorkload" \
-		enableAcceleratedNetworking="$enableAcceleratedNetworking" \
-		privateIpAllocationMethod="$privateIpAllocationMethod" \
-		publicIpResourceGroup="$rgNameVmLocation1" \
-		publicIpName="$virtualMachinePublicIpLocation1" \
-		ipConfigName="$ipConfigName"
-
-	az deployment group create --subscription "$subscriptionId" -n "NIC-""$location2" --verbose \
-		-g "$rgNameVmLocation2" --template-file "$templateNetworkInterfaceWithPublicIp" \
-		--parameters \
-		applicationId="$applicationId" \
-		productId="$productId" \
-		productLine="$productLine" \
-		employeeId="$employeeId" \
-		businessUnit="$businessUnit" \
-		environment="$environment" \
-		organization="$organization" \
-		timestamp="$timestamp" \
-		location="$location2" \
-		networkInterfaceName="$networkInterfaceNameLocation2" \
-		vnetResourceGroup="$rgNameNetworkLocation2" \
-		vnetName="$vnetNameLocation2" \
-		subnetName="$subnetNameWorkload" \
-		enableAcceleratedNetworking="$enableAcceleratedNetworking" \
-		privateIpAllocationMethod="$privateIpAllocationMethod" \
-		publicIpResourceGroup="$rgNameVmLocation2" \
-		publicIpName="$virtualMachinePublicIpLocation2" \
-		ipConfigName="$ipConfigName"
-else
-	az deployment group create --subscription "$subscriptionId" -n "NIC-""$location1" --verbose \
-		-g "$rgNameVmLocation1" --template-file "$templateNetworkInterfaceWithoutPublicIp" \
-		--parameters \
-		applicationId="$applicationId" \
-		productId="$productId" \
-		productLine="$productLine" \
-		employeeId="$employeeId" \
-		businessUnit="$businessUnit" \
-		environment="$environment" \
-		organization="$organization" \
-		timestamp="$timestamp" \
-		location="$location1" \
-		networkInterfaceName="$networkInterfaceNameLocation1" \
-		vnetResourceGroup="$rgNameNetworkLocation1" \
-		vnetName="$vnetNameLocation1" \
-		subnetName="$subnetNameWorkload" \
-		enableAcceleratedNetworking="$enableAcceleratedNetworking" \
-		privateIpAllocationMethod="$privateIpAllocationMethod" \
-		ipConfigName="$ipConfigName"
-
-	az deployment group create --subscription "$subscriptionId" -n "NIC-""$location2" --verbose \
-		-g "$rgNameVmLocation2" --template-file "$templateNetworkInterfaceWithoutPublicIp" \
-		--parameters \
-		applicationId="$applicationId" \
-		productId="$productId" \
-		productLine="$productLine" \
-		employeeId="$employeeId" \
-		businessUnit="$businessUnit" \
-		environment="$environment" \
-		organization="$organization" \
-		timestamp="$timestamp" \
-		location="$location2" \
-		networkInterfaceName="$networkInterfaceNameLocation2" \
-		vnetResourceGroup="$rgNameNetworkLocation2" \
-		vnetName="$vnetNameLocation2" \
-		subnetName="$subnetNameWorkload" \
-		enableAcceleratedNetworking="$enableAcceleratedNetworking" \
-		privateIpAllocationMethod="$privateIpAllocationMethod" \
-		ipConfigName="$ipConfigName"
-fi
+echo "Deploy Location 2 VM Network Interface"
+az deployment group create --subscription "$subscriptionId" -n "VM-NIC-""$location2" --verbose \
+	-g "$rgNameTestLocation2" --template-file "$templateNetworkInterface" \
+	--parameters \
+	applicationId="$applicationId" \
+	productId="$productId" \
+	productLine="$productLine" \
+	employeeId="$employeeId" \
+	businessUnit="$businessUnit" \
+	environment="$environment" \
+	organization="$organization" \
+	timestamp="$timestamp" \
+	location="$location2" \
+	networkInterfaceName="$virtualMachineNetworkInterfaceNameLocation2" \
+	vnetResourceGroup="$rgNameNetworkSpoke1Location2" \
+	vnetName="$vnetNameSpoke1Location2" \
+	subnetName="$subnetNameTest" \
+	enableAcceleratedNetworking="$enableAcceleratedNetworking" \
+	privateIpAllocationMethod="$privateIpAllocationMethod" \
+	publicIpResourceGroup="$rgNameTestLocation2" \
+	publicIpName="$virtualMachinePublicIpLocation2" \
+	ipConfigName="$ipConfigName"
 
 echo -e "\n"
 
 if $enableBootDiagnostics
 then
-	echo "Deploy Diagnostics Storage Accounts"
-
-	az deployment group create --subscription "$subscriptionId" -n "DIAG-SA-""$location1" --verbose \
-		-g "$rgNameVmLocation1" --template-file "$templateStorageAccount" \
+	echo "Deploy Location 1 Diagnostics Storage Account"
+	az deployment group create --subscription "$subscriptionId" -n "VM-DIAG-SA-""$location1" --verbose \
+		-g "$rgNameTestLocation1" --template-file "$templateStorageAccount" \
 		--parameters \
 		applicationId="$applicationId" \
 		productId="$productId" \
@@ -164,10 +120,14 @@ then
 		defaultAction="Deny" \
 		bypass="AzureServices, Logging, Metrics" \
 		allowBlobPublicAccess=false \
-		minimumTlsVersion="TLS1_2"
+		minimumTlsVersion="TLS1_2" \
+		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location1" \
+		virtualNetworkName="$vnetNameSpoke1Location1" \
+		subnetNamesToAllow="$subnetNameTest"
 
-	az deployment group create --subscription "$subscriptionId" -n "DIAG-SA-""$location2" --verbose \
-		-g "$rgNameVmLocation2" --template-file "$templateStorageAccount" \
+	echo "Deploy Location 2 Diagnostics Storage Account"
+	az deployment group create --subscription "$subscriptionId" -n "VM-DIAG-SA-""$location2" --verbose \
+		-g "$rgNameTestLocation2" --template-file "$templateStorageAccount" \
 		--parameters \
 		applicationId="$applicationId" \
 		productId="$productId" \
@@ -188,45 +148,17 @@ then
 		defaultAction="Deny" \
 		bypass="AzureServices, Logging, Metrics" \
 		allowBlobPublicAccess=false \
-		minimumTlsVersion="TLS1_2"
-
-	echo -e "\n"
-
-	echo "Deploy Diagnostics Storage Account VNet Rules"
-
-	az deployment group create --subscription "$subscriptionId" -n "VM-SA-VNR-""$location1" --verbose \
-		-g "$rgNameVmLocation1" --template-file "$templateStorageAccountVnetRuleForVmBootDiagnostics" \
-		--parameters \
-		location="$location1" \
-		storageAccountName="$bootDiagnosticsStorageAccountNameLocation1" \
-		skuName="Standard_LRS" \
-		skuTier="Standard" \
-		kind="StorageV2" \
-		virtualNetworkResourceGroup="$rgNameNetworkLocation1" \
-		virtualNetworkName="$vnetNameLocation1" \
-		subnetName="$subnetNameWorkload" \
-		action="Allow"
-
-	az deployment group create --subscription "$subscriptionId" -n "VM-SA-VNR-""$location2" --verbose \
-		-g "$rgNameVmLocation2" --template-file "$templateStorageAccountVnetRuleForVmBootDiagnostics" \
-		--parameters \
-		location="$location2" \
-		storageAccountName="$bootDiagnosticsStorageAccountNameLocation2" \
-		skuName="Standard_LRS" \
-		skuTier="Standard" \
-		kind="StorageV2" \
-		virtualNetworkResourceGroup="$rgNameNetworkLocation2" \
-		virtualNetworkName="$vnetNameLocation2" \
-		subnetName="$subnetNameWorkload" \
-		action="Allow"
+		minimumTlsVersion="TLS1_2" \
+		virtualNetworkResourceGroup="$rgNameNetworkSpoke1Location2" \
+		virtualNetworkName="$vnetNameSpoke1Location2" \
+		subnetNamesToAllow="$subnetNameTest"
 
 	echo -e "\n"
 fi
 
-echo "Deploy VMs"
-
+echo "Deploy Location 1 VM"
 az deployment group create --subscription "$subscriptionId" -n "VM-""$location1" --verbose \
-	-g "$rgNameVmLocation1" --template-file "$templateVirtualMachine" \
+	-g "$rgNameTestLocation1" --template-file "$templateVirtualMachine" \
 	--parameters \
 	applicationId="$applicationId" \
 	productId="$productId" \
@@ -259,11 +191,12 @@ az deployment group create --subscription "$subscriptionId" -n "VM-""$location1"
 	enableAutoShutdownNotification="$enableAutoShutdownNotification" \
 	autoShutdownNotificationWebhookURL="$autoShutdownNotificationWebhookURL" \
 	autoShutdownNotificationMinutesBefore="$autoShutdownNotificationMinutesBefore" \
-	resourceGroupNameNetwork="$rgNameVmLocation1" \
-	networkInterfaceName="$networkInterfaceNameLocation1"
+	resourceGroupNameNetworkInterface="$rgNameTestLocation1" \
+	networkInterfaceName="$virtualMachineNetworkInterfaceNameLocation1"
 
+echo "Deploy Location 2 VM"
 az deployment group create --subscription "$subscriptionId" -n "VM-""$location2" --verbose \
-	-g "$rgNameVmLocation2" --template-file "$templateVirtualMachine" \
+	-g "$rgNameTestLocation2" --template-file "$templateVirtualMachine" \
 	--parameters \
 	applicationId="$applicationId" \
 	productId="$productId" \
@@ -296,25 +229,25 @@ az deployment group create --subscription "$subscriptionId" -n "VM-""$location2"
 	enableAutoShutdownNotification="$enableAutoShutdownNotification" \
 	autoShutdownNotificationWebhookURL="$autoShutdownNotificationWebhookURL" \
 	autoShutdownNotificationMinutesBefore="$autoShutdownNotificationMinutesBefore" \
-	resourceGroupNameNetwork="$rgNameVmLocation2" \
-	networkInterfaceName="$networkInterfaceNameLocation2"
+	resourceGroupNameNetworkInterface="$rgNameTestLocation2" \
+	networkInterfaceName="$virtualMachineNetworkInterfaceNameLocation2"
 
 echo -e "\n"
 
 if $enableBootDiagnostics
 then
-	echo "Configure VM Boot Diagnostics"
-
+	echo "Configure Location 1 VM Boot Diagnostics"
 	az deployment group create --subscription "$subscriptionId" -n "DIAG-VM-""$location1" --verbose \
-		-g "$rgNameVmLocation1" --template-file "$templateVirtualMachineBootDiagnostics" \
+		-g "$rgNameTestLocation1" --template-file "$templateVirtualMachineBootDiagnostics" \
 		--parameters \
 		location="$location1" \
 		virtualMachineName="$virtualMachineNameLocation1" \
 		enableBootDiagnostics="$enableBootDiagnostics" \
 		diagnosticsStorageAccountName="$bootDiagnosticsStorageAccountNameLocation1"
 
+	echo "Configure Location 2 VM Boot Diagnostics"
 	az deployment group create --subscription "$subscriptionId" -n "DIAG-VM-""$location2" --verbose \
-		-g "$rgNameVmLocation2" --template-file "$templateVirtualMachineBootDiagnostics" \
+		-g "$rgNameTestLocation2" --template-file "$templateVirtualMachineBootDiagnostics" \
 		--parameters \
 		location="$location2" \
 		virtualMachineName="$virtualMachineNameLocation2" \

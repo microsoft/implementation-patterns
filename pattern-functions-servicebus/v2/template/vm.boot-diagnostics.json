@@ -1,0 +1,52 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"location": {
+			"type": "string",
+			"metadata": {
+				"displayName": "Azure region",
+				"description": "The Azure region within which to deploy. Examples: 'eastus2', 'centralus', etc. See https://azure.microsoft.com/regions/."
+			}
+		},
+		"virtualMachineName": {
+			"type": "string",
+			"metadata": {
+				"displayName": "Virtual Machine name",
+				"description": "The VM name. Should be unique within the resource group."
+			}
+		},
+		"enableBootDiagnostics": {
+			"type": "bool",
+			"defaultValue": true
+		},
+		"diagnosticsStorageAccountName": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Storage account name for boot diagnostics",
+				"description": ""
+			}
+		}
+	},
+	"variables": {
+		"bootDiagnosticsStorageUri": "[concat('https://', parameters('diagnosticsStorageAccountName'), '.blob.core.windows.net/')]",
+		"apiVersionCompute": "2020-06-01"
+	},
+	"resources": [
+		{
+			"name": "[parameters('virtualMachineName')]",
+			"type": "Microsoft.Compute/virtualMachines",
+			"apiVersion": "[variables('apiVersionCompute')]",
+			"location": "[parameters('location')]",
+			"properties": {
+				"diagnosticsProfile": {
+					"bootDiagnostics": {
+						"enabled": "[parameters('enableBootDiagnostics')]",
+						"storageUri": "[variables('bootDiagnosticsStorageUri')]"
+					}
+				}
+			}
+		}
+	]
+}

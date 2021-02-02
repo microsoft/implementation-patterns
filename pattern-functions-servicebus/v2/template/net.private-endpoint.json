@@ -1,0 +1,158 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"applicationId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application ID in ServiceNow",
+				"required": true
+			}
+		},
+		"productId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PR in ServiceNow",
+				"required": true
+			}
+		},
+		"productLine": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PL in ServiceNow",
+				"required": true
+			}
+		},
+		"employeeId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Employee ID",
+				"required": true
+			}
+		},
+		"businessUnit": {
+			"type": "string",
+			"defaultValue": "wi",
+			"metadata": {
+				"comments": "Business Unit. Examples: 'wi', 'ecc', 'gs'",
+				"required": true
+			}
+		},
+		"environment": {
+			"type": "string",
+			"defaultValue": "dev",
+			"metadata": {
+				"comments": "Deployment Environment",
+				"required": false
+			}
+		},
+		"organization": {
+			"type": "string",
+			"defaultValue": "WIM",
+			"metadata": {
+				"comments": "Organization",
+				"required": false
+			}
+		},
+		"timestamp": {
+			"type": "string",
+			"defaultValue": "[utcNow('u')]"
+		},
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String"
+        },
+        "privateDnsZoneResourceGroup": {
+            "type": "string"
+        },
+        "privateDnsZoneName": {
+            "type": "string"
+        },
+        "protectedWorkloadResourceGroup": {
+            "type": "string"
+        },
+        "protectedWorkloadResourceType": {
+            "type": "string"
+        },
+        "protectedWorkloadName": {
+            "type": "string"
+        },
+        "protectedWorkloadSubResource": {
+            "type": "string"
+        },
+        "privateEndpointName": {
+            "type": "string"
+        },
+        "networkResourceGroup": {
+            "type": "string"
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "vnetId": "[resourceId(parameters('networkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+		"resourceTags": {
+			"ApplicationId": "[toLower(parameters('applicationId'))]",
+			"ProductId": "[toLower(parameters('productId'))]",
+			"ProductLine": "[toLower(parameters('productLine'))]",
+			"CreatedBy": "[toLower(parameters('employeeId'))]",
+			"BusinessUnit": "[parameters('businessUnit')]",
+			"Environment": "[toLower(parameters('environment'))]",
+			"Organization": "[parameters('organization')]",
+			"Timestamp": "[parameters('timestamp')]"
+		},
+        "apiVersionPrivateEndpoint": "2020-07-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "[variables('apiVersionPrivateEndpoint')]",
+            "name": "[parameters('privateEndpointName')]",
+            "location": "[parameters('location')]",
+			"tags": "[variables('resourceTags')]",
+            "properties": {
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpointName')]",
+                        "properties": {
+                            "privateLinkServiceId": "[resourceId(parameters('protectedWorkloadResourceGroup'), parameters('protectedWorkloadResourceType'), parameters('protectedWorkloadName'))]",
+                            "groupIds": [ "[parameters('protectedWorkloadSubResource')]" ]
+                        }
+                    }
+                ],
+                "manualPrivateLinkServiceConnections": [],
+                "subnet": {
+                    "id": "[variables('subnetId')]"
+                },
+                "customDnsConfigs": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+            "apiVersion": "[variables('apiVersionPrivateEndpoint')]",
+            "name": "[concat(parameters('privateEndpointName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpointName'))]"
+            ],
+            "properties": {
+                "privateDnsZoneConfigs": [
+                    {
+                        "name": "[parameters('privateDnsZoneName')]",
+                        "properties": {
+                            "privateDnsZoneId": "[resourceId(parameters('privateDnsZoneResourceGroup'), 'Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

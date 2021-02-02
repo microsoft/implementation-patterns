@@ -1,0 +1,140 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"applicationId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application ID in ServiceNow",
+				"required": false
+			}
+		},
+		"productId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PR in ServiceNow",
+				"required": false
+			}
+		},
+		"productLine": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PL in ServiceNow",
+				"required": false
+			}
+		},
+		"employeeId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Employee ID",
+				"required": false
+			}
+		},
+		"businessUnit": {
+			"type": "string",
+			"defaultValue": "wi",
+			"metadata": {
+				"comments": "Business Unit. Examples: 'wi', 'ecc', 'gs'",
+				"required": false
+			}
+		},
+		"environment": {
+			"type": "string",
+			"defaultValue": "dev",
+			"metadata": {
+				"comments": "Deployment Environment",
+				"required": false
+			}
+		},
+		"organization": {
+			"type": "string",
+			"defaultValue": "WIM",
+			"metadata": {
+				"comments": "Organization",
+				"required": false
+			}
+		},
+		"timestamp": {
+			"type": "string",
+			"defaultValue": "[utcNow('u')]"
+		},
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Azure region"
+            }
+        },
+        "nsgName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+		"nsgRuleInbound100Src": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "displayName": "Source for dev/test inbound rule",
+                "description": "Optional. If provided, a priority 100 rule will be created to allow inbound access from this source. Useful for dev/test/debug etc. but likely not appropriate to provide in production."
+            }
+        }
+	},
+    "variables": {
+        "rule100Name": "DevTestInbound",
+		"resourceTags": {
+			"ApplicationId": "[toLower(parameters('applicationId'))]",
+			"ProductId": "[toLower(parameters('productId'))]",
+			"ProductLine": "[toLower(parameters('productLine'))]",
+			"CreatedBy": "[toLower(parameters('employeeId'))]",
+			"BusinessUnit": "[parameters('businessUnit')]",
+			"Environment": "[toLower(parameters('environment'))]",
+			"Organization": "[parameters('organization')]",
+			"Timestamp": "[parameters('timestamp')]"
+		},
+        "apiVersionNet": "2020-07-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "[variables('apiVersionNet')]",
+            "name": "[parameters('nsgName')]",
+            "location": "[parameters('location')]",
+			"tags": "[variables('resourceTags')]",
+            "properties": {
+                "securityRules":
+                "[
+                    if
+                    (
+                        empty(trim(parameters('nsgRuleInbound100Src'))),
+                        json('[]'),
+                        array
+                        (
+                            createObject
+                            (
+                                'name', variables('rule100Name'),
+                                'properties', createObject
+                                (
+                                    'protocol', '*',
+                                    'sourcePortRange', '*',
+                                    'destinationPortRange', '*',
+                                    'sourceAddressPrefix', parameters('nsgRuleInbound100Src'),
+                                    'destinationAddressPrefix', '*',
+                                    'access', 'Allow',
+                                    'priority', 100,
+                                    'direction', 'Inbound',
+                                    'sourcePortRanges', json('[]'),
+                                    'destinationPortRanges', json('[]'),
+                                    'sourceAddressPrefixes', json('[]'),
+                                    'destinationAddressPrefixes', json('[]')
+                                )
+                            )
+                        )
+                    )
+                ]"
+            }
+        }
+	]
+}

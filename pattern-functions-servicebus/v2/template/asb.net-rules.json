@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespaceName": {
+            "type": "string"
+        },
+        "allowTrustedServices": {
+            "type": "bool",
+            "defaultValue": true
+        },
+        "defaultAction": {
+            "type": "string",
+            "defaultValue": "Deny",
+            "allowedValues": [
+                "Allow",
+                "Deny"
+            ]
+        }
+    },
+    "variables": {
+        "apiVersionServiceBusNetRules": "2018-01-01-preview",
+        "ruleName": "[concat(parameters('namespaceName'), concat('/', 'default'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces/networkruleset",
+            "apiVersion": "[variables('apiVersionServiceBusNetRules')]",
+            "name": "[variables('ruleName')]",
+            "properties": {
+                "trustedServiceAccessEnabled": "[parameters('allowTrustedServices')]",
+                "defaultAction": "[parameters('defaultAction')]"
+            }
+        }
+    ]
+}

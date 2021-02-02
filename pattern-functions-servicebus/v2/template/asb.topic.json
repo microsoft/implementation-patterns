@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespaceName": {
+            "type": "string"
+        },
+        "topicName": {
+            "type": "string"
+        },
+        "defaultMessageTimeToLive": {
+            "type": "string",
+            "defaultValue": "P10D",
+			"metadata": {
+				"displayName": "Lock Duration",
+				"description": "ISO 8601 default message timespan to live value. This is the duration after which the message expires, starting from when the message is sent to Service Bus. This is the default value used when TimeToLive is not set on a message itself. See https://docs.microsoft.com/azure/templates/microsoft.servicebus/namespaces/queues."
+			}
+        },
+        "maxSizeInMegabytes": {
+            "type": "int",
+            "defaultValue": 1024,
+			"metadata": {
+				"displayName": "Max Size in Megabytes",
+				"description": "The maximum size of the queue in megabytes, which is the size of memory allocated for the queue. See https://docs.microsoft.com/azure/templates/microsoft.servicebus/namespaces/queues."
+			}
+        },
+        "requiresDuplicateDetection": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "duplicateDetectionHistoryTimeWindow": {
+            "type": "string",
+            "defaultValue": "PT10M",
+			"metadata": {
+				"displayName": "Lock Duration",
+				"description": "ISO 8601 timeSpan structure that defines the duration of the duplicate detection history. The default value is 10 minutes. See https://docs.microsoft.com/azure/templates/microsoft.servicebus/namespaces/queues."
+			}
+        },
+        "enableBatchedOperations": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "supportOrdering": {
+            "type": "bool",
+            "defaultValue": false
+        }
+    },
+    "variables": {
+        "apiVersionServiceBusTopics": "2017-04-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces/topics",
+            "apiVersion": "[variables('apiVersionServiceBusTopics')]",
+            "name": "[concat(parameters('namespaceName'), '/', parameters('topicName'))]",
+            "properties": {
+                "defaultMessageTimeToLive": "[parameters('defaultMessageTimeToLive')]",
+                "maxSizeInMegabytes": "[parameters('maxSizeInMegabytes')]",
+                "requiresDuplicateDetection": "[parameters('requiresDuplicateDetection')]",
+                "duplicateDetectionHistoryTimeWindow": "[parameters('duplicateDetectionHistoryTimeWindow')]",
+                "enableBatchedOperations": "[parameters('enableBatchedOperations')]",
+                "supportOrdering": "[parameters('supportOrdering')]"
+            }
+        }
+    ]
+}

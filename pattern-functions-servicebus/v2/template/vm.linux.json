@@ -1,0 +1,434 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"applicationId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application ID in ServiceNow",
+				"required": true
+			}
+		},
+		"productId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PR in ServiceNow",
+				"required": true
+			}
+		},
+		"productLine": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Application PL in ServiceNow",
+				"required": true
+			}
+		},
+		"employeeId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"comments": "Employee ID",
+				"required": true
+			}
+		},
+		"businessUnit": {
+			"type": "string",
+			"defaultValue": "wi",
+			"metadata": {
+				"comments": "Business Unit. Examples: 'wi', 'ecc', 'gs'",
+				"required": true
+			}
+		},
+		"environment": {
+			"type": "string",
+			"defaultValue": "dev",
+			"metadata": {
+				"comments": "Deployment Environment",
+				"required": false
+			}
+		},
+		"organization": {
+			"type": "string",
+			"defaultValue": "WIM",
+			"metadata": {
+				"comments": "Organization",
+				"required": false
+			}
+		},
+		"timestamp": {
+			"type": "string",
+			"defaultValue": "[utcNow('u')]"
+		},
+		"location": {
+			"type": "string",
+			"metadata": {
+				"displayName": "Azure region",
+				"description": "The Azure region within which to deploy. Examples: 'eastus2', 'centralus', etc. See https://azure.microsoft.com/regions/."
+			}
+		},
+		"availabilityZone": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Azure availability zone (AZ)",
+				"description": "The Azure AZ within which to deploy. Examples: 'eastus2', 'centralus', etc. See https://azure.microsoft.com/regions/ for which regions support AZs."
+			}
+		},
+		"userAssignedManagedIdentityResourceId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "User-Assigned Managed Identity Resource ID",
+				"description": "Optional. Can be retrieved for an existing UAMI using az identity show -o tsv --query 'id'."
+			}
+		},
+		"virtualMachineName": {
+			"type": "string",
+			"metadata": {
+				"displayName": "Virtual Machine name",
+				"description": "The VM name. Should be unique within the resource group."
+			}
+		},
+		"virtualMachineSize": {
+			"type": "string",
+			"defaultValue": "Standard_D4s_v3",
+			"metadata": {
+				"displayName": "Virtual Machine size",
+				"description": "The VM size. See https://docs.microsoft.com/azure/virtual-machines/windows/sizes or use Azure CLI command 'az vm list-sizes'."
+			}
+		},
+		"imageResourceId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Image Resource Id",
+				"description": ""
+			}
+		},
+		"publisher": {
+			"type": "string",
+			"defaultValue": "Canonical",
+			"metadata": {
+				"displayName": "Publisher",
+				"description": "CLI: az vm image list-publishers -l [Azure region]"
+			}
+		},
+		"offer": {
+			"type": "string",
+			"defaultValue": "UbuntuServer",
+			"metadata": {
+				"displayName": "Offer",
+				"description": "CLI: az vm image list-offers -l [Azure region] --publisher [Publisher]"
+			}
+		},
+		"sku": {
+			"type": "string",
+			"defaultValue": "20.04",
+			"metadata": {
+				"displayName": "SKU",
+				"description": "CLI: az vm image list-skus -l [Azure region] --publisher [Publisher] --offer [Offer]"
+			}
+		},
+		"version": {
+			"type": "string",
+			"defaultValue": "latest",
+			"metadata": {
+				"displayName": "Version",
+				"description": "Image version. Typically use latest."
+			}
+		},
+		"provisionVmAgent": {
+			"type": "bool",
+			"defaultValue": false
+		},
+		"adminUsername": {
+			"type": "string",
+			"metadata": {
+				"displayName": "VM administrator username",
+				"description": ""
+			}
+		},
+		"adminPublicKey": {
+			"type": "string",
+			"metadata": {
+				"displayName": "VM administrator SSH public key",
+				"description": "VM administrator SSH public key in form 'ssh-rsa {key}'"
+			}
+		},
+		"virtualMachineTimeZone": {
+			"type": "string",
+			"defaultValue": "Eastern Standard Time",
+			"metadata": {
+				"displayName": "VM timezone",
+				"description": "Possible values can be TimeZoneInfo.Id (https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id) value from time zones returned by TimeZoneInfo.GetSystemTimeZones. See https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones"
+			}
+		},
+		"disablePasswordAuthentication": {
+			"type": "bool",
+			"defaultValue": true
+		},
+		"osDiskName": {
+			"type": "string",
+			"defaultValue": "[concat(parameters('virtualMachineName'), '-os')]"
+		},
+		"osDiskStorageType": {
+			"type": "string",
+			"allowedValues": [
+				"Standard_LRS",
+				"Premium_LRS"
+			],
+			"defaultValue": "Premium_LRS",
+			"metadata": {
+				"displayName": "OS disk storage type",
+				"description": ""
+			}
+		},
+		"osDiskSizeInGB": {
+			"type": "int",
+			"defaultValue": 64,
+			"minValue": 32,
+			"maxValue": 1023,
+			"metadata": {
+				"displayName": "OS disk size in GB",
+				"description": ""
+			}
+		},
+		"dataDiskNameInfix": {
+			"type": "string",
+			"defaultValue": "[concat(parameters('virtualMachineName'), '-data-')]"
+		},
+		"dataDiskStorageType": {
+			"type": "string",
+			"allowedValues": [
+				"Standard_LRS",
+				"Premium_LRS"
+			],
+			"defaultValue": "Premium_LRS",
+			"metadata": {
+				"displayName": "Data disk storage type",
+				"description": ""
+			}
+		},
+		"dataDiskCount": {
+			"type": "int",
+			"defaultValue": 1,
+			"metadata": {
+				"displayName": "Number of data disks",
+				"description": "Number of data disks to attach to the VM."
+			}
+		},
+		"dataDiskSizeInGB": {
+			"type": "int",
+			"defaultValue": 128,
+			"minValue": 32,
+			"maxValue": 1023,
+			"metadata": {
+				"displayName": "Data disk size",
+				"description": "Data disk size in GB. Each data disk will be created at this size"
+			}
+		},
+		"vmAutoShutdownTime": {
+			"type": "string",
+			"defaultValue": "9999",
+			"minLength": 4,
+			"maxLength": 4,
+			"metadata": {
+				"description": "The time at which VMs will be automatically shutdown (24h HHmm format). Set value to '9999' to NOT configure the auto shutdown."
+			}
+		},
+		"enableAutoShutdownNotification": {
+			"type": "string",
+			"defaultValue": "Disabled",
+			"allowedValues": [
+				"Enabled",
+				"Disabled"
+			],
+			"metadata": {
+				"displayName": "Enable Auto-shutdown Notification?",
+				"description": "Specify whether a notification should be sent before VM auto-shutdown."
+			}
+		},
+		"autoShutdownNotificationWebhookURL": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Auto-shutdown Notification Webhook URL",
+				"description": ""
+			}
+		},
+		"autoShutdownNotificationMinutesBefore": {
+			"type": "int",
+			"defaultValue": 15,
+			"metadata": {
+				"displayName": "Auto-shutdown Notification minutes in advance",
+				"description": ""
+			}
+		},
+		"resourceGroupNameNetworkInterface": {
+			"type": "string",
+			"metadata": {
+				"displayName": "Resource Group for network interface",
+				"description": "The Resource Group that contains the existing network interface to use with this VM."
+			}
+		},
+		"networkInterfaceName": {
+			"type": "String",
+			"metadata": {
+				"displayName": "Network Interface Name",
+				"description": ""
+			}
+		}
+	},
+	"variables": {
+		"identityType": "[
+			if
+			(
+				empty(trim(parameters('userAssignedManagedIdentityResourceId'))),
+				'None',
+				'UserAssigned'
+			)
+		]",
+		"userAssignedIdentities": "[
+			if
+			(
+				empty(trim(parameters('userAssignedManagedIdentityResourceId'))),
+				json('null'),
+				createObject(parameters('userAssignedManagedIdentityResourceId'), json('{}'))
+			)
+		]",
+		"zones":
+		"[
+			if
+			(
+				empty(trim(parameters('availabilityZone'))),
+				json('[]'),
+				array(parameters('availabilityZone'))
+			)
+		]",
+		"networkInterfaceId": "[resourceId(parameters('resourceGroupNameNetworkInterface'), 'Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
+		"imageReference": "[
+			if
+			(
+				empty(trim(parameters('imageResourceId'))),
+				createObject
+				(
+					'publisher', parameters('publisher'),
+					'offer', parameters('offer'),
+					'sku', parameters('sku'),
+					'version', parameters('version')
+				),
+				createObject
+				(
+					'id', parameters('imageResourceId')
+				)
+			)
+		]",
+		"resourceTags": {
+			"ApplicationId": "[toLower(parameters('applicationId'))]",
+			"ProductId": "[toLower(parameters('productId'))]",
+			"ProductLine": "[toLower(parameters('productLine'))]",
+			"CreatedBy": "[toLower(parameters('employeeId'))]",
+			"BusinessUnit": "[parameters('businessUnit')]",
+			"Environment": "[toLower(parameters('environment'))]",
+			"Organization": "[parameters('organization')]",
+			"Timestamp": "[parameters('timestamp')]"
+		},
+		"apiVersionCompute": "2020-06-01",
+		"apiVersionDevTestLabSchedule": "2018-09-15"
+	},
+	"resources": [
+		{
+			"name": "[parameters('virtualMachineName')]",
+			"type": "Microsoft.Compute/virtualMachines",
+			"apiVersion": "[variables('apiVersionCompute')]",
+			"location": "[parameters('location')]",
+			"tags": "[variables('resourceTags')]",
+			"identity": {
+				"type": "[variables('identityType')]",
+				"userAssignedIdentities": "[variables('userAssignedIdentities')]"
+			},
+			"zones": "[variables('zones')]",
+			"properties": {
+				"osProfile": {
+					"computerName": "[parameters('virtualMachineName')]",
+					"adminUsername": "[parameters('adminUsername')]",
+					"linuxConfiguration": {
+						"provisionVMAgent": "[parameters('provisionVmAgent')]",
+						"disablePasswordAuthentication": "[parameters('disablePasswordAuthentication')]",
+						"ssh": {
+							"publicKeys": [
+								{
+									"path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+									"keyData": "[parameters('adminPublicKey')]"
+								}
+							]
+						}
+					}
+				},
+				"hardwareProfile": {
+					"vmSize": "[parameters('virtualMachineSize')]"
+				},
+				"storageProfile": {
+					"imageReference": "[variables('imageReference')]",
+					"osDisk": {
+						"createOption": "FromImage",
+						"name": "[parameters('osDiskName')]",
+						"diskSizeGB": "[parameters('osDiskSizeInGB')]",
+						"managedDisk": {
+							"storageAccountType": "[parameters('osDiskStorageType')]"
+						}
+					},
+					"copy": [
+						{
+							"name": "dataDisks",
+							"count": "[parameters('dataDiskCount')]",
+							"input": {
+								"lun": "[copyIndex('dataDisks')]",
+								"createOption": "Empty",
+								"name": "[concat(parameters('dataDiskNameInfix'), copyIndex('dataDisks', 1))]",
+								"diskSizeGB": "[parameters('dataDiskSizeInGB')]",
+								"managedDisk": {
+									"storageAccountType": "[parameters('dataDiskStorageType')]"
+								}
+							}
+						}
+					]
+				},
+				"networkProfile": {
+					"networkInterfaces": [
+						{
+							"id": "[variables('networkInterfaceId')]"
+						}
+					]
+				}
+			}
+		},
+		{
+			"condition": "[not(equals(parameters('vmAutoShutdownTime'), '9999'))]",
+			"type": "Microsoft.DevTestLab/schedules",
+			"name": "[concat('shutdown-computevm-', parameters('virtualMachineName'))]",
+			"apiVersion": "[variables('apiVersionDevTestLabSchedule')]",
+			"location": "[parameters('location')]",
+			"dependsOn": [
+				"[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+			],
+			"properties": {
+				"status": "Enabled",
+				"taskType": "ComputeVmShutdownTask",
+				"dailyRecurrence": {
+					"time": "[parameters('vmAutoShutdownTime')]"
+				},
+				"timeZoneId": "[parameters('virtualMachineTimeZone')]",
+				"notificationSettings": {
+					"status": "[parameters('enableAutoShutdownNotification')]",
+					"timeInMinutes": "[parameters('autoShutdownNotificationMinutesBefore')]",
+					"webhookUrl": "[parameters('autoShutdownNotificationWebhookURL')]"
+				},
+				"targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+			}
+		}
+	]
+}

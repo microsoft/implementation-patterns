@@ -1,0 +1,34 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String"
+        },
+        "namespaceName": {
+            "type": "String"
+        },
+        "sasRuleName": {
+            "defaultValue": "SendListen",
+            "type": "String"
+        }
+    },
+    "variables": {
+        "apiVersionServiceBusAuthRules": "2017-04-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ServiceBus/namespaces/AuthorizationRules",
+            "apiVersion": "[variables('apiVersionServiceBusAuthRules')]",
+            "name": "[concat(parameters('namespaceName'), '/', parameters('sasRuleName'))]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "rights": [
+                    "Send",
+                    "Listen"
+                ]
+            }
+        }
+    ]
+}
