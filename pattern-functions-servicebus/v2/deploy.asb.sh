@@ -58,6 +58,37 @@ az deployment group create --subscription "$subscriptionId" -n "ASB-SAS-""$locat
 
 echo -e "\n"
 
+if $asbSynchronizeSasPolicyKeys
+then
+	echo "Synchronize namespace SAS policy keys from Location 1 to Location 2"
+
+	# Source namespace RootManageSharedAccessKey
+	primaryKey="$(az servicebus namespace authorization-rule keys list --subscription "$subscriptionId" -g "$rgNameSharedLocation1" --namespace-name "$asbNamespaceNameLocation1" -n "RootManageSharedAccessKey" -o tsv --query 'primaryKey')"
+	secondaryKey="$(az servicebus namespace authorization-rule keys list --subscription "$subscriptionId" -g "$rgNameSharedLocation1" --namespace-name "$asbNamespaceNameLocation1" -n "RootManageSharedAccessKey" -o tsv --query 'secondaryKey')"
+
+	# Set to destination namespace
+	az servicebus namespace authorization-rule keys renew --subscription "$subscriptionId" --verbose \
+		-g "$rgNameSharedLocation2" --namespace-name "$asbNamespaceNameLocation2" -n "RootManageSharedAccessKey" \
+		--key PrimaryKey --key-value "$primaryKey"
+
+	az servicebus namespace authorization-rule keys renew --subscription "$subscriptionId" --verbose \
+		-g "$rgNameSharedLocation2" --namespace-name "$asbNamespaceNameLocation2" -n "RootManageSharedAccessKey" \
+		--key SecondaryKey --key-value "$secondaryKey"
+
+	# Source namespace Send-Listen
+	primaryKey="$(az servicebus namespace authorization-rule keys list --subscription "$subscriptionId" -g "$rgNameSharedLocation1" --namespace-name "$asbNamespaceNameLocation1" -n "$asbSendListenSasPolicyName" -o tsv --query 'primaryKey')"
+	secondaryKey="$(az servicebus namespace authorization-rule keys list --subscription "$subscriptionId" -g "$rgNameSharedLocation1" --namespace-name "$asbNamespaceNameLocation1" -n "$asbSendListenSasPolicyName" -o tsv --query 'secondaryKey')"
+
+	# Set to destination namespace
+	az servicebus namespace authorization-rule keys renew --subscription "$subscriptionId" --verbose \
+		-g "$rgNameSharedLocation2" --namespace-name "$asbNamespaceNameLocation2" -n "$asbSendListenSasPolicyName" \
+		--key PrimaryKey --key-value "$primaryKey"
+
+	az servicebus namespace authorization-rule keys renew --subscription "$subscriptionId" --verbose \
+		-g "$rgNameSharedLocation2" --namespace-name "$asbNamespaceNameLocation2" -n "$asbSendListenSasPolicyName" \
+		--key SecondaryKey --key-value "$secondaryKey"
+fi
+
 # Do these BEFORE any namespace VNet rules deployed below
 echo "Configure Location 1 Service Bus Namespace Trusted Azure service access and any explicit IP rules"
 az deployment group create --subscription "$subscriptionId" -n "ASB-Net-Rules-""$location1" --verbose \
