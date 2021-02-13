@@ -159,6 +159,14 @@ asbPrivateEndpointNameLocation1="$businessUnit""-""$environment""-asb-pe-""$loca
 
 asbNamespaceNameLocation2="$applicationId""-""$employeeId""-""$location2""-asb"
 asbPrivateEndpointNameLocation2="$businessUnit""-""$environment""-asb-pe-""$location2"
+
+# If true, the script will get the location1 namespace keys for the built-in RootManageSharedAccessKey and send-listen (specified above) policies,
+# and synchronize the keys to the corresponding policies on the location2 namespace. Why would you want to do this?
+# Because if you're using multiple namespaces for HA, and you're using a message producer like a Java/JMS/Apache Qpid client which lets you
+# specify multiple message sink FQDNs in the connection string, you can specify ONLY ONE SET of credentials which must be valid on
+# any of the message sinks. If you're using a client for which this is true, set this to true. If you're not sure, and you understand
+# the implications of having the same policy keys on both namespaces, you can also set this to true - it won't prevent anything in this asset from deploying.
+asbSynchronizeSasPolicyKeys=true
 # ==================================================
 
 # ==================================================
