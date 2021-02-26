@@ -6,7 +6,7 @@
 # ALL OTHER BLOCKS/VARIABLES CAN BE LEFT AT DEFAULTS (BUT REVIEW/CHANGE AS NEEDED ANYWAY)
 
 # Deployment
-# subscriptionId="PROVIDE"
+# subscriptionId="PROVIDE" # Provide explicitly if cannot get it using next line
 subscriptionId="$(az account show -o tsv --query 'id')"
 location1="eastus2"
 location2="centralus"
@@ -191,7 +191,7 @@ storageFilePrivateEndpointNameLocation2="$businessUnit""-""$environment""-sf-pe-
 # ==================================================
 # Workload - Function
 workloadVnetIntegration="true"
-workloadPrivateEndpoint="true"
+workloadPrivateEndpoint="false"
 
 workloadResourceType="Microsoft.Web/sites"
 workloadSubResource="sites"
