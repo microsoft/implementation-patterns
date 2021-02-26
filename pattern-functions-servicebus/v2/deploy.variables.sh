@@ -191,7 +191,7 @@ storageFilePrivateEndpointNameLocation2="$businessUnit""-""$environment""-sf-pe-
 # ==================================================
 # Workload - Function
 workloadVnetIntegration="true"
-workloadPrivateEndpoint="false"
+workloadPrivateEndpoint="true"
 
 workloadResourceType="Microsoft.Web/sites"
 workloadSubResource="sites"
